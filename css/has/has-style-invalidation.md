@@ -244,7 +244,23 @@ Dividing the style process into the two processes (Style Invalidation / Style Re
 
 For the simple and clear understanding, we will check style invalidation and style recalculation of a compound selector that contains single `:has`. Performance factors for the complex cases will be handled after those.
 
-### 4.1. :has Style Invalidation
+### 4.1. Differences from the directions of Invalidation and Recalculation
+
+The different invalidation direction and recalculation direction are the most important performance factors for :has because all the complexities are comming from those. We can get simple understanding about it by comparing the performances of the two directions.
+
+ * Invalidation Direction
+ * Recalculation Direction
+
+With a selector that doesn't have any subject elements in a DOM, we can check the style invalidation overhead by skipping the style recalculation process.
+
+#### 4.1.1. Invalidation Direction
+![Invalidation Direction](images/invalidation-factors-invalidation-direction.png)
+
+#### 4.1.2. Recalculation Direction
+![Recalculation Direction](images/recalculation-factors-recalculation-direction.png)
+
+
+### 4.2. :has Style Invalidation
 In the style invalidation process, style-engine get features for the change, and invalidate elements in upward subtree of the changed element with invalidation sets. These are factors that can affect performance of a style invalidation.
 
  * Depth of the changed element
@@ -255,30 +271,28 @@ In the style invalidation process, style-engine get features for the change, and
  * Matching operation of a simple feature in a feature for the change
  * Number of partial attribute features for an attribute name of the attribute change
 
-With a selector that doesn't have any subject elements in a DOM, we can check the style invalidation overhead by skipping the style recalculation process.
-
-#### 4.1.1. Depth of the changed element
+#### 4.2.1. Depth of the changed element
 ![Depth of the changed element](images/invalidation-factors-depth-of-the-changed-element.png)
 
-#### 4.1.2. Number of subject features
+#### 4.2.2. Number of subject features
 ![Number of subject features](images/invalidation-factors-number-of-subject-features.png)
 
-#### 4.1.3. Number of simple features in a subject feature
+#### 4.2.3. Number of simple features in a subject feature
 ![Number of simple features in a subject feature](images/invalidation-factors-number-of-simple-features-in-a-subject-feature.png)
 
-#### 4.1.4. Number of simple features in a feature for the change
+#### 4.2.4. Number of simple features in a feature for the change
 ![Number of simple features in a feature for the change](images/invalidation-factors-number-of-simple-features-in-a-feature-for-the-change.png)
 
-#### 4.1.5. Matching operation of a simple feature in a subject feature
+#### 4.2.5. Matching operation of a simple feature in a subject feature
 ![Matching operatoin of a simple feature in a subject feature](images/invalidation-factors-matching-operation-of-a-simple-feature-in-a-subject-feature.png)
 
-#### 4.1.6. Matching operation of a simple feature in a feature for the change
+#### 4.2.6. Matching operation of a simple feature in a feature for the change
 ![Matching operatoin of a simple feature in a feature for the change](images/invalidation-factors-matching-operation-of-a-simple-feature-in-a-feature-for-the-change.png)
 
-#### 4.1.7. Number of partial attribute features for an attribute name of the attribute change
+#### 4.2.7. Number of partial attribute features for an attribute name of the attribute change
 ![Number of partial attribute features for an attribute name of the attribute change](images/invalidation-factors-number-of-partial-attribute-features-for-an-attribute-name-of-the-attribute-change.png)
 
-### 4.2. :has Style Recalculation
+### 4.3. :has Style Recalculation
 
 In the style recalculation process, style engine matches `:has` argument selectors to descendent elements of a style invalid element to determine whether the style invalid element is a subject element or not. (Please refer the [has style recalculation](has-style-recalculation.md) to get some details)
 
@@ -292,23 +306,23 @@ These are the factors that affect performance of the style recalculation.
 
 We can check those factors as followings.
 
-#### 4.2.1. Descendant tree size of a subject element
+#### 4.3.1. Descendant tree size of a subject element
 ![Descendant tree size of a subject element](images/recalculation-factors-descendant-tree-size-of-a-subject-element.png)
 
-#### 4.2.2. Position of the first element that matches argument selector
+#### 4.3.2. Position of the first element that matches argument selector
 ![Position of the first element that matches argument selector](images/recalculation-factors-position-of-the-first-element-that-matches-argument-selector.png)
 
-#### 4.2.3. Number of invalid/none-subject elements
+#### 4.3.3. Number of invalid/none-subject elements
 ![Number of invalid/none-subject elements](images/recalculation-factors-number-of-invalid-none-subject-elements.png)
 
-#### 4.2.4. Number of subject elements
+#### 4.3.4. Number of subject elements
 ![Number of subject elements](images/recalculation-factors-number-of-subject-elements.png)
 
-#### 4.2.5. Existence of a subject element
+#### 4.3.5. Existence of a subject element
 ![Existence of a subject element](images/recalculation-factors-existence-of-a-subject-element.png)
 
 
-### 4.3. Complex Cases
+### 4.4. Complex Cases
 
 // WIP
 
