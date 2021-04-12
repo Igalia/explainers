@@ -238,26 +238,42 @@ Based on this view point, we can think about solutions for the complicated cases
 #### 3.3.5. none-terminal :has(:is)
 // WIP
 
-## 4. Performance Factors
+## 4. Performance factors
 
 Dividing the style process into the two processes (Style Invalidation / Style Recalculation) is also helpful to get simple and clear understanding about the performance factors of the `:has()` invalidation approach.
 
 For the simple and clear understanding, we will check style invalidation and style recalculation of a compound selector that contains single `:has`. Performance factors for the complex cases will be handled after those.
 
-### 4.1. Differences from the directions of Invalidation and Recalculation
+### 4.1. Understanding the subtree direction
 
-The different invalidation direction and recalculation direction are the most important performance factors for :has because all the complexities are comming from those. We can get simple understanding about it by comparing the performances of the two directions.
+All the complexities about `:has()` are comming from the different invalidation direction and the subtree traversal in recalculation process. Before breaking down the performance factors on each process (invalidation/recalculation), comparing performances related with those characteristics would be helpful to get clear understanding about the subtree direction.
 
  * Invalidation Direction
  * Recalculation Direction
+ * :has Invalidation and Recalculation
 
 With a selector that doesn't have any subject elements in a DOM, we can check the style invalidation overhead by skipping the style recalculation process.
 
 #### 4.1.1. Invalidation Direction
 ![Invalidation Direction](images/invalidation-factors-invalidation-direction.png)
 
+For a same change type at a same level of a DOM tree, the upward invalidation process performs better than the downward invalidation process because of the subtree size.
+
+Test link : https://css-has.glitch.me/performance-factor-invalidation-direction.html
+
 #### 4.1.2. Recalculation Direction
 ![Recalculation Direction](images/recalculation-factors-recalculation-direction.png)
+
+For a same change type at a same level of a DOM tree, the `:has()` recalculation process performs worse than the normal recalculation process because of the `:has()` matching logic that requires subtree traversal.
+
+Test link : https://css-has.glitch.me/performance-factor-recalculation-direction.html
+
+#### 4.1.3. :has Invalidation and Recalculation
+![Existence of a subject element](images/recalculation-factors-existence-of-a-subject-element.png)
+
+For a same change type at a same level of a DOM tree, the `:has()` recalculation overhead is heavier than the invalidation overhead because of the subtree direction of invalidation and recalculation.
+
+Test link : https://css-has.glitch.me/performance-factor-has-invalidation-and-recalculation.html
 
 
 ### 4.2. :has Style Invalidation
@@ -317,9 +333,6 @@ We can check those factors as followings.
 
 #### 4.3.4. Number of subject elements
 ![Number of subject elements](images/recalculation-factors-number-of-subject-elements.png)
-
-#### 4.3.5. Existence of a subject element
-![Existence of a subject element](images/recalculation-factors-existence-of-a-subject-element.png)
 
 
 ### 4.4. Complex Cases
