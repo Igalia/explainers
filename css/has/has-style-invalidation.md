@@ -315,8 +315,18 @@ In the style invalidation process, style-engine get features for the change, and
 #### 4.2.1. Depth of the changed element
 ![Depth of the changed element](images/invalidation-factors-depth-of-the-changed-element.png)
 
+**Invalidation time (μs)**
+![Depth of the changed element result](images/performance-factor-depth-of-the-changed-element-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-depth-of-the-changed-element.html
+
 #### 4.2.2. Number of subject features
 ![Number of subject features](images/invalidation-factors-number-of-subject-features.png)
+
+**Invalidation time (μs)**
+![Number of subject features result](images/performance-factor-number-of-subject-features-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-subject-features.html
 
 #### 4.2.3. Number of simple features in a subject feature
 ![Number of simple features in a subject feature](images/invalidation-factors-number-of-simple-features-in-a-subject-feature.png)
