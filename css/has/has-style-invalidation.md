@@ -276,6 +276,7 @@ Before breaking down the `:has()` performance factors on each process (invalidat
 For a same change type at a same level of a DOM tree, the upward invalidation process performs better than the downward invalidation process because of the subtree size.
 
 **Invalidation time (μs)**
+
 ![Invalidation difference result](images/performance-factor-invalidation-difference-result.png)
 
 Test link : https://css-has.glitch.me/performance-factor-invalidation-difference.html
@@ -286,6 +287,7 @@ Test link : https://css-has.glitch.me/performance-factor-invalidation-difference
 For a same change type at a same level of a DOM tree, the `:has()` recalculation process performs worse than the normal recalculation process because of the `:has()` matching logic that requires subtree traversal.
 
 **Recalculation time (μs)**
+
 ![Recalculation difference result](images/performance-factor-recalculation-difference-result.png)
 
 Test link : https://css-has.glitch.me/performance-factor-recalculation-difference.html
@@ -296,6 +298,7 @@ Test link : https://css-has.glitch.me/performance-factor-recalculation-differenc
 For a same change type at a same level of a DOM tree, the `:has()` recalculation overhead is heavier than the invalidation overhead because of the subtree direction of invalidation and recalculation.
 
 **:has Invalidation/Recalculation time (μs)**
+
 ![:has Invalidation and Recalculation result](images/performance-factor-has-invalidation-and-recalculation-result.png)
 
 Test link : https://css-has.glitch.me/performance-factor-has-invalidation-and-recalculation.html
@@ -316,6 +319,7 @@ In the style invalidation process, style-engine get features for the change, and
 ![Depth of the changed element](images/invalidation-factors-depth-of-the-changed-element.png)
 
 **Invalidation time (μs)**
+
 ![Depth of the changed element result](images/performance-factor-depth-of-the-changed-element-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-depth-of-the-changed-element.html
@@ -324,6 +328,7 @@ Test link: https://css-has.glitch.me/performance-factor-depth-of-the-changed-ele
 ![Number of subject features](images/invalidation-factors-number-of-subject-features.png)
 
 **Invalidation time (μs)**
+
 ![Number of subject features result](images/performance-factor-number-of-subject-features-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-subject-features.html
@@ -332,6 +337,7 @@ Test link: https://css-has.glitch.me/performance-factor-number-of-subject-featur
 ![Number of simple features in a subject feature](images/invalidation-factors-number-of-simple-features-in-a-subject-feature.png)
 
 **Invalidation time(μs)**
+
 ![Number of simple features in a subject feature result](images/performance-factor-number-of-simple-features-in-a-subject-feature-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-simple-features-in-a-subject-feature.html
@@ -340,6 +346,7 @@ Test link: https://css-has.glitch.me/performance-factor-number-of-simple-feature
 ![Number of simple features in a feature for the change](images/invalidation-factors-number-of-simple-features-in-a-feature-for-the-change.png)
 
 **Invalidation time(μs)**
+
 ![Number of simple features in a feature for the change result](images/performance-factor-number-of-simple-features-in-a-feature-for-the-change-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-simple-features-in-a-feature-for-the-change.html
