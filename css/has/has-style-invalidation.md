@@ -241,7 +241,7 @@ Based on this view point, we can think about solutions for the complicated cases
 ## 4. Performance factors
 
 When we check the performance of the `:has` invalidation, we usually check entire invalidation process and this includes style recalculation process also.
-![Invalidation and Recalculation](images/performance-factors-invalidation-recalculation.png)
+![:has Invalidation and Recalculation](images/performance-factors-has-invalidation-recalculation.png)
 
 Dividing the style process into the two processes (Style Invalidation / Style Recalculation) is also helpful to get simple and clear understanding about the performance factors of the `:has()` invalidation approach.
 
@@ -255,30 +255,48 @@ For the simple and clear understanding, we will check style invalidation and sty
 
 ### 4.1. Understanding the subtree direction
 
-All the complexities about `:has()` are comming from the different invalidation direction and the subtree traversal in recalculation process. Before breaking down the performance factors on each process (invalidation/recalculation), comparing performances related with those characteristics would be helpful to get clear understanding about the subtree direction.
+Compared to `:has()`, normal style invalidation and recalculation has different invalidation direction(downward invalidation) and it doesn't need to traverse downward subtree in the recalculation process.
+![Normal Invalidation and Recalculation](images/performance-factors-normal-invalidation-recalculation.png)
 
- * Invalidation Direction
- * Recalculation Direction
+All the complexities about `:has()` are comming from these differences.
+|               |                 .b:has(.a)                   |                .a .b                |
+| ------------- | -------------------------------------------- | ----------------------------------- |
+| Invalidation  | Upward subtree of changed element            | Downward subtree of changed element |
+| Recalculation | Invalidated element and its downward subtree | Invalidated element                 |
+
+Before breaking down the `:has()` performance factors on each process (invalidation/recalculation), comparing performances related with those differences would be helpful to get clear understanding about the subtree direction.
+
+ * Invalidation difference
+ * Recalculation difference
  * :has Invalidation and Recalculation
 
-#### 4.1.1. Invalidation Direction
-![Invalidation Direction](images/invalidation-factors-invalidation-direction.png)
+#### 4.1.1. Invalidation difference
+![Invalidation difference](images/invalidation-factors-invalidation-difference.png)
 
 For a same change type at a same level of a DOM tree, the upward invalidation process performs better than the downward invalidation process because of the subtree size.
 
-Test link : https://css-has.glitch.me/performance-factor-invalidation-direction.html
+**Invalidation time (μs)**
+![Invalidation difference result](images/performance-factor-invalidation-difference-result.png)
 
-#### 4.1.2. Recalculation Direction
-![Recalculation Direction](images/recalculation-factors-recalculation-direction.png)
+Test link : https://css-has.glitch.me/performance-factor-invalidation-difference.html
+
+#### 4.1.2. Recalculation difference
+![Recalculation difference](images/recalculation-factors-recalculation-difference.png)
 
 For a same change type at a same level of a DOM tree, the `:has()` recalculation process performs worse than the normal recalculation process because of the `:has()` matching logic that requires subtree traversal.
 
-Test link : https://css-has.glitch.me/performance-factor-recalculation-direction.html
+**Recalculation time (μs)**
+![Recalculation difference result](images/performance-factor-recalculation-difference-result.png)
+
+Test link : https://css-has.glitch.me/performance-factor-recalculation-difference.html
 
 #### 4.1.3. :has Invalidation and Recalculation
 ![Existence of a subject element](images/recalculation-factors-existence-of-a-subject-element.png)
 
 For a same change type at a same level of a DOM tree, the `:has()` recalculation overhead is heavier than the invalidation overhead because of the subtree direction of invalidation and recalculation.
+
+**:has Invalidation/Recalculation time (μs)**
+![:has Invalidation and Recalculation result](images/performance-factor-has-invalidation-and-recalculation-result.png)
 
 Test link : https://css-has.glitch.me/performance-factor-has-invalidation-and-recalculation.html
 
