@@ -240,7 +240,16 @@ Based on this view point, we can think about solutions for the complicated cases
 
 ## 4. Performance factors
 
+When we check the performance of the `:has` invalidation, we usually check entire invalidation process and this includes style recalculation process also.
+![Invalidation and Recalculation](images/performance-factors-invalidation-recalculation.png)
+
 Dividing the style process into the two processes (Style Invalidation / Style Recalculation) is also helpful to get simple and clear understanding about the performance factors of the `:has()` invalidation approach.
+
+Invalidation process is a process to get style invalid element by matching features for a change. The performance of the feature matching operation is the key of the invalidation performance. If we need to focus to the operation, we can check the performance of the invalidation process with a change that doesn't have any style invalid element.
+![Invalidation only](images/performance-factors-invalidation-only.png)
+
+Recalculation process is a process to get subject element by matching selector to the style invalid element. The performance of the argument selector matching operation is the key of the recalculation performance. If we need to focus to the operation, we can check the performance of the recalculation process with a change that has style invalid elements but doesn't have any subject element.
+![Recalculation only](images/performance-factors-recalculation-only.png)
 
 For the simple and clear understanding, we will check style invalidation and style recalculation of a compound selector that contains single `:has`. Performance factors for the complex cases will be handled after those.
 
@@ -251,8 +260,6 @@ All the complexities about `:has()` are comming from the different invalidation 
  * Invalidation Direction
  * Recalculation Direction
  * :has Invalidation and Recalculation
-
-With a selector that doesn't have any subject elements in a DOM, we can check the style invalidation overhead by skipping the style recalculation process.
 
 #### 4.1.1. Invalidation Direction
 ![Invalidation Direction](images/invalidation-factors-invalidation-direction.png)
