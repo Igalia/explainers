@@ -331,8 +331,18 @@ Test link: https://css-has.glitch.me/performance-factor-number-of-subject-featur
 #### 4.2.3. Number of simple features in a subject feature
 ![Number of simple features in a subject feature](images/invalidation-factors-number-of-simple-features-in-a-subject-feature.png)
 
+**Invalidation time(μs)**
+![Number of simple features in a subject feature result](images/performance-factor-number-of-simple-features-in-a-subject-feature-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-simple-features-in-a-subject-feature.html
+
 #### 4.2.4. Number of simple features in a feature for the change
 ![Number of simple features in a feature for the change](images/invalidation-factors-number-of-simple-features-in-a-feature-for-the-change.png)
+
+**Invalidation time(μs)**
+![Number of simple features in a feature for the change result](images/performance-factor-number-of-simple-features-in-a-feature-for-the-change-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-simple-features-in-a-feature-for-the-change.html
 
 #### 4.2.5. Matching operation of a simple feature in a subject feature
 ![Matching operatoin of a simple feature in a subject feature](images/invalidation-factors-matching-operation-of-a-simple-feature-in-a-subject-feature.png)
