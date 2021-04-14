@@ -17,6 +17,6 @@ According to the spec, the `:has()` selector takes [relative selector](https://w
 ## 3. Style invalidation with :has()
 Style invalidation approach for `:has()` is described in the [has style invalidation](has-style-invalidation.md). You can get the most details about the :has style invalidation from here.
 
-The approach follows the idea of blink style invalidation. The [blink css style invalidation](blink-css-style-invalidation.md) simply summarized the design documents.
+The approach follows the idea of the blink style invalidation. The [blink css style invalidation](blink-css-style-invalidation.md) simply summarized the [design documents](https://chromium.googlesource.com/chromium/src/+/refs/tags/90.0.4430.54/third_party/blink/renderer/core/css/style-invalidation.md).
 
 In the [prototyping details](prototyping-details.md), you can get the detailed design of the `:has()` invalidation prototyping.
