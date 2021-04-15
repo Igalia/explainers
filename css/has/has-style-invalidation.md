@@ -357,22 +357,56 @@ These are the factors that affect performance of the style recalculation.
  * Position of the first element that matches argument selector
  * Number of invalid/none-subject elements
  * Number of subject elements
- * Existence of a subject element
 
 We can check those factors as followings.
 
 #### 4.3.1. Descendant tree size of a subject element
 ![Descendant tree size of a subject element](images/recalculation-factors-descendant-tree-size-of-a-subject-element.png)
 
+**Recalculation time(μs)**
+
+![Descendant tree size of a subject element-result](images/performance-factor-descendant-tree-size-of-a-subject-element-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-subject-element.html
+
 #### 4.3.2. Position of the first element that matches argument selector
 ![Position of the first element that matches argument selector](images/recalculation-factors-position-of-the-first-element-that-matches-argument-selector.png)
+
+**Recalculation time(μs)**
+
+![Position of the first element that matches argument selector](images/performance-factor-position-of-the-first-element-that-matches-argument-selector-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-position-of-the-first-element-that-matches-argument-selector.html
 
 #### 4.3.3. Number of invalid/none-subject elements
 ![Number of invalid/none-subject elements](images/recalculation-factors-number-of-invalid-none-subject-elements.png)
 
+**Recalculation time(μs)**
+
+![Number of invalid/none-subject elements result](images/performance-factor-number-of-invalid-none-subject-elements-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-none-subject-elements.html
+
+**Ref. Recalculation time(μs) of '.a .b .c {...}'**
+
+![Number of invalid/none-subject elements without :has result](images/performance-factor-number-of-invalid-none-subject-elements-without-has-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-none-subject-elements-without-has.html
+
 #### 4.3.4. Number of subject elements
 ![Number of subject elements](images/recalculation-factors-number-of-subject-elements.png)
 
+**Recalculation time(μs)**
+
+![Number of subject elements result](images/performance-factor-number-of-subject-elements-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-subject-elements.html
+
+**Ref. Recalculation time(μs) of '.a .b .c {...}'**
+
+![Number of subject elements without :has result](images/performance-factor-number-of-subject-elements-without-has-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-subject-elements-without-has.html
 
 ### 4.4. Complex Cases
 
