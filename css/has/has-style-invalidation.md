@@ -241,7 +241,7 @@ For the removed subtree, we can invalidate it's upward subtree with the subject 
 
 ### 3.3. Subtree traversal variations
 
-Upward invalidation is not enough to handle various cases with `:has` selector because the subject elements can be everywhere in the DOM when we use`:has()` seletor with other selectors. It can be upward subtree, downward subtree and none-upward/none-downward subtree of the changed element.
+Upward invalidation is not enough to handle various cases with `:has` selector because the subject elements can be everywhere in the DOM when we use`:has()` seletor with other selectors. It can be upward subtree, downward subtree and non-upward/non-downward subtree of the changed element.
 
 ![Subject elements can be everywhere in the DOM](images/subject-elements-can-be-everywhere-in-the-dom.png)
 
@@ -253,8 +253,47 @@ In the [3.1.3. Add or remove a subtree](#313-add-or-remove-a-subtree) section, w
 
 Based on this view point, we can think about solutions for the complicated cases without creating tight dependencies or having a copy of the downward solutions. The following sections will describe those with more details.
 
-#### 3.3.2. none-terminal :has
-// WIP
+#### 3.3.2. non-terminal :has
+
+When a `:has()` selector is not in the terminal compound selector, the subject element will be in the downward subtree of the elements that match with the compound selector that contains the `:has()` selector. We can invalidate the subject elements by scheduling downward invalidations for each element that matches the `:has()` compound selector. We can get those elements(elements to be scheduled) from the upward invalidation and features from the non-terminal compound selector containing `:has()` pseudo class.
+![Invalidate non-terminal :has by scheduling downward invalidation](images/invalidate-non-terminal-has-by-scheduling-downward-invalidation.png)
+
+The downward invalidation logic already provides methods to schedule invalidation. The methods takes target element and values of a change (e.g. class values for a class change). We can get the elements to be scheduled with the scheduling features, and can get the change values from the scheduling features. So what we need to do is just call the scheduling methods when an upward invalidation find elements to be scheduled. There will not be any changes on the downward invalidation logic.
+![Upward invalidation interface with scheduling](diagrams/upward-invalidation-interface-with-scheduling.png)
+
+```diff
+ ...
+
+ * Create a ancestor_feature_set
+ * Create a preceding_feature_set
++* Create scheduling_map<element, feature_set>
+
+ ...
+
+      * Match feature3 to the ancestor element
+      * If matched
++       * If feature3 is scheduling feature
++         * Add feature3 to the scheduling_map[ancestor element]
+        * If feature3 is subject feature
+          * Invalidate the ancestor element
+
+ ...
+
+          * Match feature4 to the preceding sibling element
+          * If matched
++           * If feature4 is scheduling feature
++             * Add feature4 to the scheduling_map[preceding sibling element]
+            * Invalidate the preceding sibling element
+
+ ...
+
++* For each <element, feature_set> in scheduling_map
++  * For each feature in feature_set
++    * Schedule downward invalidation for the element
+```
+
+
+
 
 #### 3.3.3. terminal :has(:has)
 // WIP
@@ -265,7 +304,7 @@ Based on this view point, we can think about solutions for the complicated cases
 #### 3.3.4. terminal :has(:is(:has))
 // WIP
 
-#### 3.3.5. none-terminal :has(:is)
+#### 3.3.5. non-terminal :has(:is)
 // WIP
 
 ## 4. Performance factors
@@ -398,7 +437,7 @@ These are the factors that affect performance of the style recalculation.
 
  * Descendant tree size of a subject element
  * Position of the first element that matches argument selector
- * Number of invalid/none-subject elements
+ * Number of invalid/non-subject elements
  * Number of subject elements
 
 We can check those factors as followings.
@@ -421,20 +460,20 @@ Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-
 
 Test link: https://css-has.glitch.me/performance-factor-position-of-the-first-element-that-matches-argument-selector.html
 
-#### 4.3.3. Number of invalid/none-subject elements
-![Number of invalid/none-subject elements](images/recalculation-factors-number-of-invalid-none-subject-elements.png)
+#### 4.3.3. Number of invalid/non-subject elements
+![Number of invalid/non-subject elements](images/recalculation-factors-number-of-invalid-non-subject-elements.png)
 
 **Recalculation time(μs)**
 
-![Number of invalid/none-subject elements result](images/performance-factor-number-of-invalid-none-subject-elements-result.png)
+![Number of invalid/non-subject elements result](images/performance-factor-number-of-invalid-non-subject-elements-result.png)
 
-Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-none-subject-elements.html
+Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements.html
 
 **Ref. Recalculation time(μs) of '.a .b .c {...}'**
 
-![Number of invalid/none-subject elements without :has result](images/performance-factor-number-of-invalid-none-subject-elements-without-has-result.png)
+![Number of invalid/non-subject elements without :has result](images/performance-factor-number-of-invalid-non-subject-elements-without-has-result.png)
 
-Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-none-subject-elements-without-has.html
+Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements-without-has.html
 
 #### 4.3.4. Number of subject elements
 ![Number of subject elements](images/recalculation-factors-number-of-subject-elements.png)
