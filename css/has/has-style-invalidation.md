@@ -292,20 +292,26 @@ The downward invalidation logic already provides methods to schedule invalidatio
 +    * Schedule downward invalidation for the element
 ```
 
-
-
-
 #### 3.3.3. terminal :has(:has)
-// WIP
+
+Nested `:has` can be projected to the single `:has` to extract features and relations.
+// TODO Need more descriptions and images...
+
+![Project nested `:has` to single `:has` to extract features and relations](images/project-nested-has-to-single-has-to-extract-features-and-relations.png)
 
 #### 3.3.3. terminal :has(:is)
-// WIP
+// TODO Need more descriptions and images...
+
+![invalidate with subject feature sets](images/terminal-has-is-invalidate-with-subject-feature-sets.png)
 
 #### 3.3.4. terminal :has(:is(:has))
-// WIP
+// TODO Need more descriptions and images...
 
-#### 3.3.5. non-terminal :has(:is)
-// WIP
+![get top-most inner :has matching element and invalidate with subject feature sets](images/terminal-has-is-has-get-top-most-inner-has-matching-element-and-invalidate-with-subject-feature-sets.png)
+
+#### 3.3.5. non-terminal :has(:is), :has(:is(:has))
+
+// TODO (Similar with non-terminal :has, schedule downward invalidation) Need more descriptions and images...
 
 ## 4. Performance factors
 
