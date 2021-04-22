@@ -344,8 +344,6 @@ Before breaking down the `:has()` performance factors on each process (invalidat
 
 For a same change type at a same level of a DOM tree, the upward invalidation process performs better than the downward invalidation process because of the subtree size.
 
-**Invalidation time (μs)**
-
 ![Invalidation difference result](images/performance-factor-invalidation-difference-result.png)
 
 Test link : https://css-has.glitch.me/performance-factor-invalidation-difference.html
@@ -354,8 +352,6 @@ Test link : https://css-has.glitch.me/performance-factor-invalidation-difference
 ![Recalculation difference](images/recalculation-factors-recalculation-difference.png)
 
 For a same change type at a same level of a DOM tree, the `:has()` recalculation process performs worse than the normal recalculation process because of the `:has()` matching logic that requires subtree traversal.
-
-**Recalculation time (μs)**
 
 ![Recalculation difference result](images/performance-factor-recalculation-difference-result.png)
 
@@ -366,7 +362,6 @@ Test link : https://css-has.glitch.me/performance-factor-recalculation-differenc
 
 For a same change type at a same level of a DOM tree, the `:has()` recalculation overhead is heavier than the invalidation overhead because of the subtree direction of invalidation and recalculation.
 
-**:has Invalidation/Recalculation time (μs)**
 
 ![:has Invalidation and Recalculation result](images/performance-factor-has-invalidation-and-recalculation-result.png)
 
@@ -387,38 +382,38 @@ In the style invalidation process, style-engine get features for the change, and
 #### 4.2.1. Depth of the changed element
 ![Depth of the changed element](images/invalidation-factors-depth-of-the-changed-element.png)
 
-**Invalidation time (μs)**
-
 ![Depth of the changed element result](images/performance-factor-depth-of-the-changed-element-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-depth-of-the-changed-element.html
 
-#### 4.2.2. Number of subject features
-![Number of subject features](images/invalidation-factors-number-of-subject-features.png)
+#### 4.2.2. Number of rules
+![Number of rules](images/invalidation-factors-number-of-rules.png)
 
-**Invalidation time (μs)**
+![Number of rules result](images/performance-factor-number-of-rules-result.png)
 
-![Number of subject features result](images/performance-factor-number-of-subject-features-result.png)
+Test link: https://css-has.glitch.me/performance-factor-number-of-rules.html
 
-Test link: https://css-has.glitch.me/performance-factor-number-of-subject-features.html
+#### 4.2.3. Number of simple selectors in a compound selector for the subject element
+![Number of simple selectors in a compound selector for the subject element](images/invalidation-factors-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element.png)
 
-#### 4.2.3. Number of simple features in a subject feature
-![Number of simple features in a subject feature](images/invalidation-factors-number-of-simple-features-in-a-subject-feature.png)
+![Number of simple selectors in a compound selector for the subject element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation-result.png)
 
-**Invalidation time(μs)**
+Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation.html
 
-![Number of simple features in a subject feature result](images/performance-factor-number-of-simple-features-in-a-subject-feature-result.png)
+![Number of simple selectors in a compound selector for the subject element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation-result.png)
 
-Test link: https://css-has.glitch.me/performance-factor-number-of-simple-features-in-a-subject-feature.html
+Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation.html
 
-#### 4.2.4. Number of simple features in a feature for the change
-![Number of simple features in a feature for the change](images/invalidation-factors-number-of-simple-features-in-a-feature-for-the-change.png)
+#### 4.2.4. Number of simple selectors in a compound selector for the changed element
+![Number of simple selectors in a compound selector for the changed element](images/invalidation-factors-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element.png)
 
-**Invalidation time(μs)**
+![Number of simple selectors in a compound selector for the  changed element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation-result.png)
 
-![Number of simple features in a feature for the change result](images/performance-factor-number-of-simple-features-in-a-feature-for-the-change-result.png)
+Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation.html
 
-Test link: https://css-has.glitch.me/performance-factor-number-of-simple-features-in-a-feature-for-the-change.html
+![Number of simple selectors in a compound selector for the  changed element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation.html
 
 #### 4.2.5. Matching operation of a simple feature in a subject feature
 ![Matching operatoin of a simple feature in a subject feature](images/invalidation-factors-matching-operation-of-a-simple-feature-in-a-subject-feature.png)
@@ -445,50 +440,47 @@ We can check those factors as followings.
 #### 4.3.1. Descendant tree size of a subject element
 ![Descendant tree size of a subject element](images/recalculation-factors-descendant-tree-size-of-a-subject-element.png)
 
-**Recalculation time(μs)**
-
-![Descendant tree size of a subject element-result](images/performance-factor-descendant-tree-size-of-a-subject-element-result.png)
+![Descendant tree size of a subject element result](images/performance-factor-descendant-tree-size-of-a-subject-element-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-subject-element.html
 
+![Descendant tree size of a subject element large tree result](images/performance-factor-descendant-tree-size-of-a-subject-element-large-tree-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-subject-element-large-tree.html
+
+![Descendant tree size of a changed element large tree result for non :has](images/performance-factor-descendant-tree-size-of-a-changed-element-large-tree-non-has-result.png)
+
+Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-changed-element-large-tree-non-has.html
+
+
 #### 4.3.2. Position of the first element that matches argument selector
 ![Position of the first element that matches argument selector](images/recalculation-factors-position-of-the-first-element-that-matches-argument-selector.png)
-
-**Recalculation time(μs)**
 
 ![Position of the first element that matches argument selector](images/performance-factor-position-of-the-first-element-that-matches-argument-selector-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-position-of-the-first-element-that-matches-argument-selector.html
 
-#### 4.3.3. Number of invalid/non-subject elements
-![Number of invalid/non-subject elements](images/recalculation-factors-number-of-invalid-non-subject-elements.png)
+#### 4.3.3. Number of invalidated non-subject elements
+![Number of invalidated non-subject elements](images/recalculation-factors-number-of-invalid-non-subject-elements.png)
 
-**Recalculation time(μs)**
-
-![Number of invalid/non-subject elements result](images/performance-factor-number-of-invalid-non-subject-elements-result.png)
+![Number of invalidated non-subject elements result](images/performance-factor-number-of-invalid-non-subject-elements-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements.html
 
-**Ref. Recalculation time(μs) of '.a .b .c {...}'**
+![Number of invalidated non-subject elements non :has result](images/performance-factor-number-of-invalid-non-subject-elements-non-has-result.png)
 
-![Number of invalid/non-subject elements without :has result](images/performance-factor-number-of-invalid-non-subject-elements-without-has-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements-without-has.html
+Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements-non-has.html
 
 #### 4.3.4. Number of subject elements
 ![Number of subject elements](images/recalculation-factors-number-of-subject-elements.png)
-
-**Recalculation time(μs)**
 
 ![Number of subject elements result](images/performance-factor-number-of-subject-elements-result.png)
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-subject-elements.html
 
-**Ref. Recalculation time(μs) of '.a .b .c {...}'**
+![Number of subject elements non :has result](images/performance-factor-number-of-subject-elements-non-has-result.png)
 
-![Number of subject elements without :has result](images/performance-factor-number-of-subject-elements-without-has-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-subject-elements-without-has.html
+Test link: https://css-has.glitch.me/performance-factor-number-of-subject-elements-non-has.html
 
 ### 4.4. Complex Cases
 
