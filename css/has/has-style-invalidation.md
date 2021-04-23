@@ -378,12 +378,12 @@ Test link : https://css-has.glitch.me/performance-factor-has-invalidation-and-re
 In the style invalidation process, style-engine get features for the change, and invalidate elements in upward subtree of the changed element with invalidation sets. These are factors that can affect performance of a style invalidation.
 
  * Depth of the changed element
- * Number of subject features
- * Number of simple features in a subject features
- * Number of simple features in a feature for the change
- * Matching operation of a simple feature in a subject feature
- * Matching operation of a simple feature in a feature for the change
- * Number of partial attribute features for an attribute name of the attribute change
+ * Number of rules
+ * Number of simple selectors in a compound selector for the subject element
+ * Number of simple selectors in a compound selector for the changed element
+ * Simple selector type in a compound feature for the subject element
+ * Simple selector type in a compound feature for the changed element
+ * Number of attribute selector with same attribute name
 
 #### 4.2.1. Depth of the changed element
 ![Depth of the changed element](images/invalidation-factors-depth-of-the-changed-element.png)
@@ -421,14 +421,14 @@ Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selecto
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation.html
 
-#### 4.2.5. Matching operation of a simple feature in a subject feature
-![Matching operatoin of a simple feature in a subject feature](images/invalidation-factors-matching-operation-of-a-simple-feature-in-a-subject-feature.png)
+#### 4.2.5. Simple selector type in a compound selector for the subject element
+![Simple selector type in a compound selector for the subject element](images/invalidation-factors-simple-selector-type-in-a-compound-selector-for-the-subject-element.png)
 
-#### 4.2.6. Matching operation of a simple feature in a feature for the change
-![Matching operatoin of a simple feature in a feature for the change](images/invalidation-factors-matching-operation-of-a-simple-feature-in-a-feature-for-the-change.png)
+#### 4.2.6. Simple selector type in a compound selector for the changed element
+![Simple selector type in a compound selector for the changed element](images/invalidation-factors-simple-selector-type-in-a-compound-selector-for-the-changed-element.png)
 
-#### 4.2.7. Number of partial attribute features for an attribute name of the attribute change
-![Number of partial attribute features for an attribute name of the attribute change](images/invalidation-factors-number-of-partial-attribute-features-for-an-attribute-name-of-the-attribute-change.png)
+#### 4.2.7. Number of attribute selector with same attribute name
+![Number of attribute selector with same attribute name](images/invalidation-factors-number-of-attribute-selector-with-same-attribute-name.png)
 
 ### 4.3. :has Style Recalculation
 
@@ -438,7 +438,7 @@ These are the factors that affect performance of the style recalculation.
 
  * Descendant tree size of a subject element
  * Position of the first element that matches argument selector
- * Number of invalid/non-subject elements
+ * Number of invalidated non-subject elements
  * Number of subject elements
 
 We can check those factors as followings.
