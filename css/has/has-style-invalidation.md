@@ -350,29 +350,27 @@ Before breaking down the `:has()` performance factors on each process (invalidat
 
 For a same change type at a same level of a DOM tree, the upward invalidation process performs better than the downward invalidation process because of the subtree size.
 
-![Invalidation difference result](images/performance-factor-invalidation-difference-result.png)
-
 Test link : https://css-has.glitch.me/performance-factor-invalidation-difference.html
+
+<kbd>![Invalidation difference result](images/performance-factor-invalidation-difference-result.png)</kbd>
 
 #### 4.1.2. Recalculation difference
 ![Recalculation difference](images/recalculation-factors-recalculation-difference.png)
 
 For a same change type at a same level of a DOM tree, the `:has()` recalculation process performs worse than the normal recalculation process because of the `:has()` matching logic that requires subtree traversal.
 
-![Recalculation difference result](images/performance-factor-recalculation-difference-result.png)
-
 Test link : https://css-has.glitch.me/performance-factor-recalculation-difference.html
+
+<kbd>![Recalculation difference result](images/performance-factor-recalculation-difference-result.png)</kbd>
 
 #### 4.1.3. :has Invalidation and Recalculation
 ![Existence of a subject element](images/recalculation-factors-existence-of-a-subject-element.png)
 
 For a same change type at a same level of a DOM tree, the `:has()` recalculation overhead is heavier than the invalidation overhead because of the subtree direction of invalidation and recalculation.
 
-
-![:has Invalidation and Recalculation result](images/performance-factor-has-invalidation-and-recalculation-result.png)
-
 Test link : https://css-has.glitch.me/performance-factor-has-invalidation-and-recalculation.html
 
+<kbd>![:has Invalidation and Recalculation result](images/performance-factor-has-invalidation-and-recalculation-result.png)</kbd>
 
 ### 4.2. :has Style Invalidation
 In the style invalidation process, style-engine get features for the change, and invalidate elements in upward subtree of the changed element with invalidation sets. These are factors that can affect performance of a style invalidation.
@@ -386,49 +384,56 @@ In the style invalidation process, style-engine get features for the change, and
  * Number of attribute selector with same attribute name
 
 #### 4.2.1. Depth of the changed element
-![Depth of the changed element](images/invalidation-factors-depth-of-the-changed-element.png)
 
-![Depth of the changed element result](images/performance-factor-depth-of-the-changed-element-result.png)
+// Need update details...
 
 Test link: https://css-has.glitch.me/performance-factor-depth-of-the-changed-element.html
 
-#### 4.2.2. Number of rules
-![Number of rules](images/invalidation-factors-number-of-rules.png)
+<kbd>![Depth of the changed element result](images/performance-factor-depth-of-the-changed-element-result.png)</kbd>
 
-![Number of rules result](images/performance-factor-number-of-rules-result.png)
+#### 4.2.2. Number of rules
+
+// Need update details...
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-rules.html
 
-#### 4.2.3. Number of simple selectors in a compound selector for the subject element
-![Number of simple selectors in a compound selector for the subject element](images/invalidation-factors-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element.png)
+<kbd>![Number of rules result](images/performance-factor-number-of-rules-result.png)</kbd>
 
-![Number of simple selectors in a compound selector for the subject element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation-result.png)
+#### 4.2.3. Number of simple selectors in a compound selector for the subject element
+
+// Need update details...
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation.html
 
-![Number of simple selectors in a compound selector for the subject element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation-result.png)
+<kbd>![Number of simple selectors in a compound selector for the subject element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation-result.png)</kbd>
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation.html
 
-#### 4.2.4. Number of simple selectors in a compound selector for the changed element
-![Number of simple selectors in a compound selector for the changed element](images/invalidation-factors-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element.png)
+<kbd>![Number of simple selectors in a compound selector for the subject element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation-result.png)</kbd>
 
-![Number of simple selectors in a compound selector for the  changed element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation-result.png)
+#### 4.2.4. Number of simple selectors in a compound selector for the changed element
+
+// Need update details...
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation.html
 
-![Number of simple selectors in a compound selector for the  changed element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation-result.png)
+<kbd>![Number of simple selectors in a compound selector for the  changed element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation-result.png)</kbd>
 
 Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation.html
 
+<kbd>![Number of simple selectors in a compound selector for the  changed element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation-result.png)</kbd>
+
 #### 4.2.5. Simple selector type in a compound selector for the subject element
 ![Simple selector type in a compound selector for the subject element](images/invalidation-factors-simple-selector-type-in-a-compound-selector-for-the-subject-element.png)
+// Need update...
 
 #### 4.2.6. Simple selector type in a compound selector for the changed element
 ![Simple selector type in a compound selector for the changed element](images/invalidation-factors-simple-selector-type-in-a-compound-selector-for-the-changed-element.png)
+// Need update...
 
 #### 4.2.7. Number of attribute selector with same attribute name
 ![Number of attribute selector with same attribute name](images/invalidation-factors-number-of-attribute-selector-with-same-attribute-name.png)
+// Need update...
 
 ### 4.3. :has Style Recalculation
 
@@ -436,57 +441,167 @@ In the style recalculation process, style engine matches `:has` argument selecto
 
 These are the factors that affect performance of the style recalculation.
 
- * Descendant tree size of a subject element
+ * Subtree size of a subject element
  * Position of the first element that matches argument selector
  * Number of invalidated non-subject elements
  * Number of subject elements
+ * Number of rules and `:has()` argument selectors
 
 We can check those factors as followings.
 
-#### 4.3.1. Descendant tree size of a subject element
-![Descendant tree size of a subject element](images/recalculation-factors-descendant-tree-size-of-a-subject-element.png)
+#### 4.3.1. Subtree size of a subject element
 
-![Descendant tree size of a subject element result](images/performance-factor-descendant-tree-size-of-a-subject-element-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-subject-element.html
-
-![Descendant tree size of a subject element large tree result](images/performance-factor-descendant-tree-size-of-a-subject-element-large-tree-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-subject-element-large-tree.html
-
-![Descendant tree size of a changed element large tree result for non :has](images/performance-factor-descendant-tree-size-of-a-changed-element-large-tree-non-has-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-changed-element-large-tree-non-has.html
+* Result summary
+  * Result shows linear relationship to the subtree size.
+  * Can be exponential to the subtree height because tree size can be exponential to the tree height.<br><br>
+* Manipulated variable
+  * Subtree size of a subject element<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree
+  * Depth of the changed element : subtree height
+  * Depth of the invalidated element : 0
+  * Number of the invalidated element : 1
+  * Number of the subject element : 1
+  * Position(Traversal order) of the first argument matched element : last (bottom right descendant)
+  * Number of rules for the subject element : 1
+  * Number of rules for the change : 1
+  * Number of argument selectors for the subject element : 1<br><br>
+* Test scenario : Add/remove class value `x` for rule `.y:has(.x) {...}`
+  * Test1 (small subtree size)
+    * Link : https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-subject-element.html
+    * Result<br>
+      <kbd>![Descendant tree size of a subject element result](images/performance-factor-descendant-tree-size-of-a-subject-element-result.png)</kbd><br><br>
+  * Test2 (large subtree size)
+    * Link : https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-subject-element-large-tree.html
+    * Result<br>
+      <kbd>![Descendant tree size of a subject element large tree result](images/performance-factor-descendant-tree-size-of-a-subject-element-large-tree-result.png)</kbd><br><br>
+* Test scenario : Add/remove class value `x` for rule `.x .y {...}`
+  * Link: https://css-has.glitch.me/performance-factor-descendant-tree-size-of-a-changed-element-large-tree-non-has.html
+  * Result<br>
+    <kbd>![Descendant tree size of a changed element large tree result for non :has](images/performance-factor-descendant-tree-size-of-a-changed-element-large-tree-non-has-result.png)</kbd>
 
 
 #### 4.3.2. Position of the first element that matches argument selector
-![Position of the first element that matches argument selector](images/recalculation-factors-position-of-the-first-element-that-matches-argument-selector.png)
 
-![Position of the first element that matches argument selector](images/performance-factor-position-of-the-first-element-that-matches-argument-selector-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-position-of-the-first-element-that-matches-argument-selector.html
+* Result summary
+  * The position of the first argument matched element can change the actual subtree size that affects the performance.
+  * Even if the subtree size is large, there is a possibility to perform with a smaller subtree if descendants matches earlier.<br><br>
+* Manipulated variable
+  * Position(Traversal order) of the first argument matched element<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (height 9)
+  * Subtree size of a subject element : 1022 descendants
+  * Depth of the changed element : 9
+  * Depth of the invalidated element : 0
+  * Number of the invalidated element : 1
+  * Number of the subject element : 1
+  * Number of rules for the subject element : 1
+  * Number of rules for the change : 1
+  * Number of argument selectors for the subject element : 1<br><br>
+* Test scenario : Add/remove class value `a` for rule `.b:has(.a) {...}`
+  * Link: https://css-has.glitch.me/performance-factor-position-of-the-first-element-that-matches-argument-selector.html
+  * Result<br>
+    <kbd>![Position of the first element that matches argument selector](images/performance-factor-position-of-the-first-element-that-matches-argument-selector-result.png)</kbd>
 
 #### 4.3.3. Number of invalidated non-subject elements
-![Number of invalidated non-subject elements](images/recalculation-factors-number-of-invalid-non-subject-elements.png)
 
-![Number of invalidated non-subject elements result](images/performance-factor-number-of-invalid-non-subject-elements-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements.html
-
-![Number of invalidated non-subject elements non :has result](images/performance-factor-number-of-invalid-non-subject-elements-non-has-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements-non-has.html
+* Result summary
+  * We can see the linear increase from the test with `:has`, but the increment is relatively small.
+  * We can also see the similar amount of linear increment from the test without `:has`
+  * The number of invalidated elements looks not create additional overhead, so it is well controlled.<br><br>
+* Manipulated variable
+  * Number of the invalidated element<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (height 9)
+  * Subtree size of a subject element : 1022 descendants
+  * Depth of the changed element : 9
+  * Depth of the invalidated element : 0
+  * Number of the subject element : 0
+  * Position(Traversal order) of the first argument matched element : last (bottom right descendant)
+  * Number of rules for the subject element : 1
+  * Number of rules for the change : 1
+  * Number of argument selectors for the subject element : 1<br><br>
+* Test scenario : Add/remove class value `b` for rule `.c:has(.b > .a) {...}`
+  * Link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements.html
+  * Result<br>
+    <kbd>![Number of invalidated non-subject elements result](images/performance-factor-number-of-invalid-non-subject-elements-result.png)</kbd><br><br>
+* Test scenario : Add/remove class value `b` for rule `.a .b > .c {...}`
+  * Link: https://css-has.glitch.me/performance-factor-number-of-invalid-non-subject-elements-non-has.html
+  * Result<br>
+    <kbd>![Number of invalidated non-subject elements non :has result](images/performance-factor-number-of-invalid-non-subject-elements-non-has-result.png)</kbd>
 
 #### 4.3.4. Number of subject elements
-![Number of subject elements](images/recalculation-factors-number-of-subject-elements.png)
+* Result summary
+  * Same with the [above](#433-number-of-invalidated-non-subject-elements)<br><br>
+* Manipulated variable
+  * Number of the invalidated element
+  * Number of the subject element<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (height 9)
+  * Subtree size of a subject element : 1022 descendants
+  * Depth of the changed element : 9
+  * Depth of the invalidated element : 0
+  * Position(Traversal order) of the first argument matched element : last (bottom right descendant)
+  * Number of rules for the subject element : 1
+  * Number of rules for the change : 1
+  * Number of argument selectors for the subject element : 1<br><br>
+* Test scenario : Add/remove class value `a` for rule `.b:has(.a) {...}`
+  * Link: https://css-has.glitch.me/performance-factor-number-of-subject-elements.html
+  * Result<br>
+    <kbd>![Number of subject elements result](images/performance-factor-number-of-subject-elements-result.png)</kbd><br><br>
+* Test scenario : Add/remove class value `b` for rule `.a .b > .c {...}`
+  * Link: https://css-has.glitch.me/performance-factor-number-of-subject-elements-non-has.html
+  * Result<br>
+    <kbd>![Number of subject elements non :has result](images/performance-factor-number-of-subject-elements-non-has-result.png)</kbd>
 
-![Number of subject elements result](images/performance-factor-number-of-subject-elements-result.png)
+#### 4.3.5. Number of rules and argument selectors
 
-Test link: https://css-has.glitch.me/performance-factor-number-of-subject-elements.html
+* Result summary
+  * We can see the linear relationship to the 'number of `:has()` argument selectors for the subject element'.
+  * 'Number of rules for the subject element' looks not have noticable affect when the `:has()` in those rules have same argument selectors.
+  * 'Number of rules for the change' looks not have noticable affect.<br><br>
+* Manipulated variable
+  * Number of rules for the subject element
+  * Number of argument selectors for the subject element
+  * Number of rules for the change<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (height 9)
+  * Subtree size of a subject element : 1022 descendants
+  * Depth of the changed element : 9
+  * Depth of the invalidated element : 0
+  * Number of the invalidated element : 1
+  * Number of the subject element : 1
+  * Position(Traversal order) of the first argument matched element : last (bottom right descendant)<br><br>
+* Test scenario : Add/remove class value `x` for rules `.something:has(.x) {...}` (e.g. `.b:has(.a)`, `.c:has(.a)`. The subject element for this test will have class value `b` only, and test will add/remove class value `a` to it's descendant)
+  * Variable manipulation
+    * Number of rules for the subject element : 1
+    * Number of argument selectors for the subject element : 1
+    * Number of rules for the change : N
+  * Link: https://css-has.glitch.me/performance-factor-number-of-rules-for-the-change-recalculation.html
+  * Result<br>
+    <kbd>![Number of elements result](images/performance-factor-number-of-rules-for-the-change-recalculation-result.png)</kbd><br><br>
+* Test scenario : Add/remove class value `x` for rules `.something:has(.x) {...}` (e.g. `.b:has(.a)`, `.c:has(.a)`. The subject element for these rules will have class value both `b` and `c`)
+  * Variable manipulation
+    * Number of rules for the subject element : N
+    * Number of argument selectors for the subject element : 1
+    * Number of rules for the change : N
+  * Link: https://css-has.glitch.me/performance-factor-number-of-same-argument-rules-for-the-subject-element-recalculation.html
+  * Result<br>
+    <kbd>![Number of subject elements result](images/performance-factor-number-of-same-argument-rules-for-the-subject-element-recalculation-result.png)</kbd><br><br>
+* Test scenario : Add/remove class value `something` for rules `.a:has(.something) {...}` (e.g. `.c:has(.a)`, `.c:has(.b)`. The subject element for these rules will have class value `c`, and test will add/remove class value `a` to it's descendant)
+  * Variable manipulation
+    * Number of rules for the subject element : N
+    * Number of argument selectors for the subject element : N
+    * Number of rules for the change : 1
+  * Link: https://css-has.glitch.me/performance-factor-number-of-rules-for-the-subject-element-recalculation.html
+  * Result<br>
+    <kbd>![Number of elements result](images/performance-factor-number-of-rules-for-the-subject-element-recalculation-result.png)</kbd>
 
-![Number of subject elements non :has result](images/performance-factor-number-of-subject-elements-non-has-result.png)
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-subject-elements-non-has.html
 
 ### 4.4. Complex Cases
 
