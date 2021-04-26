@@ -372,11 +372,26 @@ Test link : https://css-has.glitch.me/performance-factor-has-invalidation-and-re
 
 <kbd>![:has Invalidation and Recalculation result](images/performance-factor-has-invalidation-and-recalculation-result.png)</kbd>
 
+#### 4.1.4. Key performance factor
+
+From the understanding about the subtree direction, and the above results, we can simply expect that,
+ * Recalculation performance is more important than the Invalidation performance for `:has()`
+ * The number of matching operations to the downward subtree will be the key performance factor that significantly affects the invalidation+recalculation performance.
+
+In the `:has()` invalidation/recalculation, there are two variables that directly affect the number of matching operations to the downward subtree.
+ * Downward subtree size of a subject element
+ * Number of argument selectors for a subject element
+
+And there can be other variables that possibly affect the invalidation performance or recalculation performance.
+
+Following sections ([4.2. :has Style Invalidation](#42-has-style-invalidation), [4.3. :has Style Recalculation](#43-has-style-recalculation)) list up the variables and show the performance when it scales.
+
+
 ### 4.2. :has Style Invalidation
 In the style invalidation process, style-engine get features for the change, and invalidate elements in upward subtree of the changed element with invalidation sets. These are factors that can affect performance of a style invalidation.
 
  * Depth of the changed element
- * Number of rules
+ * Number of rules for the change
  * Number of simple selectors in a compound selector for the subject element
  * Number of simple selectors in a compound selector for the changed element
  * Simple selector type in a compound feature for the subject element
@@ -385,43 +400,104 @@ In the style invalidation process, style-engine get features for the change, and
 
 #### 4.2.1. Depth of the changed element
 
-// Need update details...
+* Result summary
+  * Depth of the changed element doesn't significantly affect the invalidation performance.<br><br>
+* Manipulated variable
+  * Depth of the changed element<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (tree height 10)
+  * Number of the invalidated element : 0
+  * Number of the subject element : 0
+  * Number of rules for the change : 1
+  * Number of simple selectors in a compound selector for the subject element : 1
+  * Number of simple selectors in a compound selector for the changed element : 1<br><br>
+* Test scenario : Add/remove class value `a` for rule `.b:has(.a) {...}`
+  * Link: https://css-has.glitch.me/performance-factor-depth-of-the-changed-element.html
+  * Result<br>
+    <kbd>![Depth of the changed element result](images/performance-factor-depth-of-the-changed-element-result.png)</kbd>
 
-Test link: https://css-has.glitch.me/performance-factor-depth-of-the-changed-element.html
+#### 4.2.2. Number of rules for the change
 
-<kbd>![Depth of the changed element result](images/performance-factor-depth-of-the-changed-element-result.png)</kbd>
+* Result summary
+  * Result shows linear relationship to the number of rules for a change.
+  * But the amount of the increment is very small.
+  * We can check how much it actually affects with recalculation overhead, and the section [4.3.5. Number of rules and argument selectors](#435-number-of-rules-and-argument-selectors) shows it.<br><br>
+* Manipulated variable
+  * Number of rules for the change<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (tree height 9)
+  * Number of the invalidated element : 0
+  * Number of the subject element : 0
+  * Depth of the changed element : 9
+  * Number of simple selectors in a compound selector for the subject element : 1
+  * Number of simple selectors in a compound selector for the changed element : 1<br><br>
+* Test scenario : Add/remove class value `x` for rules `.something:has(.x) {...}`
+  * Link: https://css-has.glitch.me/performance-factor-number-of-rules.html
+  * Result<br>
+    <kbd>![Number of rules result](images/performance-factor-number-of-rules-result.png)</kbd>
 
-#### 4.2.2. Number of rules
-
-// Need update details...
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-rules.html
-
-<kbd>![Number of rules result](images/performance-factor-number-of-rules-result.png)</kbd>
 
 #### 4.2.3. Number of simple selectors in a compound selector for the subject element
 
-// Need update details...
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation.html
-
-<kbd>![Number of simple selectors in a compound selector for the subject element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation-result.png)</kbd>
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation.html
-
-<kbd>![Number of simple selectors in a compound selector for the subject element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation-result.png)</kbd>
+* Result summary
+  * Number of simple selectors in a compound selector for the subject element doesn't affect invalidation performance.
+  * It doesn't affect invalidation+recalculation performance also.<br><br>
+* Manipulated variable
+  * Number of simple selectors in a compound selector for the subject element<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (tree height 9)
+  * Number of the subject element : 0
+  * Number of rules for the subject element : 1
+  * Number of rules for the change : 1
+  * Depth of the changed element : 9
+  * Number of simple selectors in a compound selector for the changed element : 1<br><br>
+* Test scenario : Add/remove class value to an element. The changed element doesn't have any ancestor elements that matches the compound selector for the subject element.
+  * Control variables
+    * Number of the invalidated element : 0
+  * Link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation.html
+  * Result<br>
+    <kbd>![Number of simple selectors in a compound selector for the subject element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-invalidation-result.png)</kbd><br><br>
+* Test scenario : Add/remove class value to an element. The changed element has an element that matches the compound selector for the subject element.
+  * Control variables
+    * Number of the invalidated element : 1
+    * Depth of the invalidated element : 0
+  * Link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation.html
+  * Result<br>
+    <kbd>![Number of simple selectors in a compound selector for the subject element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element-recalculation-result.png)</kbd>
 
 #### 4.2.4. Number of simple selectors in a compound selector for the changed element
 
-// Need update details...
+* Result summary
+  * The invalidation time shows linear increase, but the increment is small.
+  * The invalidation+recalculation time shows increase and the increment is relatively small.
+  * For both case, it looks not significantly affect the performance.<br><br>
+* Manipulated variable
+  * Number of simple selectors in a compound selector for the changed element<br><br>
+* Control variables
+  * Change type : add/remove class value
+  * Tree to test : complete binary tree (tree height 9)
+  * Number of the subject element : 0
+  * Number of rules for the subject element : 1
+  * Number of rules for the change : 1
+  * Depth of the changed element : 9
+  * Number of simple selectors in a compound selector for the subject element : 1<br><br>
+* Test scenario : Add/remove class value to an element that doesn't have any argument-selector-matched class value
+  * Control variables
+    * Number of the invalidated element : 0
+  * Link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation.html
+  * Result<br>
+    <kbd>![Number of simple selectors in a compound selector for the  changed element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation-result.png)</kbd><br><br>
+* Test scenario : Add/remove class value to an element that has all class values for the arguement selector
+  * Control variables
+    * Number of the invalidated element : 1
+    * Depth of the invalidated element : 0
+  * Link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation.html
+  * Result<br>
+    <kbd>![Number of simple selectors in a compound selector for the  changed element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation-result.png)</kbd>
 
-Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation.html
-
-<kbd>![Number of simple selectors in a compound selector for the  changed element invalidation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-invalidation-result.png)</kbd>
-
-Test link: https://css-has.glitch.me/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation.html
-
-<kbd>![Number of simple selectors in a compound selector for the  changed element recalculation result](images/performance-factor-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element-recalculation-result.png)</kbd>
 
 #### 4.2.5. Simple selector type in a compound selector for the subject element
 ![Simple selector type in a compound selector for the subject element](images/invalidation-factors-simple-selector-type-in-a-compound-selector-for-the-subject-element.png)
@@ -562,8 +638,8 @@ We can check those factors as followings.
 
 * Result summary
   * We can see the linear relationship to the 'number of `:has()` argument selectors for the subject element'.
-  * 'Number of rules for the subject element' looks not have noticable affect when the `:has()` in those rules have same argument selectors.
-  * 'Number of rules for the change' looks not have noticable affect.<br><br>
+  * 'Number of rules for the subject element' doesn't significantly affect when the `:has()` in those rules have same argument selectors.
+  * 'Number of rules for the change' doesn't significantly affect.<br><br>
 * Manipulated variable
   * Number of rules for the subject element
   * Number of argument selectors for the subject element
