@@ -30,20 +30,15 @@ Binary: <a href="https://cloud.igalia.com/s/roLob25tsTzdKTa" target="_blink">htt
 
 ![Ensure compound feature](diagrams/ensure_compound_feature.png)
 
-##### 1.2.1.5. Extract argument features from downward / upward selectors
+##### 1.2.1.5. Initialize / Collect / Get Argument Template / Finalize of has compound feature collect
 
-![Extract argument features from downward selectors](diagrams/extract_argument_features_from_downward_selectors.png)
-![Extract argument features from upward selectors](diagrams/extract_argument_features_from_upward_selectors.png)
+![Initialize / Collect / Get Argument Template / Finalize of downward invalidation](diagrams/initialize_collect_get_argument_template_finalize_of_has_compound_feature_collect.png)
 
-##### 1.2.1.6. Initialize / Collect / Finalize of downward invalidation
+##### 1.2.1.6. Initialize / Collect / Get Argument Template / Finalize of has argument feature collect
 
-![Initialize / Collect / Finalize of downward invalidation](diagrams/initialize_collect_finalize_of_downward_invalidation.png)
+![Initialize / Collect / Get Argument Template / Finalize of upward invalidation](diagrams/initialize_collect_get_argument_template_finalize_of_has_argument_feature_collect.png)
 
-##### 1.2.1.7. Initialize / Collect / Finalize of upward invalidation
-
-![Initialize / Collect / Finalize of upward invalidation](diagrams/initialize_collect_finalize_of_upward_invalidation.png)
-
-##### 1.2.1.8. Index features
+##### 1.2.1.7. Index features
 
 ![Index features](diagrams/index_features.png)
 
