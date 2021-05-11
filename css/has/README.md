@@ -1,21 +1,16 @@
 # Explainer:  CSS selector `:has()` pseudo class
 
 - Contents:
-  - [Author](#author)
-  - [Participate](#participate)
+  - [Authors](#authors)
   - [Introduction](#introduction)
   - [Motivation](#motivation)
   - [Design](#design)
 
-## Author
+## Authors
 
 * Byungwoo Lee \<blee@igalia.com\>
 * Brian Kardell \<bkardell@igalia.com\>
 * Manuel Rego \<rego@igalia.com\>
-
-## Participate
-
-* [Chromium bug #1207894](https://bugs.chromium.org/p/chromium/issues/detail?id=1207894)
 
 ## Introduction
 `:has()` pseudo class is specified in the [4.5. The Relational Pseudo-class: ':has()'](https://www.w3.org/TR/selectors-4/#relational) section of the [Selector Level 4](https://www.w3.org/TR/selectors-4) as below.
