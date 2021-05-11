@@ -36,14 +36,14 @@ Unlike other selectors, it gives a way to apply a style rule to preceding elemen
 </style>
 
 <div class="parent"> <!-- color: red -->
-  <div class="red"/>
+  <div class="red"></div>
 </div>
 <div class="parent"> <!-- color: green -->
-  <div class="green"/>
+  <div class="green"></div>
 </div>
 ```
 
-This difference is attractive to web develpers, but also it generates lots of concerns mainly about performance and complexity. So there have been discussion about these over the years, but it was difficult to get those discussion moving forward.
+This difference is attractive to web developers, but also it generates lots of concerns mainly about performance and complexity. So there have been discussion about these over the years, but it was difficult to get those discussion moving forward.
 
 It is true that it can generate performance issues and complex cases. But it is also true that there have been clear demands for the usage.
 
