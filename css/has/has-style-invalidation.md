@@ -1,5 +1,54 @@
 # CSS Style Invalidation with :has()
 
+- Contents:
+  - [1. Invalidation without :has()](#1-invalidation-without-has)
+    - [1.1. Summary](#11-summary)
+    - [1.2. Inspiration from the approach](#12-inspiration-from-the-approach)
+  - [2. Invalidation of :has()](#2-invalidation-of-has)
+    - [2.1. Searching invalid elements from upward subtree](#21-searching-invalid-elements-from-upward-subtree)
+    - [2.2. Upward Invalidation](#22-upward-invalidation)
+    - [2.3 Taking similar advantages](#23-taking-similar-advantages)
+    - [2.4. Simple Feature and Compound Feature](#24-simple-feature-and-compound-feature)
+    - [2.5. Minimize dependencies](#25-minimize-dependencies)
+  - [3. Invalidation of various cases with :has()](#3-invalidation-of-various-cases-with-has)
+    - [3.1. DOM change variations](#31-dom-change-variations)
+      - [3.1.1. A change on an existing element](#311-a-change-on-an-existing-element)
+      - [3.1.2. Add or remove an element](#312-add-or-remove-an-element)
+      - [3.1.3. Add or remove a subtree](#313-add-or-remove-a-subtree)
+    - [3.2. Simple feature matching variations](#32-simple-feature-matching-variations)
+      - [3.2.1. tag/id/class selector](#321-tagidclass-selector)
+      - [3.2.2. Attribute selector](#322-attribute-selector)
+      - [3.2.3. :hover pseudo class](#323-hover-pseudo-class)
+      - [3.2.4. ...](#324)
+    - [3.3. Subtree traversal variations](#33-subtree-traversal-variations)
+      - [3.3.1. non-terminal :has](#331-non-terminal-has)
+      - [3.3.2. terminal :has(:has)](#332-terminal-hashas)
+      - [3.3.3. terminal :has(:is)](#333-terminal-hasis)
+      - [3.3.4. terminal :has(:is(:has))](#334-terminal-hasishas)
+      - [3.3.5. non-terminal :has(:is), :has(:is(:has))](#335-non-terminal-hasis-hasishas)
+  - [4. Performance factors](#4-performance-factors)
+    - [4.1. Understanding the subtree direction](#41-understanding-the-subtree-direction)
+      - [4.1.1. Invalidation difference](#411-invalidation-difference)
+      - [4.1.2. Recalculation difference](#412-recalculation-difference)
+      - [4.1.3. :has Invalidation and Recalculation](#413-has-invalidation-and-recalculation)
+      - [4.1.4. Key performance factor](#414-key-performance-factor)
+    - [4.2. :has Style Invalidation](#42-has-style-invalidation)
+      - [4.2.1. Depth of the changed element](#421-depth-of-the-changed-element)
+      - [4.2.2. Number of rules for the change](#422-number-of-rules-for-the-change)
+      - [4.2.3. Number of simple selectors in a compound selector for the subject element](#423-number-of-simple-selectors-in-a-compound-selector-for-the-subject-element)
+      - [4.2.4. Number of simple selectors in a compound selector for the changed element](#424-number-of-simple-selectors-in-a-compound-selector-for-the-changed-element)
+      - [4.2.5. Simple selector type in a compound selector for the subject element](#425-simple-selector-type-in-a-compound-selector-for-the-subject-element)
+      - [4.2.6. Simple selector type in a compound selector for the changed element](#426-simple-selector-type-in-a-compound-selector-for-the-changed-element)
+      - [4.2.7. Number of attribute selector with same attribute name](#427-number-of-attribute-selector-with-same-attribute-name)
+    - [4.3. :has Style Recalculation](#43-has-style-recalculation)
+      - [4.3.1. Subtree size of a subject element](#431-subtree-size-of-a-subject-element)
+      - [4.3.2. Position of the first element that matches argument selector](#432-position-of-the-first-element-that-matches-argument-selector)
+      - [4.3.3. Number of invalidated non-subject elements](#433-number-of-invalidated-non-subject-elements)
+      - [4.3.4. Number of subject elements](#434-number-of-subject-elements)
+      - [4.3.5. Number of rules and argument selectors](#435-number-of-rules-and-argument-selectors)
+    - [4.4. Complex Cases](#44-complex-cases)
+  - [5. Prototyping](#5-prototyping)
+
 
 ## 1. Invalidation without :has()
 
@@ -225,16 +274,16 @@ For the removed subtree, we can invalidate it's upward subtree with the subject 
 ![DOM change variations - remove a subtree - invalidate with subject feature set](images/dom-change-variations-remove-a-subtree-invalidate-with-subject-feature-set.png)
 
 ### 3.2. Simple feature matching variations
-// WIP
+// TODO Need update
 
 #### 3.2.1. tag/id/class selector
-// WIP
+// TODO Need update
 
 #### 3.2.2. Attribute selector
-// WIP
+// TODO Need update
 
 #### 3.2.3. :hover pseudo class
-// WIP
+// TODO Need update
 
 #### 3.2.4. ...
 // WIP
@@ -253,7 +302,7 @@ In the [3.1.3. Add or remove a subtree](#313-add-or-remove-a-subtree) section, w
 
 Based on this view point, we can think about solutions for the complicated cases without creating tight dependencies or having a copy of the downward solutions. The following sections will describe those with more details.
 
-#### 3.3.2. non-terminal :has
+#### 3.3.1. non-terminal :has
 
 When a `:has()` selector is not in the terminal compound selector, the subject element will be in the downward subtree of the elements that match with the compound selector that contains the `:has()` selector. We can invalidate the subject elements by scheduling downward invalidations for each element that matches the `:has()` compound selector. We can get those elements(elements to be scheduled) from the upward invalidation and features from the non-terminal compound selector containing `:has()` pseudo class.
 ![Invalidate non-terminal :has by scheduling downward invalidation](images/invalidate-non-terminal-has-by-scheduling-downward-invalidation.png)
@@ -292,7 +341,7 @@ The downward invalidation logic already provides methods to schedule invalidatio
 +    * Schedule downward invalidation for the element
 ```
 
-#### 3.3.3. terminal :has(:has)
+#### 3.3.2. terminal :has(:has)
 
 Nested `:has` can be projected to the single `:has` to extract features and relations.
 // TODO Need more descriptions and images...
