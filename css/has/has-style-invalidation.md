@@ -60,10 +60,17 @@ Current blink style invalidation approach builds invalidation sets from selector
 
 ![Downward invalidation set and invalidation](images/downward-invalidation-set-and-invalidation.png)
 
+* Feature : Values or information that can be used to determine if a compound selector can be matched on an element. (e.g. for the style rule `.a .b {...}`, we can extract class value `a` and `b` as features)
+
+* Subject Feature : The feature from the compound selector that matches on the subject elements. For the style rule `.a .b {...}`, the class value `b` is the subject feature, and it indicates that the subject element of the style rule has the class value `b`)
+
+* Feature matching element : Element that need to be matched with features to determine whether it is style invalid element or not.
+
+* Style invalidated element : Element that is possibly affected by the change, so marked as style recalculation needed.
 
 ### 1.2. Inspiration from the approach
 The approach provides following advantages.
- * Can find style invalid elements of a changed element with features from selectors in style rule
+ * Can find style invalid elements of a changed element by extracting features from selectors in style rule
  * Can skip the upward subtree matching by searching invalid elements from downward subtree
  * Can reduce matching overhead by matching features instead of selectors
  * Can reduce number of elements to be invalidated by matching subject feature
