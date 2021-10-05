@@ -4,19 +4,17 @@
 
 ### `:has()` prototyping status in chromium project
 
-After the Chrome version 95, when you enable the `enable-experimental-web-platform-features`, you can use most of the `:has()` usages with the javascript APIs (`querySelector`, `querySelectorAll`, `closest`, `matches`) except some pseudos related with tree boundary crossing (`:host()`, `:host-context()`, `:slotted()`, `::part()`, ...).
+After the Chrome version 95, when enabled via the `enable-experimental-web-platform-features` flag, authors can use the `:has()` selector via the JavaScript APIs (`querySelector`, `querySelectorAll`, `closest`, `matches`).  This implementation places very few limits except some pseudos related with tree boundary crossing (`:host()`, `:host-context()`, `:slotted()`, `::part()`, ...).
 
-In other words, we have `:has()` selector matching functionality for most cases except tree boundary crossing.
+In other words, we have `:has()` selector matching functionality in those APIs enabled for most cases except tree boundary crossing.
 
-`:has()` matching is `O(n)` operation where `n` is the number of descendant elements. When there are multiple subject elements that share same descendants, `:has()` matching can be `O(n^2)` because of the repetitive `:has()` argument matching on the shared descendants.
+`:has()` matching via these APIs is done via tree-walk, and is `O(n)` operation where `n` is the number of descendant elements. When there are multiple subject elements that share same descendants (as would be the case in `:has(.foo)` for example), `:has()` matching can be `O(n^2)` because of the repetitive checking of descendants, even when it is already known to be true.
 
-By using a cache that stores the `:has()` matching status, the repetitive `:has()` argument matching problem can be solved.
+By using a cache that stores the `:has()` matching status, this can be improved, at least within a single lifecycle (a single JavaScript call, a single style recalculation lifecycle), so we still have the `O(n)` problem of `:has()` matching for every lifecycle.
 
-But the cache is currently available within a single lifecycle (a single Javascript call, a single style recalculation lifecycle), so we still have the `O(n)` problem of `:has()` matching for every lifecycle.
+### Next step: invalidation prototyping.
 
-### Now, we are trying to do `:has()` invalidation prototyping.
-
-With the merged CLs, we can see that the `:has()` works in style rules. We can style ancestor element with the condition of a descendant. (e.g. `.ancestor:has(.descendant) { background-color: green }`). But this only works on loading time because `:has()` invalidation is not supported yet.
+With the merged CLs, `:has()` containing rules (e.g. `.ancestor:has(.descendant) { background-color: green }`) are applied on the initial load, but not live, because `:has()` invalidation is not supported yet.
 
 #### How do we think about the `:has()` invalidation?
 To share the overview of `:has()` style invalidation, we will use following simplified case.
