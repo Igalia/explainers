@@ -164,8 +164,13 @@ For the start, we will discuss the `:has()` invalidation with these limitation.
 
 Please note that, these limitations are not necessarily proposals for where we end up, it's just about how we simplify and grow the discussion.
 
-## Minutes of discussion
+## Updates from the discussions
 
+I have some questions.
 * Does the above summary make sense to all? Are there any missing or arguable points?
-* More specifically, does it make sense to add a step that traverses ancestors to find possibly affected element?<br>
-  (The traversal will be `O(m)` where `m` is tree depth of the changed element)
+* More specifically about `:has()` invalidation overview,
+  * is it acceptable to add a step that traverses ancestors to find possibly affected element?<br>
+    (The traversal will be `O(m)` where `m` is tree depth of the changed element)
+  * does it make sense to extract upward traversal filtering condition from the selector in a style rule?
+    (From `.product:has(.shirt)`, we can get filtering condition of class value `product` for the mutation of changing the class value `shirt`)
+  * does it make sense to trigger style invalidation of the element that matches the upward traversal filtering condition?
