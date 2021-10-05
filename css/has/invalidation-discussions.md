@@ -1,6 +1,6 @@
 # `:has()` invalidation discussion status
 
-## Common base of the discussion
+## Common baseline for the discussion
 
 ### `:has()` prototyping status in chromium project
 
