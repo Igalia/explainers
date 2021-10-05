@@ -177,4 +177,4 @@ I have some questions.
     * does it make sense to trigger style invalidation of the element that matches the upward traversal filtering condition?
   * about the discussion scope,
     * does it make sense to separate the `has()` matching overhead (`O(n)` where `n` is number of descendants) from the `:has()` invalidation discussion scope?<br>
-      I think it would be better to focus on the steps that traverse upward and trigger invalidation. For the `O(n)` problem, we may think about changing `:has()` matching cache lifecycle, and the approach looks require the upward traversal step.
+      I think it would be better to focus on the steps that traverse upward and trigger invalidation. For the `O(n)` problem, we may think about changing `:has()` matching cache lifecycle, and the approach looks require the upward traversal step. So we can discuss the problem after we have the upward traversal step.
