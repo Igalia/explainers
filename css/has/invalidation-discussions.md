@@ -135,7 +135,7 @@ Listing all the possible limitations and examining the complexity and performanc
 
 Considering *"What will be the basic and important use cases?"* will help us choose the limitations to start with.
 
-We have these tree use cases from the previous discussions. (Shared by [Rune](https://twitter.com/runeli), originally from [Una](https://twitter.com/una))
+We have these three use cases from the previous discussions. (Shared by [Rune](https://twitter.com/runeli), originally from [Una](https://twitter.com/una))
 
 
 1. **Interactions** -- Hovering a button within a card makes the card style change (i.e. background color, border, or even interaction like having a shine animation gloss over it). Sure you can solve this when a single card has a single action, but what happens when that card has multiple actions? You need JS for that.
