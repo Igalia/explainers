@@ -167,7 +167,7 @@ Please note that, these limitations are not necessarily proposals for where we e
 ## Updates from the discussions
 
 I have some questions.
-* Does the above summary make sense to all? Are there any missing or arguable points?
+* Does the above summary make sense to all? Are there any missing or arguable points that blocks discussion?
 * More specifically about `:has()` invalidation overview,
   * is it acceptable to add a step that traverses ancestors to find possibly affected element?<br>
     (The traversal will be `O(m)` where `m` is tree depth of the changed element)
