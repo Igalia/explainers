@@ -171,6 +171,7 @@ I have some questions.
 * More specifically about `:has()` invalidation overview,
   * is it acceptable to add a step that traverses ancestors to find possibly affected element?<br>
     (The traversal will be `O(m)` where `m` is tree depth of the changed element)
-  * does it make sense to extract upward traversal filtering condition from the selector in a style rule?
+  * does it make sense to extract upward traversal filtering condition from the selector in a style rule?<br>
     (From `.product:has(.shirt)`, we can get filtering condition of class value `product` for the mutation of changing the class value `shirt`)
   * does it make sense to trigger style invalidation of the element that matches the upward traversal filtering condition?
+
