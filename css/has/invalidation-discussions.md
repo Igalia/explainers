@@ -1,6 +1,6 @@
-# Discussion status
+# `:has()` invalidation discussion status
 
-## Common base of the current discussion
+## Common base of the discussion
 
 ### `:has()` prototyping status in chromium project
 
@@ -167,3 +167,5 @@ Please note that, these limitations are not necessarily proposals for where we e
 ## Minutes of discussion
 
 * Does the above summary make sense to all? Are there any missing or arguable points?
+* More specifically, does it make sense to add a step that traverses ancestors to find possibly affected element?<br>
+  (The traversal will be `O(m)` where `m` is tree depth of the changed element)
