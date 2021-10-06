@@ -19,52 +19,52 @@ With the merged CLs, `:has()` containing rules (e.g. `.ancestor:has(.descendant)
 #### How do we think about the `:has()` invalidation?
 To share the overview of `:has()` style invalidation, we will use following simplified case.
 
-* Descendant have boolean state of clicked/not-clicked which toggles when it clicked.
-* Descendant and its ancestor have different style for the descendant having the clicked state.
+* Descendant toggles the class value `selected-item` when it clicked.
+* Descendant and its ancestor have different style when the descendant has the class value `selected-item`.
 
-For the above case, without ':has', we need to add similar state to the ancestor and synchronize the ancestor state with the descendant state by javascript.
+For the above case, without ':has', we need to add additional class value to the ancestor, and synchronize the ancestor class value with the descendant class value by JavaScript.
 
 ```html
 <style>
-    .checked { font-weight: bold }                      /* rule1 */
-    .ancestor.has-checked { background-color: yellow }  /* rule2 */
+    .selected-item { font-weight: bold }                      /* rule1 */
+    .ancestor.has-selected-item { background-color: yellow }  /* rule2 */
 </style>
 <div class='ancestor'>
     <div><div><div id=descendant>click</div></div></div>
 </div>
 <script>
 descendant.addEventListener('click', function() {
-    // Change #descendant element state.
+    // Toggle #descendant class value.
     // This leads to style invalidation for the #descendant element
     // due to the rule1.
-    this.classList.toggle('checked');
+    this.classList.toggle('selected-item');
 
     // Get ancestor element
     ancestor = this.closest('.ancestor');
     
-    // Change .ancestor element state.
+    // Toggle .ancestor class value
     // This leads to style invalidation for the .ancestor element
     // due to the rule2.
-    ancestor.classList.toggle('has-checked');
+    ancestor.classList.toggle('has-selected-item');
 });
 </script>
 ```
 
-Style invalidation perspective, the javascript logic for the ancestor element consists of two parts. One is finding the `.ancestor` element, and the other one is triggering style invalidation by updating state of the element.
+Style invalidation perspective, the JavaScript logic for the ancestor element consists of two parts. One is finding the `.ancestor` element, and the other one is triggering style invalidation by updating class value of the element.
 
-We can use `:has()` to remove the javascript code that finds the `.ancestor` element and triggers style invalidation on the element.
+We can use `:has()` to remove the JavaScript code that finds the `.ancestor` element and triggers style invalidation on the element.
 
 ```html
 <style>
-    .checked { font-weight: bold }                        /* rule1 */
-    .ancestor:has(.checked) { background-color: yellow }  /* rule2 */
+    .selected-item { font-weight: bold }                        /* rule1 */
+    .ancestor:has(.selected-item) { background-color: yellow }  /* rule2 */
 </style>
 <div class='ancestor'>
     <div><div><div id=descendant>click</div></div></div>
 </div>
 <script>
 descendant.addEventListener('click', function() {
-    // Change #descendant element state.
+    // Toggle #descendant class value.
     // This leads to style invalidation for the #descendant element
     // due to the rule1.
     this.classList.toggle('checked');
@@ -81,17 +81,17 @@ descendant.addEventListener('click', function() {
 This means that, what ':has' style invalidation need to do are, 1. finding `.ancestor` element, 2. triggering style invalidation on the `.ancestor` element.
 
 So, in this case, 
-1. when browser engine detect a chage of adding or removing the class value `checked` on an element,<br>
-(<code>.ancestor:has( <b style='background-color: yellow'>.checked</b>)) {...}</code>)
+1. when browser engine detect a chage of adding or removing the class value `selected-item` on an element,<br>
+(<code>.ancestor:has( <b style='background-color: yellow'>.selected-item</b>)) {...}</code>)
 2. it will travers to ancestors of the changed element to find elements with the class value `ancestor`,<br>
-(<code><b style='background-color: yellow'>.ancestor</b>:has(<b style='background-color: yellow; color: yellow'>&nbsp;</b>.checked) {...}</code>)
-3. and trigger style invalidation of the ancestor element as if the `:has(.checked)` state was changed on the ancestor element.<br>
-(<code>.ancestor<b style='background-color: yellow'>:has( .checked)</b> {...}</code>)
+(<code><b style='background-color: yellow'>.ancestor</b>:has(<b style='background-color: yellow; color: yellow'>&nbsp;</b>.selected-item) {...}</code>)
+3. and trigger style invalidation of the ancestor element as if the `:has(.selected-item)` state was changed on the ancestor element.<br>
+(<code>.ancestor<b style='background-color: yellow'>:has( .selected-item)</b> {...}</code>)
 
-If we assume we have a virtual pseudo-class that represents true when there is a descendant element with a class value of `checked` (something like `:has-descendant-class-checked`), then we can read the last step as:
+If we assume we have a virtual pseudo-class that represents true when there is a descendant element with a class value of `selected-item` (something like `:has-descendant-class-selected-item`), then we can read the last step as:
 
-3. and trigger style invalidation of the ancestor element as if the `:has-descendant-class-checked` pseudo state is changed.<br>
-(<code>.ancestor<b style='background-color: yellow'>:has-descendant-class-checked</b> {…}</code>)
+3. and trigger style invalidation of the ancestor element as if the `:has-descendant-class-selected-item` pseudo state is changed.<br>
+(<code>.ancestor<b style='background-color: yellow'>:has-descendant-class-selected-item</b> {…}</code>)
 
 We can say that these steps are : *"Finding elements that are possibly affected by a mutation, and creating virtual pseudo state mutation event on the elements to trigger style invalidation"*
 
