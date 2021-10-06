@@ -133,8 +133,7 @@ Listing all the possible limitations and examining the complexity and performanc
 
 Considering *"What will be the basic and important use cases?"* will help us choose the limitations to start with.
 
-We have these three use cases from the previous discussions. (Shared by [Rune](https://twitter.com/runeli), originally from [Una](https://twitter.com/una))
-
+We have these three use cases from the previous discussions. (Shared by [Rune](https://twitter.com/runeli), originally from [Una](https://twitter.com/una)). There can be better use cases, but these seemed to appear to be reasonable to consider as representative examples of many cases. These use cases are cited to keep the progress of the previous conversations.
 
 1. **Interactions** -- Hovering a button within a card makes the card style change (i.e. background color, border, or even interaction like having a shine animation gloss over it). Sure you can solve this when a single card has a single action, but what happens when that card has multiple actions? You need JS for that.
 2. **States** -- Styling things like containers with certain states (i.e. "empty" or "pending") is either not consistent (:empty/:not:empty due to elements vs text nodes and whitespace), or not possible in CSS. Say you want an empty state experience and in your JS you populate an Inbox with a cute message that says "Yay you've reached Inbox 0!". You may want to style the page a certain way, detecting when the child class is present. I.e. if .empty-message is present, it's parent/ancestor .inbox-container could get a style, like a sunshine background. JS is currently required for that.
