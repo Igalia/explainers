@@ -126,7 +126,7 @@ To get the possible limitations, it would be helpful to list all the variations 
 | input pseudo-classess in `:has()` | ... |
 | tree structural pseudos in `:has()` | ... |
 
-By grouping these variations into the two group (allowing/disallowing), we can get possible limitations.
+By grouping these variations into allowing or disallowing group, we can get possible limitations.
 
 #### What are the basic and important use cases to start?
 
