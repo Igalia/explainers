@@ -105,7 +105,7 @@ We can generate infinite number of selector expressions by combining `:has()` wi
 
 To get the possible limitations, it would be helpful to list all the variations to consider in `:has()` invalidation.
 
-| variation to consider   | Example |
+| Variation to consider   | Example |
 | :----------- | :----- |
 | `:has()` argument starts with `>` | `.hero:has(> img)` |
 | `:has()` argument starts with descendant combinator | `.hero:has(img)` |
@@ -130,7 +130,7 @@ By grouping these variations into allowing or disallowing group, we can get poss
 
 #### What are the essential use cases that `:has()` invalidation should support?
 
-Listing all the possible limitations and examining the complexity and performance impact of all limitations is too difficult and time consuming. Actually it looks impossible and inefficient to get all those and discuss with those.
+Listing all the possible limitations and examining the complexity and performance impact of all limitations are too difficult and time consuming. Actually it looks impossible and inefficient to get all those and discuss with those.
 
 Considering *"What are the essential use cases that `:has()` invalidation should support?"* will help us get the limitation to start with.
 
@@ -161,3 +161,22 @@ For the start, we will discuss the `:has()` invalidation with these limitation.
 * Disallow all pseudos in `:has()`
 
 Please note that, these limitations are not necessarily proposals for where we end up, it's just about how we simplify and grow the discussion.
+
+These are roughly expected issues for each limitation to be removed.
+
+| Limitation to be removed | Issues |
+| :----------------------- | :------------------------------ |
+| Disallow selector list in `:has()` | Can be supported by some small changes in feature extraction |
+| Disallow `:has()` argument starts with `~` or `+` | Previous sibling traversal will be added to upward traversal |
+| Disallow complex selector in `:has()` | Can be supported by some small changes in feature extraction |
+| Disallow non-terminal `:has()` | Can be supported by some changes in feature extraction |
+| Disallow `:has()` in logical combinations | Can be supported by some changes in feature extraction |
+| Disallow pseudo elements in `:has()` | Not yet checked |
+| logical combinations in `:has()` | `:is()` and `:where()` may introduce many changes.<br>`:has()` and `:not` can be supported by some changes in feature extraction. |
+| linguistic pseudo-classes in `:has()` | Not yet checked |
+| location pseudo-classes in `:has()` | Not yet fully checked. It looks that most can be supported by some small changes in feature extraction.  |
+| user action pseudo-classes in `:has()` | Not yet fully checked. It looks that most can be support by some small changes in feature extraction. Need additional filtering for `:hover` to prevent unnecessary frequent upward traversal  |
+| time-dimensional pseudo-classes in `:has()` | Not yet checked |
+| resource state pseudos in `:has()` | Not yet checked |
+| input pseudo-classess in `:has()` | Not yet fully checked. It looks that most can be supported by some small changes in feature extraction. |
+| tree structural pseudos in `:has()` | Not yet fully checked. It looks that most can be supported by some small changes in feature extraction. |
