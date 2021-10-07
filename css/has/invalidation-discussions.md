@@ -99,34 +99,34 @@ Existing browser engine already has a functionality of invalidating style of an 
 
 The time complexity of the step2 (finding `.ancestor`) will be `O(m)` where `m` is the tree depth of the changed element - it will traverse all ancestors of the changed element to find elements with the class value `ancestor`. (Please note that this is different with the `:has()` selector matching complexity which is `O(n)` where `n` is the number of descendants)
 
-#### What is the possible limitations for `:has()` invalidation ?
+#### What are the variations to consider in `:has()` invalidation?
 
-We can generate infinite number of selector expressions by combining `:has()` with other selectors. Each of those introduces different types and amount of complexity and performance impact. Those also make it more difficult to discuss. Effectively, we need to discuss what might be necessary limitations on `:has()` style invalidation, and where things bigin to get into uncomfortable levels of complexity and performance impact.
+We can generate infinite number of selector expressions by combining `:has()` with other selectors. Each of those introduces different types and amount of complexity and performance impact. Those also make it more difficult to discuss. Effectively, we need to discuss what might be necessary limitations on `:has()` style invalidation, and where things begin to get into uncomfortable levels of complexity and performance impact.
 
-When we have some discussions about a limitation that disallow something, it would be better to minimize the variations to focus the complexity or performance impact of that limitation. Listing independant criteria by which `:has()` expressions can be divided into two distinct group (allowing something/disallowing something) will be helpful to focus the limitation itself. With this independant criteria, we can focus complexity or performance impact of supporting the cases that allowing something, or we can focus complexity or performance impact of supporting the opposite cases that disallowing something. And based on the complexity or performance impact, we can say that, when we have a limitation of disallowing something, we may have this kind of advantages.
+To get the possible limitations, it would be helpful to list all the variations to consider in `:has()` invalidation.
 
-These are the possible criteria for the limitations.
-
-|    Criteria   | Example |
+| variation to consider   | Example |
 | :----------- | :----- |
-| Allow `:has()` argument starts with `>` ? | `.hero:has(> img)` |
-| Allow `:has()` argument starts with descendant combinator ? | `.hero:has(img)` |
-| Allow attribute/elemental selectors in `:has()` ?  | `.hero:has(img)`<br>`.hero:has(.splash)`<br>`.hero:has([alt])`<br>`.hero:has(#main-feature)`<br> |
-| Allow compound selector in `:has()`?  | `.product-card:has(.shirt.sale[active])` |
-| Allow selector list in `:has()`?  | `.product-card:has(.shirt, .pants)` |
-| Allow `:has()` argument starts with `~` or `+` ? | `.hero:has(+ section)`<br>`.hero:has(~ section)` |
-| Allow complex selector in `:has()` ? | `.product:has(.recommended > .adapter)`<br>`section:has(figure.schematic figcaption)` |
-| Allow non-terminal `:has()` ? | `.product-card:has(.shirt.sale[active]) .button` |
-| Allow `:has()` in logical combinations ? | `:not(:has(foo))`<br>`:is(:has(foo), :has(bar))` |
-| Allow pseudo elements in `:has()` ? | `:has(::first-letter)` |
-| Allow logical combinations in `:has()` ? | `:has(:not(foo))`<br>`:has(:where(foo, bar))`<br>`:has(.a:has(.b))` |
-| Allow linguistic pseudo-classes in `:has()` ? | `:has(:dir(rtl))`<br>`:has(:lang(fr-be))` |
-| Allow location pseudo-classes in `:has()` ? | `:has(:any-link)`<br>`:has(:visited)`<br> `:has(:target)`<br>`:has(:target-within)`<br>...|
-| Allow user action pseudo-classes in `:has()` ? | `:has(:hover)`<br>`:has(:active)`<br>`:has(:focus)`<br>...|
-| Allow time-dimensional pseudo-classes in `:has()` ? | ... |
-| Allow resource state pseudos in `:has()` ? | ... |
-| Allow input pseudo-classess in `:has()` ? | ... |
-| Allow tree structural pseudos in `:has()` ? | ... |
+| `:has()` argument starts with `>` | `.hero:has(> img)` |
+| `:has()` argument starts with descendant combinator | `.hero:has(img)` |
+| attribute/elemental selectors in `:has()`  | `.hero:has(img)`<br>`.hero:has(.splash)`<br>`.hero:has([alt])`<br>`.hero:has(#main-feature)`<br> |
+| compound selector in `:has()`  | `.product-card:has(.shirt.sale[active])` |
+| selector list in `:has()`  | `.product-card:has(.shirt, .pants)` |
+| `:has()` argument starts with `~` or `+` | `.hero:has(+ section)`<br>`.hero:has(~ section)` |
+| complex selector in `:has()` | `.product:has(.recommended > .adapter)`<br>`section:has(figure.schematic figcaption)` |
+| non-terminal `:has()` | `.product-card:has(.shirt.sale[active]) .button` |
+| `:has()` in logical combinations | `:not(:has(foo))`<br>`:is(:has(foo), :has(bar))` |
+| pseudo elements in `:has()` | `:has(::first-letter)` |
+| logical combinations in `:has()` | `:has(:not(foo))`<br>`:has(:where(foo, bar))`<br>`:has(.a:has(.b))` |
+| linguistic pseudo-classes in `:has()` | `:has(:dir(rtl))`<br>`:has(:lang(fr-be))` |
+| location pseudo-classes in `:has()` | `:has(:any-link)`<br>`:has(:visited)`<br> `:has(:target)`<br>`:has(:target-within)`<br>...|
+| user action pseudo-classes in `:has()` | `:has(:hover)`<br>`:has(:active)`<br>`:has(:focus)`<br>...|
+| time-dimensional pseudo-classes in `:has()` | ... |
+| resource state pseudos in `:has()` | ... |
+| input pseudo-classess in `:has()` | ... |
+| tree structural pseudos in `:has()` | ... |
+
+By grouping these variations into the two group (allowing/disallowing), we can get possible limitations.
 
 #### What are the basic and important use cases to start?
 
