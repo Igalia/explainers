@@ -144,7 +144,7 @@ It looks that lots of `:has()` usages would be similar with these cases. (Stylin
 
 #### Given the use cases, what limitations would it make sense to start with?
 
-All the three use cases above tries to style parent or ancestor element by the condition of its descendant element. So, allowing these cases would be enough for supporting those cases.
+All the three use cases above tries to style parent or ancestor element by the condition of its descendant element. So, allowing these variations would be enough for supporting those use cases.
 * Allow `:has()` argument starts with `>`
 * Allow `:has()` argument starts with descendant combinator
 * Allow attribute/elemental selectors in `:has()`
@@ -153,26 +153,11 @@ All the three use cases above tries to style parent or ancestor element by the c
 When we have any progress with the above limitations, we can extend it to the pseudo classes mentioned at the use cases (`:hover`, `:disabled`). So, using the pseudos in `:has()` will be limited for now.
 
 For the start, we will discuss the `:has()` invalidation with these limitation.
-* Not allow selector list in `:has()`
-* Not allow `:has()` argument starts with `~` or `+`
-* Not allow complex selector in `:has()`
-* Not allow non-terminal `:has()`
-* Not allow `:has()` in logical combinations
-* Not allow all pseudos in `:has()`
+* Disallow selector list in `:has()`
+* Disallow `:has()` argument starts with `~` or `+`
+* Disallow complex selector in `:has()`
+* Disallow non-terminal `:has()`
+* Disallow `:has()` in logical combinations
+* Disallow all pseudos in `:has()`
 
 Please note that, these limitations are not necessarily proposals for where we end up, it's just about how we simplify and grow the discussion.
-
-## Updates from the discussions
-
-I have some questions.
-* Does the above baseline make sense to all? Are there any missing or arguable points that blocks discussion?
-* More specifically,
-  * about `:has()` invalidation overview,
-    * is it acceptable to add a step that traverses ancestors to find possibly affected element?<br>
-      (The traversal will be `O(m)` where `m` is tree depth of the changed element)
-    * does it make sense to extract upward traversal filtering condition from the selector in a style rule?<br>
-      (From `.product:has(.shirt)`, we can get filtering condition of class value `product` for the mutation of changing the class value `shirt`)
-    * does it make sense to trigger style invalidation of the element that matches the upward traversal filtering condition?
-  * about the discussion scope,
-    * does it make sense to separate the `has()` matching overhead (`O(n)` where `n` is number of descendants) from the `:has()` invalidation discussion scope?<br>
-      I think it would be better to focus on the steps that traverse upward and trigger invalidation. For the `O(n)` problem, we may think about changing `:has()` matching cache lifecycle, and the approach looks require the upward traversal step. So we can discuss the problem after we have the upward traversal step.
