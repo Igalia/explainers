@@ -162,21 +162,21 @@ For the start, we will discuss the `:has()` invalidation with these limitation.
 
 Please note that, these limitations are not necessarily proposals for where we end up, it's just about how we simplify and grow the discussion.
 
-These are roughly expected issues for each limitation to be removed.
+These are roughly expected issues for allowing each variations.
 
-| Limitation to be removed | Issues |
+| Variations to be allowed | Issues |
 | :----------------------- | :------------------------------ |
-| Disallow selector list in `:has()` | Can be supported by some small changes in feature extraction |
-| Disallow `:has()` argument starts with `~` or `+` | Previous sibling traversal will be added to upward traversal |
-| Disallow complex selector in `:has()` | Can be supported by some small changes in feature extraction |
-| Disallow non-terminal `:has()` | Can be supported by some changes in feature extraction |
-| Disallow `:has()` in logical combinations | Can be supported by some changes in feature extraction |
-| Disallow pseudo elements in `:has()` | Not yet checked |
+| selector list in `:has()` | Can be supported by small changes in feature extraction. |
+| `:has()` argument starts with `~` or `+` | Previous sibling traversal step need to be added. |
+| complex selector in `:has()` | Can be supported by small changes in feature extraction. |
+| non-terminal `:has()` | Can be supported by some changes in feature extraction. |
+| `:has()` in logical combinations | Can be supported by some changes in feature extraction. |
+| pseudo elements in `:has()` | Not yet checked. |
 | logical combinations in `:has()` | `:is()` and `:where()` may introduce many changes.<br>`:has()` and `:not` can be supported by some changes in feature extraction. |
-| linguistic pseudo-classes in `:has()` | Not yet checked |
-| location pseudo-classes in `:has()` | Not yet fully checked. It looks that most can be supported by some small changes in feature extraction.  |
-| user action pseudo-classes in `:has()` | Not yet fully checked. It looks that most can be support by some small changes in feature extraction. Need additional filtering for `:hover` to prevent unnecessary frequent upward traversal  |
-| time-dimensional pseudo-classes in `:has()` | Not yet checked |
-| resource state pseudos in `:has()` | Not yet checked |
-| input pseudo-classess in `:has()` | Not yet fully checked. It looks that most can be supported by some small changes in feature extraction. |
-| tree structural pseudos in `:has()` | Not yet fully checked. It looks that most can be supported by some small changes in feature extraction. |
+| linguistic pseudo-classes in `:has()` | Not yet checked. |
+| location pseudo-classes in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction.  |
+| user action pseudo-classes in `:has()` | Not yet fully checked.<br>Most may be support by small changes in feature extraction.<br>Need additional filtering for `:hover` to prevent frequent upward traversal.  |
+| time-dimensional pseudo-classes in `:has()` | Not yet checked. |
+| resource state pseudos in `:has()` | Not yet checked. |
+| input pseudo-classess in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
+| tree structural pseudos in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
