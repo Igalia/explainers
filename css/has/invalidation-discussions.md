@@ -128,20 +128,19 @@ To get the possible limitations, it would be helpful to list all the variations 
 
 By grouping these variations into allowing or disallowing group, we can get possible limitations.
 
-#### What are the basic and important use cases to start?
+#### What are the essential use cases that `:has()` invalidation should support?
 
 Listing all the possible limitations and examining the complexity and performance impact of all limitations is too difficult and time consuming. Actually it looks impossible and inefficient to get all those and discuss with those.
 
-Considering *"What will be the basic and important use cases?"* will help us choose the limitations to start with.
+Considering *"What are the essential use cases that `:has()` invalidation should support?"* will help us get the limitation to start with.
 
-We have these three use cases from the previous discussions. (Shared by [Rune](https://twitter.com/runeli), originally from [Una](https://twitter.com/una))
+We have these three use cases from the previous discussions. (Shared by [Rune](https://twitter.com/runeli), originally from [Una](https://twitter.com/una)).
 
+1. Interactions -- Hovering a button within a card makes the card style change (i.e. background color, border, or even interaction like having a shine animation gloss over it). Sure you can solve this when a single card has a single action, but what happens when that card has multiple actions? You need JS for that.
+2. States -- Styling things like containers with certain states (i.e. "empty" or "pending") is either not consistent (:empty/:not:empty due to elements vs text nodes and whitespace), or not possible in CSS. Say you want an empty state experience and in your JS you populate an Inbox with a cute message that says "Yay you've reached Inbox 0!". You may want to style the page a certain way, detecting when the child class is present. I.e. if .empty-message is present, it's parent/ancestor .inbox-container could get a style, like a sunshine background. JS is currently required for that.
+3. Pairings -- Say you have a shopping card. The shopping card has a "Buy" button. The buy button may be :disabled when the item is sold out. It would be nice to be able to style either the parent card or any parent element with the "Sold Out" style. JS is currently required for that. (I guess this is also a state example)
 
-1. **Interactions** -- Hovering a button within a card makes the card style change (i.e. background color, border, or even interaction like having a shine animation gloss over it). Sure you can solve this when a single card has a single action, but what happens when that card has multiple actions? You need JS for that.
-2. **States** -- Styling things like containers with certain states (i.e. "empty" or "pending") is either not consistent (:empty/:not:empty due to elements vs text nodes and whitespace), or not possible in CSS. Say you want an empty state experience and in your JS you populate an Inbox with a cute message that says "Yay you've reached Inbox 0!". You may want to style the page a certain way, detecting when the child class is present. I.e. if .empty-message is present, it's parent/ancestor .inbox-container could get a style, like a sunshine background. JS is currently required for that.
-3. **Pairings** -- Say you have a shopping card. The shopping card has a "Buy" button. The buy button may be :disabled when the item is sold out. It would be nice to be able to style either the parent card or any parent element with the "Sold Out" style. JS is currently required for that. (I guess this is also a state example)
-
-It looks that lots of `:has()` usage would be similar with these cases. (Styling parent or ancestor element by its descendant condition)
+It looks that lots of `:has()` usages would be similar with these cases. (Styling parent or ancestor element by its descendant condition)
 
 #### Given the use cases, what limitations would it make sense to start with?
 
