@@ -164,7 +164,7 @@ Please note that, these limitations are not necessarily proposals for where we e
 
 These are roughly expected issues for allowing each variations.
 
-| Variations to be allowed | Issues |
+| Variation | Issues |
 | :----------------------- | :------------------------------ |
 | selector list in `:has()` | Can be supported by small changes in feature extraction. |
 | `:has()` argument starts with `~` or `+` | Previous sibling traversal step need to be added. |
