@@ -1,8 +1,8 @@
 # `:has()` invalidation plans and discussions
 
-## 1. Common baseline for the discussion
+## Common baseline for the discussion
 
-### 1.1. `:has()` prototyping status in chromium project
+### `:has()` prototyping status in chromium project
 
 After the Chrome version 95, when enabled via the `enable-experimental-web-platform-features` flag, authors can use the `:has()` selector via the JavaScript APIs (`querySelector`, `querySelectorAll`, `closest`, `matches`).  This implementation places very few limits except some pseudos related with tree boundary crossing (`:host()`, `:host-context()`, `:slotted()`, `::part()`, ...).
 
@@ -12,11 +12,11 @@ In other words, we have `:has()` selector matching functionality in those APIs e
 
 By using a cache that stores the `:has()` matching status, this can be improved, at least within a single lifecycle (a single JavaScript call, a single style recalculation lifecycle), so we still have the `O(n)` problem of `:has()` matching for every lifecycle.
 
-### 1.2. Next step: invalidation prototyping.
+### Next step: invalidation prototyping.
 
 With the merged CLs, `:has()` containing rules (e.g. `.ancestor:has(.descendant) { background-color: green }`) are applied on the initial load, but not live, because `:has()` invalidation is not supported yet.
 
-#### 1.2.1. How do we think about the `:has()` invalidation?
+#### How do we think about the `:has()` invalidation?
 To share the overview of `:has()` style invalidation, we will use following simplified case.
 
 * Descendant toggles the class value `selected-item` when it clicked.
@@ -99,7 +99,7 @@ Existing browser engine already has a functionality of invalidating style of an 
 
 The time complexity of the step2 (finding `.ancestor`) will be `O(m)` where `m` is the tree depth of the changed element - it will traverse all ancestors of the changed element to find elements with the class value `ancestor`. (Please note that this is different with the `:has()` selector matching complexity which is `O(n)` where `n` is the number of descendants)
 
-#### 1.2.2. What are the variations to consider in `:has()` invalidation?
+#### What are the variations to consider in `:has()` invalidation?
 
 We can generate infinite number of selector expressions by combining `:has()` with other selectors. Each of those introduces different types and amount of complexity and performance impact. Those also make it more difficult to discuss. Effectively, we need to discuss what might be necessary limitations on `:has()` style invalidation, and where things begin to get into uncomfortable levels of complexity and performance impact.
 
@@ -128,7 +128,7 @@ To get the possible limitations, it would be helpful to list all the variations 
 
 By grouping these variations into allowing or disallowing group, we can get possible limitations.
 
-#### 1.2.3. What are the essential use cases that `:has()` invalidation should support?
+#### What are the essential use cases that `:has()` invalidation should support?
 
 Listing all the possible limitations and examining the complexity and performance impact of all limitations are too difficult and time consuming. Actually it looks impossible and inefficient to get all those and discuss with those.
 
@@ -146,7 +146,7 @@ It looks that lots of `:has()` usages would be similar with these cases.
 
 And we can abstract those as “Styling parent or ancestor element by its descendant condition”.
 
-#### 1.2.4. Given the use cases, what limitations would it make sense to start with?
+#### Given the use cases, what limitations would it make sense to start with?
 
 It would be better to handle the descendant conditions mentioned at above use-cases (`:hover`, `.empty-message`, `:disabld`) as variation groups (User action pseudo-classes, Attribute/elemental selectors, Input pseudo classes).
 
@@ -187,11 +187,11 @@ These are roughly expected issues for allowing each variations.
 | input pseudo-classess in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
 | tree structural pseudos in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
 
-## 2. Plans and discussions
+## Plans and discussions
 
-### 2.1. Step1: Initial `:has()` invalidation
+### Step1: Initial `:has()` invalidation
 
-This step will try the `:has()` invalidation with all the limitations listed in [1.2.4](#124-given-the-use-cases-what-limitations-would-it-make-sense-to-start-with).
+This step will try the `:has()` invalidation with all the limitations listed [at above](#given-the-use-cases-what-limitations-would-it-make-sense-to-start-with).
 
 ### Step2: Support complex selctor
 
