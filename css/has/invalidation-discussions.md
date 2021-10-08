@@ -140,17 +140,23 @@ We have these three use cases from the previous discussions. (Shared by [Rune](h
 2. States -- Styling things like containers with certain states (i.e. "empty" or "pending") is either not consistent (:empty/:not:empty due to elements vs text nodes and whitespace), or not possible in CSS. Say you want an empty state experience and in your JS you populate an Inbox with a cute message that says "Yay you've reached Inbox 0!". You may want to style the page a certain way, detecting when the child class is present. I.e. if .empty-message is present, it's parent/ancestor .inbox-container could get a style, like a sunshine background. JS is currently required for that.
 3. Pairings -- Say you have a shopping card. The shopping card has a "Buy" button. The buy button may be :disabled when the item is sold out. It would be nice to be able to style either the parent card or any parent element with the "Sold Out" style. JS is currently required for that. (I guess this is also a state example)
 
-It looks that lots of `:has()` usages would be similar with these cases. (Styling parent or ancestor element by its descendant condition)
+It looks that lots of `:has()` usages would be similar with these cases.
+* [https://twitter.com/gumnos/status/1445734109163102210](https://twitter.com/gumnos/status/1445734109163102210)
+* [https://www.smashingmagazine.com/2021/06/has-native-css-parent-selector/](https://www.smashingmagazine.com/2021/06/has-native-css-parent-selector/)
+
+And we can abstract those as “Styling parent or ancestor element by its descendant condition”.
 
 #### Given the use cases, what limitations would it make sense to start with?
 
-All the three use cases above tries to style parent or ancestor element by the condition of its descendant element. So, allowing these variations would be enough for supporting those use cases.
+It would be better to handle the descendant conditions mentioned at above use-cases (`:hover`, `.empty-message`, `:disabld`) as variation groups (User action pseudo-classes, Attribute/elemental selectors, Input pseudo classes).
+
+Among those three, Attribute/elemental selectors variation will be simple to handle first because there can be different complexity or performance impact on a specific pseudo in a pseudo-type variation group.
+
+So, allowing these variations would be easy to start.
 * Allow `:has()` argument starts with `>`
 * Allow `:has()` argument starts with descendant combinator
 * Allow attribute/elemental selectors in `:has()`
 * Allow compound selector in `:has()`
-
-When we have any progress with the above limitations, we can extend it to the pseudo classes mentioned at the use cases (`:hover`, `:disabled`). So, using the pseudos in `:has()` will be limited for now.
 
 For the start, we will discuss the `:has()` invalidation with these limitation.
 * Disallow selector list in `:has()`
