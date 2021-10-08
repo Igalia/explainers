@@ -105,7 +105,7 @@ We can generate infinite number of selector expressions by combining `:has()` wi
 
 To get the possible limitations, it would be helpful to list all the variations to consider in `:has()` invalidation.
 
-| variation to consider   | Example |
+| Variation to consider   | Example |
 | :----------- | :----- |
 | `:has()` argument starts with `>` | `.hero:has(> img)` |
 | `:has()` argument starts with descendant combinator | `.hero:has(img)` |
@@ -130,7 +130,7 @@ By grouping these variations into allowing or disallowing group, we can get poss
 
 #### What are the essential use cases that `:has()` invalidation should support?
 
-Listing all the possible limitations and examining the complexity and performance impact of all limitations is too difficult and time consuming. Actually it looks impossible and inefficient to get all those and discuss with those.
+Listing all the possible limitations and examining the complexity and performance impact of all limitations are too difficult and time consuming. Actually it looks impossible and inefficient to get all those and discuss with those.
 
 Considering *"What are the essential use cases that `:has()` invalidation should support?"* will help us get the limitation to start with.
 
@@ -140,17 +140,23 @@ We have these three use cases from the previous discussions. (Shared by [Rune](h
 2. States -- Styling things like containers with certain states (i.e. "empty" or "pending") is either not consistent (:empty/:not:empty due to elements vs text nodes and whitespace), or not possible in CSS. Say you want an empty state experience and in your JS you populate an Inbox with a cute message that says "Yay you've reached Inbox 0!". You may want to style the page a certain way, detecting when the child class is present. I.e. if .empty-message is present, it's parent/ancestor .inbox-container could get a style, like a sunshine background. JS is currently required for that.
 3. Pairings -- Say you have a shopping card. The shopping card has a "Buy" button. The buy button may be :disabled when the item is sold out. It would be nice to be able to style either the parent card or any parent element with the "Sold Out" style. JS is currently required for that. (I guess this is also a state example)
 
-It looks that lots of `:has()` usages would be similar with these cases. (Styling parent or ancestor element by its descendant condition)
+It looks that lots of `:has()` usages would be similar with these cases.
+* [https://twitter.com/gumnos/status/1445734109163102210](https://twitter.com/gumnos/status/1445734109163102210)
+* [https://www.smashingmagazine.com/2021/06/has-native-css-parent-selector/](https://www.smashingmagazine.com/2021/06/has-native-css-parent-selector/)
+
+And we can abstract those as “Styling parent or ancestor element by its descendant condition”.
 
 #### Given the use cases, what limitations would it make sense to start with?
 
-All the three use cases above tries to style parent or ancestor element by the condition of its descendant element. So, allowing these variations would be enough for supporting those use cases.
+It would be better to handle the descendant conditions mentioned at above use-cases (`:hover`, `.empty-message`, `:disabld`) as variation groups (User action pseudo-classes, Attribute/elemental selectors, Input pseudo classes).
+
+Among those three, Attribute/elemental selectors variation will be simple to handle first because there can be different complexity or performance impact on a specific pseudo in a pseudo-type variation group.
+
+So, allowing these variations would be easy to start.
 * Allow `:has()` argument starts with `>`
 * Allow `:has()` argument starts with descendant combinator
 * Allow attribute/elemental selectors in `:has()`
 * Allow compound selector in `:has()`
-
-When we have any progress with the above limitations, we can extend it to the pseudo classes mentioned at the use cases (`:hover`, `:disabled`). So, using the pseudos in `:has()` will be limited for now.
 
 For the start, we will discuss the `:has()` invalidation with these limitation.
 * Disallow selector list in `:has()`
@@ -161,3 +167,65 @@ For the start, we will discuss the `:has()` invalidation with these limitation.
 * Disallow all pseudos in `:has()`
 
 Please note that, these limitations are not necessarily proposals for where we end up, it's just about how we simplify and grow the discussion.
+
+These are roughly expected issues for allowing each variations.
+
+| Variation | Issues |
+| :----------------------- | :------------------------------ |
+| selector list in `:has()` | Can be supported by small changes in feature extraction. |
+| `:has()` argument starts with `~` or `+` | Previous sibling traversal step need to be added. |
+| complex selector in `:has()` | Can be supported by small changes in feature extraction. |
+| non-terminal `:has()` | Can be supported by some changes in feature extraction. |
+| `:has()` in logical combinations | Can be supported by some changes in feature extraction. |
+| pseudo elements in `:has()` | Not yet checked. |
+| logical combinations in `:has()` | `:is()` and `:where()` may introduce many changes.<br>`:has()` and `:not` can be supported by some changes in feature extraction. |
+| linguistic pseudo-classes in `:has()` | Not yet checked. |
+| location pseudo-classes in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction.  |
+| user action pseudo-classes in `:has()` | Not yet fully checked.<br>Most may be support by small changes in feature extraction.<br>Need additional filtering for `:hover` to prevent frequent upward traversal.  |
+| time-dimensional pseudo-classes in `:has()` | Not yet checked. |
+| resource state pseudos in `:has()` | Not yet checked. |
+| input pseudo-classess in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
+| tree structural pseudos in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
+
+## Plans, progress and discussions
+
+### Step1: Support class attribute mutation in existing element.
+
+To make the first step more simple, I'm going to add sub variations to add additional limitation.
+* Id selectors in `:has()`
+* Class selectors in `:has()`
+* Other attribute selectors (presence/value/substring) in `:has()`
+* Type selector in `:has()`
+* Universal Selector in `:has()`
+* Invalidation for an attribute change on an existing element
+* Invalidation for insertion or removal of an element or a subtree
+
+For the first step, these will be disallowed.
+* Disallow ID selectors in `:has()`
+* Disallow other attribute selectors (presence/value/substring) in `:has()`
+* Disallow Type selector in `:has()`
+* Disallow Universal Selector in `:has()`
+* Disallow Invalidation for insertion or removal of an element or a subtree
+
+So for the first step, we will support these variations
+* Allow `:has()` argument starts with `>`
+* Allow `:has()` argument starts with descendant combinator
+* Allow compound selector in `:has()`
+* Allow Class selectors in `:has()`
+* Allow Invalidation for an attribute change on an existing element
+
+### Step2: Support element/subtree insertion and removal
+
+### Step3: Support other attribute/elemental selectors
+
+### Step4: Support complex selctor
+
+### Step5: Support selector list
+
+### Step6: Support non-terminal `:has()`
+
+### Step7: Support `:has()` in logical combinations
+
+### Step8: Support `:has()` argument starts with `~` or `+`
+
+### Step9: Support pseudos
