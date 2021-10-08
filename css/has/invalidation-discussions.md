@@ -1,4 +1,4 @@
-# `:has()` invalidation discussion status
+# `:has()` invalidation plans and discussions
 
 ## Common baseline for the discussion
 
@@ -187,7 +187,7 @@ These are roughly expected issues for allowing each variations.
 | input pseudo-classess in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
 | tree structural pseudos in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
 
-## Plans, progress and discussions
+## Plans and discussions
 
 ### Step1: Support class attribute mutation in existing element.
 
@@ -207,12 +207,17 @@ For the first step, these will be disallowed.
 * Disallow Universal Selector in `:has()`
 * Disallow Invalidation for insertion or removal of an element or a subtree
 
-So for the first step, we will support these variations
+We will support these variations by the first step.
 * Allow `:has()` argument starts with `>`
 * Allow `:has()` argument starts with descendant combinator
 * Allow compound selector in `:has()`
 * Allow Class selectors in `:has()`
 * Allow Invalidation for an attribute change on an existing element
+
+So, this will support invalidation for these cases.
+* `.card:has(> .shirt) {...}`
+* `.card:has(.shirt) {...}`
+* `.card:has(.shirt.sale) {...}`
 
 ### Step2: Support element/subtree insertion and removal
 
