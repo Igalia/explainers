@@ -214,7 +214,7 @@ We will support these variations by the first step.
 * Allow Class selectors in `:has()`
 * Allow Invalidation for an attribute change on an existing element
 
-So, this will support invalidation for these cases.
+So, this will support invalidation of class value changes for these rules.
 * `.card:has(> .shirt) {...}`
 * `.card:has(.shirt) {...}`
 * `.card:has(.shirt.sale) {...}`
