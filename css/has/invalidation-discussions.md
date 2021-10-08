@@ -180,3 +180,46 @@ These are roughly expected issues for allowing each variations.
 | resource state pseudos in `:has()` | Not yet checked. |
 | input pseudo-classess in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
 | tree structural pseudos in `:has()` | Not yet fully checked.<br>Most may be supported by small changes in feature extraction. |
+
+## Plans, progress and discussions
+
+### Step1: Support class attribute mutation in existing element.
+
+To make the first step more simple, I'm going to add sub variations to add additional limitation.
+* Id selectors in `:has()`
+* Class selectors in `:has()`
+* Other attribute selectors (presence/value/substring) in `:has()`
+* Type selector in `:has()`
+* Universal Selector in `:has()`
+* Invalidation for an attribute change on an existing element
+* Invalidation for insertion or removal of an element or a subtree
+
+For the first step, these will be disallowed.
+* Disallow ID selectors in `:has()`
+* Disallow other attribute selectors (presence/value/substring) in `:has()`
+* Disallow Type selector in `:has()`
+* Disallow Universal Selector in `:has()`
+* Disallow Invalidation for insertion or removal of an element or a subtree
+
+So for the first step, we will support these variations
+* Allow `:has()` argument starts with `>`
+* Allow `:has()` argument starts with descendant combinator
+* Allow compound selector in `:has()`
+* Allow Class selectors in `:has()`
+* Allow Invalidation for an attribute change on an existing element
+
+### Step2: Support element/subtree insertion and removal
+
+### Step3: Support other attribute/elemental selectors
+
+### Step4: Support complex selctor
+
+### Step5: Support selector list
+
+### Step6: Support non-terminal `:has()`
+
+### Step7: Support `:has()` in logical combinations
+
+### Step8: Support `:has()` argument starts with `~` or `+`
+
+### Step9: Support pseudos
