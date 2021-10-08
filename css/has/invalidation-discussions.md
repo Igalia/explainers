@@ -141,16 +141,16 @@ We have these three use cases from the previous discussions. (Shared by [Rune](h
 3. Pairings -- Say you have a shopping card. The shopping card has a "Buy" button. The buy button may be :disabled when the item is sold out. It would be nice to be able to style either the parent card or any parent element with the "Sold Out" style. JS is currently required for that. (I guess this is also a state example)
 
 It looks that lots of `:has()` usages would be similar with these cases.
-* [https://twitter.com/gumnos/status/1445734109163102210](https://twitter.com/gumnos/status/1445734109163102210)
 * [https://www.smashingmagazine.com/2021/06/has-native-css-parent-selector/](https://www.smashingmagazine.com/2021/06/has-native-css-parent-selector/)
+* [https://twitter.com/gumnos/status/1445734109163102210](https://twitter.com/gumnos/status/1445734109163102210)
 
 And we can abstract those as “Styling parent or ancestor element by its descendant condition”.
 
 #### Given the use cases, what limitations would it make sense to start with?
 
-It would be better to handle the descendant conditions mentioned at above use-cases (`:hover`, `.empty-message`, `:disabld`) as variation groups (User action pseudo-classes, Attribute/elemental selectors, Input pseudo classes).
+It would be better to handle the descendant conditions mentioned at above use-cases (`:hover`, `.empty-message`, `:disabld`) as variation groups (user action pseudo-classes, attribute/elemental selectors, input pseudo classes).
 
-Among those three, Attribute/elemental selectors variation will be simple to handle first because there can be different complexity or performance impact on a specific pseudo in a pseudo-type variation group.
+Among those three, handling the 'attribute/elemental selectors' variation will be simple because there can be different complexity or performance impact on a specific pseudo in a pseudo-type variation group.
 
 So, allowing these variations would be easy to start.
 * Allow `:has()` argument starts with `>`
