@@ -1,4 +1,4 @@
-# Explainer:  Integration with the Permission API
+# Explainer:  Permission automation for registerProtocolHandler
 
 - Contents:
   - [Authors](#authors)
