@@ -26,7 +26,7 @@ One of these extension commands is the [SetPermission](https://w3c.github.io/per
 
 To set permission for ```{name: "midi", sysex: true}``` of the current settings object of the session with ID 23 to ``"granted"``, the local end would POST to ```/session/23/permissions``` with the body:
 
-```
+```json
 {
   "descriptor": {
     "name": "midi",
@@ -60,7 +60,7 @@ Currently there are only manual tests in the WPT repository to cover the registe
 
 Using the ```test_driver.set_permission``` function we could make tests like this way:
 
-```
+```js
 function register() {
   navigator.registerProtocolHandler("web+burger",
                                     "https://burgers.example.com/?burger=%s",
@@ -97,7 +97,7 @@ Although the main goal of the feature is provide automated testing, the new Perm
 
 The navigator.permission.query method could retrieve the status of the new PermissionDescriptor, doing something like this:
 
-```
+```js
     function done(result) {
         console.log('Status: ' + result.status);
         console.log('Value: ' + result.value);
