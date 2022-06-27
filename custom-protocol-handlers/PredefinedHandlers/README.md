@@ -95,6 +95,8 @@ The use of Web Extensions provides flexibility, which is important, but it also 
 
 ## Risks
 
+I haven't detected potential risks yet, but probably we'd need a more thorough risks analysys. 
+
 ## Implementation
 
 The first step is to extend the ```SchemeRegistry``` class with a new data structure, an associative ```map``` in this case to associate a scheme with its handler. There will be APIs to retrieve and modify the new data structure.
