@@ -17,7 +17,7 @@ The ```ProtocolHandlerRegistry``` has an API to silently register a custom handl
 
 For now, only [ChromeOS Ash](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/chromeos/README.md) uses predefined handlers. Specifically it registers handlers for ```mailto```and ```webcal``` schemes:
 
-```
+```cpp
 void ProtocolHandlerRegistry::InstallDefaultsForChromeOS() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only chromeos has default protocol handlers at this point.
@@ -45,7 +45,7 @@ The data structure defines different lists to provide these specific features to
 
 There are other lists to lend specific properties to a well-defined set of schemes:
 
-```
+```cpp
   // Schemes that are allowed for referrers.
   std::vector<SchemeWithType> referrer_schemes = {
       {kHttpsScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},
@@ -101,7 +101,7 @@ I haven't detected potential risks yet, but probably we'd need a more thorough r
 
 The first step is to extend the ```SchemeRegistry``` class with a new data structure, an associative ```map``` in this case to associate a scheme with its handler. There will be APIs to retrieve and modify the new data structure.
 
-```
+```cpp
 // Schemes with a predefined default custom handler.
 std::map<std::string, std::string> predefined_handler_schemes;
 
@@ -121,7 +121,7 @@ Once we have support for adding schemes and their associated handler, we would n
 Instead of a hardcoded implementation of the predefined handlers, we could just access the SchemeRegistry and retrieve the registered schemes with predefined handlers. Something like this would be enough:
 
 
-```
+```cpp
  for (const auto& [scheme, handler] : url::GetPredefinedHandlerSchemes()) {
     AddPredefinedHandler(
         ProtocolHandler::CreateProtocolHandler(scheme, GURL(handler)));
@@ -132,7 +132,7 @@ Finally, embedders would just need to implement the ```ChromeContentClient::AddA
 
 For instance, in order to install in Android a predefined handler for the ```IPFS``` protocol, we would just need to add in the ```AwContentClient::AddAdditionalSchemes``` function the following logic:
 
-```
+```cpp
   schemes->predefined_handler_schemes["ipfs"] =
         "https://dweb.link/ipfs/?uri=%s";
   schemes->predefined_handler_schemes["ipns"] =
