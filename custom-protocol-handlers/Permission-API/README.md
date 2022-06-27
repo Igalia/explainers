@@ -12,6 +12,16 @@
 
 ## Introduction
 
+The main goal of this feature is to provide Automated testing support for the registerProtocolHandler method, so that we could avoid the user prompt dialog to grant permission for the protocol handler registration.
+
+We would need to define a new [PermissionName](https://w3c.github.io/permissions/#dom-permissiondescriptor-name) that we can use as part of the ```PermissionDescriptor``` argument for the _SetPermission_ command.
+
+* This document status: Active
+* Expected venue: [HTML Living Standard](https://html.spec.whatwg.org/) 
+* Current version: this document
+
+### Context 
+
 The HTML spec, in the section about the [System state and capabilities](https://html.spec.whatwg.org/multipage/system-state.html#system-state-and-capabilities), defines the [registerProtocolHandler](https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers) method of the `Navigator` interface's to register custom handlers for URL's schemes.
 
 The spec is a bit ambiguous, but defines a procedure to ask the user to grant permissions to register a handler for a specific URL scheme.
@@ -48,10 +58,6 @@ Usage: test_driver.set_permission(descriptor, state, one_realm=false, context=nu
 * *context*: a WindowProxy for the browsing context in which to perform the call
 
 ## Motivation
-
-The main goal of this feature is to provide Automated testing support for the registerProtocolHandler method, so that we could avoid the user prompt dialog to grant permission for the protocol handler registration.
-
-We would need to define a new [PermissionName](https://w3c.github.io/permissions/#dom-permissiondescriptor-name) that we can use as part of the ```PermissionDescriptor``` argument for the _SetPermission_ command.
 
 Currently there are only manual tests in the WPT repository to cover the registerProtocolHandler functionality. The main challenges to implement automated testing are:
 
