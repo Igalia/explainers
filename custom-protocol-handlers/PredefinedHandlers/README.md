@@ -13,6 +13,16 @@
 
 ## Introduction
 
+The idea behind this proposal is to define a new list of schemes with a custom protocol handler that we want to install as Predefined Handler.
+
+The ```ProtocolHandlerReggistry``` class will be the responsible of using this list to install the predefined handlers, in the way, and under the constraints, explained in this document.
+
+* This document status: Active
+* Expected venue: Chromium specific discussion forums
+* Current version: this document
+
+### Context
+
 The ```ProtocolHandlerRegistry``` has an API to silently register a custom handler as part of the Registry's initialization logic. This will be the default handler for the specific protocol, but it won't be assigned as won't be stored in the user's preferences storage. 
 
 For now, only [ChromeOS Ash](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/chromeos/README.md) uses predefined handlers. Specifically it registers handlers for ```mailto```and ```webcal``` schemes:
@@ -58,20 +68,16 @@ There are other lists to lend specific properties to a well-defined set of schem
   };
 ```
 
-### New list: schemes with Predefined Handlers
-
-The idea behind this proposal is to define a new list of schemes with a custom protocol handler that we want to install as Predefined Handler.
-
-The ```ProtocolHandlerReggistry``` class will be the responsible of using this list to install the predefined handlers, in the way, and under the constraints, explained before.
-
-
 ## Motivation
 
 There are different aspects of this proposals that could be used to motivate its consideration and eventually, after some iterations to polish its design and implementation, its integration into the Chromium codebase.
 
 ### Code easier to maintain
 
-Predefined Handlers is a feature that fits quite well in the general purpose of a Chrome Embedder browser. The mentioned case of ChromeOS Ash is a good example, where 2 very specific schemes are handled accordingly to the OS specific needs.
+Predefined Handlers is a feature that fits quite well in the general purpose of a Chrome Embedder browser. The mentioned case of *ChromeOS Ash* is a good example, where 2 very specific schemes are handled accordingly to the OS specific needs:
+
+* **mailto** - This scheme have a handler that forwards the request via *HTTPS* to the *mail.google.com* site.
+* **webcal** - The handler of this scheme forwards the request via *HTTPS* to the *google.com/calendar* site.
 
 It's sensible to assume that inside the limited scope of a Chrome Embedder app (browser or webview) we can relax the privacy and security checks defined in the Custom Handlers spec for the registerProtocolHandler method; this scenario could be indeed useful for Android, since it doesn't implement it.
 
@@ -79,11 +85,11 @@ The Chrome's Content Layer offers a Public API that embedders can implement to d
 
 One of these abstract features is the addition of new schemes to be handled internally. The ```ContentClient``` interface has a method called ```AddAdditionalSchemes``` precisely for this purpose. On the other hand, the ```ContentBrowserClient``` interface provides the ```HasCustomSchemeHandler``` and ```IsHandledURL``` methods to allow embedders implement their specific behavior to handler such schemes.
 
-It looks more appropriated to avoid the ```ifdef``` approach to implement embeders's specific predefined handlers and instead, use the //content layer interfaces designed for such purpose.
+It looks more appropriated to avoid the ```ifdef``` approach to implement embeders's specific predefined handlers and instead, use the **//content** layer interfaces designed for such purpose.
 
 ### Avoid relying on Web Extensions
 
-Although the use of predefined handlers is very limited now, it could become a powerful feature that Chrome embedders, especially but not exclusively, can use to implement custom handlers for the schemes they consider strategic. 
+Although the use of predefined handlers is very limited now, it could become a powerful feature that Chrome embedders, especially but not exclusively, can use to implement custom handlers for the schemes they consider strategic.
 
 This new approach allows embedders to avoid having to rely on Web Extensions to implement this custom handler logic. via the ```registerProtocolHandler``` API.
 
@@ -95,7 +101,8 @@ The use of Web Extensions provides flexibility, which is important, but it also 
 
 ## Risks
 
-No potential risks have been detected yet, but probably a more thorough risks analysys would be needed. 
+No potential risks have been detected yet, but probably a more thorough risks analysys would be needed.
+
 
 ## Implementation
 
