@@ -67,7 +67,7 @@ The ```ProtocolHandlerReggistry``` class will be the responsible of using this l
 
 ## Motivation
 
-There are different aspects of this proposals that could be used to motivate its consideration and, eventually and after some iterations to polish its design and implementation, its integration in the Chromium codebase.
+There are different aspects of this proposals that could be used to motivate its consideration and eventually, after some iterations to polish its design and implementation, its integration into the Chromium codebase.
 
 ### Code easier to maintain
 
@@ -79,11 +79,11 @@ The Chrome's Content Layer offers a Public API that embedders can implement to d
 
 One of these abstract features is the addition of new schemes to be handled internally. The ```ContentClient``` interface has a method called ```AddAdditionalSchemes``` precisely for this purpose. On the other hand, the ```ContentBrowserClient``` interface provides the ```HasCustomSchemeHandler``` and ```IsHandledURL``` methods to allow embedders implement their specific behavior to handler such schemes.
 
-I think it's more appropriated to avoid the ```ifdef``` approach to implement embeders's specific predefined handlers and instead, use the //content layer interfaces designed for such purpose.
+It looks more appropriated to avoid the ```ifdef``` approach to implement embeders's specific predefined handlers and instead, use the //content layer interfaces designed for such purpose.
 
 ### Avoid relying on Web Extensions
 
-Although the use of predefined handlers is very limited now, I think it could become a powerful feature that Chrome emedders, especially but not exclusively, can use to implement custom handlers for the schemes they considered strategic. 
+Although the use of predefined handlers is very limited now, it could become a powerful feature that Chrome embedders, especially but not exclusively, can use to implement custom handlers for the schemes they consider strategic. 
 
 This new approach allows embedders to avoid having to rely on Web Extensions to implement this custom handler logic. via the ```registerProtocolHandler``` API.
 
@@ -95,7 +95,7 @@ The use of Web Extensions provides flexibility, which is important, but it also 
 
 ## Risks
 
-I haven't detected potential risks yet, but probably we'd need a more thorough risks analysys. 
+No potential risks have been detected yet, but probably a more thorough risks analysys would be needed. 
 
 ## Implementation
 
