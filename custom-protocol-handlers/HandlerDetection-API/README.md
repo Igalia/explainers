@@ -23,7 +23,13 @@ TODO: We would need to request PL some use cases to explain the motivation for s
 
 ## Risks
 
-TODO: I still fail to see the risks, either for users's privacy or site's security, that this new feature could bring.
+### Privacy considerations
+
+Allowing sites to determine an user preference about a specific scheme associated to a custom handler implies an important fingerprint that browsers should avoid at any means. It may disclose some apps installed by the user, which could potentially correlates with some personal trait, e.g. gender, sexual orientation, political affiliation).
+
+This feature is potentially a source of user tracking capabilities that can be exploted by sites.
+
+There is an [issue](https://github.com/whatwg/html/issues/4456) filed some years ago to discuss a similar feature, whcih has been discarded due to these privacy issues.
 
 ## Implementation details
 
