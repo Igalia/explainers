@@ -18,7 +18,7 @@ It'd be useful for authors to have an API to determine whether the browser has a
 
 ## Motivation
 
-TODO: We would need to request PL some use cases to explain the motivation for such a change in the spec.
+If an html5 player would want to play data from ipfs://, it can check if the protocol handler is registered. If it is then proceed as-is (let the handler do its thing). If it's not then that media player can fallback on some known public gateway.
 
 
 ## Risks
