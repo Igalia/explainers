@@ -46,7 +46,7 @@ Although the mentioned use case is doable today, this feature would allow author
 
 Emulating window ```move``` events is not trivial; the ```window.moveTo```and ```window.moveBy``` require that the target is an auxiliary browser context and it's complex to get the position data to be checked in the tests.
 
-The best approach would be to use the [Set Window Rect]() and [Get Window Rect] WebDriver commands, an defining tests likes this:
+The best approach would be to use the [Set Window Rect](https://www.w3.org/TR/webdriver2/#set-window-rect) and [Get Window Rect](https://www.w3.org/TR/webdriver2/#get-window-rect) WebDriver commands, an defining tests likes this:
 
 ```js
 promise_test(async t => {
