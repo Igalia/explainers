@@ -65,5 +65,14 @@ promise_test(async t => {
 
 ## Risks
 
+### Performance
+
+The frequency this new event is fired may affect the browser's performance; in any case, it should be an asynchronous event as it happens with the ```resize``` event.
+
+One possible approach to mitigate the risk of performance degradation could be to apply an Observer pattern. However, according to the [TAG design principles](https://www.w3.org/TR/design-principles/#events-vs-observers) events should be the preferred solution.
 
 ### Privacy and security considerations
+
+Another issue to consider is whether firing this even may reach any element, including iframes.
+
+Tracking the inner position of an iframe may imply security breach, as there is the risk of leaking information about the parent window and its content. In order to mitigate this risk, we could add the restriction of limiting the event to the top-level window.
