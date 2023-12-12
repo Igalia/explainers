@@ -67,7 +67,7 @@ promise_test(async t => {
 
 ### Performance
 
-The frequency this new event is fired may affect the browser's performance; in any case, it should be an asynchronous event as it happens with the ```resize``` event.
+The frequency this new event is fired at may affect the browser's performance; in any case, it should be an asynchronous event as it happens with the ```resize``` event.
 
 One possible approach to mitigate the risk of performance degradation could be to apply an Observer pattern. However, according to the [TAG design principles](https://www.w3.org/TR/design-principles/#events-vs-observers) events should be the preferred solution.
 
