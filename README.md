@@ -9,3 +9,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 ## HTML / Custom Handlers
 
 * [Permission automation for registerProtocolHandler](/custom-protocol-handlers/Permission-API/README.md)
+
+## Locale preferences
+
+* [Locale-related user preferences](/user-locale-preferences/README.md)
