@@ -37,10 +37,10 @@
 
 ## Participate
 
-- [GitHub repository](/)
-- [Issue tracker](/issues)
+- [GitHub repository](https://github.com/ben-allen/locale-extensions)
+- [Issue tracker](https://github.com/ben-allen/locale-extensions/issues)
 
-
+Please post feedback on the issue tracker above or via email to Ben Allen or Shane Carr.
 
 ## Motivation
 
