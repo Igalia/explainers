@@ -4,6 +4,7 @@
   - [Table of Contents](#table-of-contents)
   - [Authors](#authors)
   - [Participate](#participate)
+  - [Feedback](#feedback)
   - [Motivation](#motivation)
   - [Overview](#overview)
   - [Summary of Proposed Supported Locale Extension Combinations](#summary-of-proposed-supported-locale-extension-combinations)
@@ -28,7 +29,7 @@
     - [Proactive Content Negotiation with Client Hints](#proactive-content-negotiation-with-client-hints) 
       - [`Client Hint` Header Fields](#client-hint-header-fields)
       - [Usage Example](#usage-example)
-  - [Final Notes on Security and Privacy(#final-notes-on-security-and-privacy)
+  - [Final Notes on Security and Privacy](#final-notes-on-security-and-privacy)
   - [FAQ](#faq)
 
 ## Authors:
@@ -37,9 +38,12 @@
 
 ## Participate
 
-- [GitHub repository](/)
-- [Issue tracker](/issues)
+- [GitHub repository](https://github.com/ben-allen/locale-extensions)
+- [Issue tracker](https://github.com/ben-allen/locale-extensions/issues)
 
+## Feedback
+
+I welcome feedback in this repository, but encourage you to file bugs against the Explainer at [https://github.com/ben-allen/locale-extensions](https://github.com/ben-allen/locale-extensions)
 
 
 ## Motivation
