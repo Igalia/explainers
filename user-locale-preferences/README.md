@@ -1,7 +1,5 @@
 ## Table of Contents
 
--- TEST DO NOT ACTUALLY MERGE --
-
 - [Explainer: Locale Extensions](#explainer-locale-extensions)
   - [Table of Contents](#table-of-contents)
   - [Authors](#authors)
@@ -17,11 +15,11 @@
     - [Example: People who have traveled from one region to another](#example-people-who-have-traveled-from-one-region-to-another)
       - [Revealed Information as Conditioned on Browser Localization](#revealed-information-as-conditioned-on-browser-localization)
     - [Example: People with preferences that differ from all commonly used locale defaults](#example-people-with-preferences-that-differ-from-all-commonly-used-locale-defaults)
-  - [Supported Tags Group #2: Numbering system and calendar](#supported-tags-group-2-numbering-system-and-calendar)]
+  - [Supported Tags Group #2: Numbering system and calendar](#supported-tags-group-2-numbering-system-and-calendar)
     - [Preferred Numbering System](#preferred-numbering-system)
     - [Preferred Calendar](#preferred-calendar)
   - [Avoiding Prioritization of Larger Linguistic Communities](#avoiding-prioritization-of-larger-linguistic-communities)
-    - [Considering Content Locale](#considering-content-locale)s
+    - [Considering Content Locales](#considering-content-locale)
     - [Options Reduction](#options-reduction)
   - [Mechanisms](#mechanisms)
     - [Agent-Driven Negotiation: JavaScript API](#agent-driven-negotiation-javascript-api)
@@ -30,7 +28,7 @@
     - [Proactive Content Negotiation with Client Hints](#proactive-content-negotiation-with-client-hints) 
       - [`Client Hint` Header Fields](#client-hint-header-fields)
       - [Usage Example](#usage-example)
-  - [Final Notes on Security and Privacy(#final-notes-on-security-and-privacy)
+  - [Final Notes on Security and Privacy](#final-notes-on-security-and-privacy)
   - [FAQ](#faq)
 
 ## Authors:
@@ -39,8 +37,10 @@
 
 ## Participate
 
-- [GitHub repository](/)
-- [Issue tracker](/issues)
+- [GitHub repository](https://github.com/ben-allen/locale-extensions)
+- [Issue tracker](https://github.com/ben-allen/locale-extensions/issues)
+
+Please post feedback on the issue tracker above or via email to Ben Allen or Shane Carr.
 
 
 
@@ -401,3 +401,4 @@ Answering this question responsibly will require user research. A key considerat
 1. Fingerprinting mitigation is in general a best practice
 2. The specific data we reveal through this mechanism could be sensitive, since it may indicate that the user is a member of a marginalized or threatened identity category
 3. The specific data we reveal through this mechanism is specifically about the user, rather than their device, and so could be used for cross-device tracking
+4. Because the data is read from OS settings, it is possible for users to not realize they're sending it
