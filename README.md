@@ -5,6 +5,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 ## CSS
 
 * [CSS selector :has() pseudo class](/css/has/README.md)
+* [CSS Highlights for find-in-page](/css/active-search-inactive-search)/README.md)
 
 ## HTML / Custom Handlers
 
