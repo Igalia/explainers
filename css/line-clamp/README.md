@@ -9,7 +9,7 @@
 
 ## Authors
 
-* Andreu Botella \<andreou@igalia.com\>
+* Andreu Botella \<abotella@igalia.com\>
 * Javier Fernandez \<jfernandez@igalia.com\>
 
 ## Introduction
@@ -26,7 +26,7 @@ The `line-clamp` property is part of the CSS Overflow Level 4 specification. The
 
 In the spec, `line-clamp` is defined as a shorthand of 3 CSS properties:  [`continue`](https://drafts.csswg.org/css-overflow-4/#continue), [`max-lines`](https://drafts.csswg.org/css-overflow-4/#max-lines) and [`block-ellipsis`](https://drafts.csswg.org/css-overflow-4/#block-ellipsis).
 
-There is also an [issue](github.com/w3c/csswg-drafts/issues/7708) of the CSS Overflow spec to discuss an alternative way of implementing the feature, which is known as the âcollapse variantâ (a.k.a. `continue: collapse`). This variant differs from the âdiscard variantâ in the following aspects:
+There is also an [issue](github.com/w3c/csswg-drafts/issues/7708) of the CSS Overflow spec to discuss an alternative way of implementing the feature, which is known as the “collapse variant” (a.k.a. `continue: collapse`). This variant differs from the “discard variant” in the following aspects:
 
 - Rather than being based on fragmentation, it is based on not painting the clamped content (as if it had `visibility: hidden`), and letting it overflow the container.
 - Any lines, block elements, floats and positioned elements after the clamp point are not painted. Additionally, when they overflow the element with the `line-clamp` property, they do not cause scrollbars to appear in its containers.
@@ -36,13 +36,13 @@ There is also an [issue](github.com/w3c/csswg-drafts/issues/7708) of the CSS Ove
 
 The functionality to clamp a block element to a number of lines and show an ellipsis at the end was previously already available through `-webkit-line-clamp`. This property, however, had a number of shortcomings. For instance, it relied on two other deprecated properties for it to work (`display: -webkit-box` and `-webkit-box-orient: vertical`), it required `overflow: hidden` to be present so the clamped lines would be hidden, and it also only allowed clamping based on a number of lines, not a height.
 
-The existing `-webkit-line-clamp` seems to be a pain point for web developers, as can be seen in the blog post [âCSS Line-Clamp â The Good, the Bad and the Straight-up Brokenâ](https://medium.com/mofed/css-line-clamp-the-good-the-bad-and-the-straight-up-broken-865413f16e5). Furthermore, a Chrome use counter shows that uses of `-webkit-line-clamp` without the other properties that are needed for it to work [are at 3-4%](https://chromestatus.com/metrics/feature/timeline/popularity/3327), showing significant misuse in the wild. Given this, it makes sense to implement a version without these fallbacks.
+The existing `-webkit-line-clamp` seems to be a pain point for web developers, as can be seen in the blog post [“CSS Line-Clamp — The Good, the Bad and the Straight-up Broken”](https://medium.com/mofed/css-line-clamp-the-good-the-bad-and-the-straight-up-broken-865413f16e5). Furthermore, a Chrome use counter shows that uses of `-webkit-line-clamp` without the other properties that are needed for it to work [are at 3-4%](https://chromestatus.com/metrics/feature/timeline/popularity/3327), showing significant misuse in the wild. Given this, it makes sense to implement a version without these fallbacks.
 
 ## Risks
 
 There is an ongoing discussion inside the CSSWG on whether this feature would be implemented on top of the [fragmentation model](https://drafts.csswg.org/css-break-4/#fragmentation-model), based on the concent of fragmentation of overflow defined in the CSS Overflow spec and the [continue: discard](https://drafts.csswg.org/css-overflow-4/#valdef-continue-discard) property, or based on hiding content from paint.
 
-Even though the fragmentation approach would allow generalizing fragmentation of overflow into something similar to CSS Regions that solves some of its drawbacks, it requires changing the implementation of fragmentation in browser engines to support discarding fragments. Considering that the original `-webkit-line-clamp` doesn't involve fragmentation at all, it would seem that the âcollapse approachâ might make more sense at this stage.
+Even though the fragmentation approach would allow generalizing fragmentation of overflow into something similar to CSS Regions that solves some of its drawbacks, it requires changing the implementation of fragmentation in browser engines to support discarding fragments. Considering that the original `-webkit-line-clamp` doesn't involve fragmentation at all, it would seem that the “collapse approach” might make more sense at this stage.
 
 In terms of interoperability, the collapse approach also seems like a better idea. The discard variant would not be easy to implement in Gecko and WebKit, given their fragmentation models, and that could imply delaying the implementation of this feature by a few years.
 
@@ -50,19 +50,19 @@ On the other hand, the collapse variant as currently proposed would result in ou
 
 ## Implementation
 
-The "collapse approach" of the line-clamp feature can be implemented on top of the "-webkit-line-clamp" property already supported, so interms of implementation complexity it's the best solution for the 3 major web engines. 
+The “collapse approach” of the line-clamp feature can be implemented on top of the already supported `-webkit-line-clamp` property, so in terms of implementation complexity it's the best solution for the 3 major web engines.
 
-Since it doesn't require fragmentation, we could implementing the feature as a simple longhand property, instead of a shorthand of 3 new properties as it's defined in the current spec. The syntax would as follows: 
+Since it doesn't require fragmentation, we could implementing the feature as a simple longhand property, instead of a shorthand of 3 new properties as defined in the current spec. The syntax would as follows:
 
  	`none | auto | <integer [1,inf]>`
 
-The 'auto' value is [proposed](https://github.com/w3c/csswg-drafts/issues/9368) as a possible value for the new max-lines property, which an eventual line-clamp shorthand will manage. When using this value, the numer of lines will be determined according to the value of the maxÂŽheight property.
+The `auto` value is [proposed](https://github.com/w3c/csswg-drafts/issues/9368) as a possible value for the new `max-lines` property, which an eventual `line-clamp` shorthand will manage. When using this value, the number of lines will be determined according to the value of the `max-height` property.
 
 ### Backward compatibility
 
-In order to ensure the compatibility with the prefixed version -webkit-line-clamp the current spec draft [proposes](https://drafts.csswg.org/css-overflow-4/#propdef--webkit-line-clamp) to define it as a shorthand of the same properties the new line-clamp is handling, but intrducing special values for the deprecated ```display: -webkit-box``` and ```continue: -webkit-discard```
+In order to ensure the compatibility with the prefixed `-webkit-line-clamp`, the current spec draft [proposes](https://drafts.csswg.org/css-overflow-4/#propdef--webkit-line-clamp) to define it as a shorthand of the same properties the new `line-clamp` is handling, but introducing special values for the deprecated ```display: -webkit-box``` and ```continue: -webkit-discard```
 
-Alternatively, given that the implementation of the 'collapse approach' proposed here relies on the code of the prefixed property, we could define it as an alias of the new line-clamp shorthand.
+Alternatively, given that the implementation of the “collapse approach” proposed here relies on the code of the prefixed property, we could define it as an alias of the new `line-clamp` shorthand.
 
 ## Examples
 
