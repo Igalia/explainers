@@ -160,7 +160,9 @@ Given the following text element:
          Lorem ipusom ....
          <div id="float">This element is float</div>
       </div>
+```
 
+```
      #abspos {
         width: 200px;
         position: absolute;
