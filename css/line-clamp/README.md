@@ -86,7 +86,7 @@ Given the following text element:
 }
 ```
 
-![example1.png](Only three lines of the text are shown, with an ellipsis at the end of the third line.)
+![Only three lines of the text are shown, with an ellipsis at the end of the third line.](example1.png)
 
 ### Example 2: Setting a maximum height
 
@@ -101,7 +101,7 @@ Given the following text element:
 }
 ```
 
-![example2.png](Four lines of the text are shown, since 75 pixels is only slightly more than four lines with this font and font size.)
+![Four lines of the text are shown, since 75 pixels is only slightly more than four lines with this font and font size.](example2.png)
 
 ### Example 3: Interaction with non-text content (i.e. a table)
 
@@ -124,7 +124,7 @@ Given the following text element:
 </div>
 ```
 
-![example3.png](The first line and the table show in full, and only two lines of the text after it shows. Even though the table has two lines in each of its cells, those lines don't count.)
+![The first line and the table show in full, and only two lines of the text after it shows. Even though the table has two lines in each of its cells, those lines don't count.](example3.png)
 
 ### Example 4: Interaction with float elements
 
@@ -145,7 +145,7 @@ Given the following text element:
 </div>
 ```
 
-![example4-1.png](Even though the regular text is still clamped to three lines, the float has four lines and overflows the element without being cut or clamped.)
+![Even though the regular text is still clamped to three lines, the float has four lines and overflows the element without being cut or clamped.](example4-1.png)
 
 ```html
 <div id="clamped">
@@ -154,7 +154,7 @@ Given the following text element:
 </div>
 ```
 
-![example1.png](Now the float does not appear at all, and the clamped element looks just like example 1.)
+![Now the float does not appear at all, and the clamped element looks just like example 1.](example1.png)
 
 ### Example 5: Interaction with relative positioned elements
 
@@ -176,7 +176,7 @@ Given the following text element:
 </div>
 ```
 
-![example5-1.png](The relative positioned element shows up outside of the clamped element. Additionally, since the relative positioned element has one line, the lorem ipsum text clamps after only two lines.)
+![The relative positioned element shows up outside of the clamped element. Additionally, since the relative positioned element has one line, the lorem ipsum text clamps after only two lines.](example5-1.png)
 
 ```html
 <style>
@@ -194,7 +194,7 @@ Given the following text element:
 </div>
 ```
 
-![example1.png](Now the relative positioned element does not appear at all, and the clamped element looks just like example 1.)
+![Now the relative positioned element does not appear at all, and the clamped element looks just like example 1.](example1.png)
 
 ### Example 6: Interaction with absolute positioned elements
 
@@ -216,7 +216,7 @@ Given the following text element:
 </div>
 ```
 
-![example6-1.png](The absolute positioned element shows up outside of the clamped element. The clamped element clamps after three lines, even though the absolute positioned element has two lines.)
+![The absolute positioned element shows up outside of the clamped element. The clamped element clamps after three lines, even though the absolute positioned element has two lines.](example6-1.png)
 
 ```html
 <div id="clamped">
@@ -225,4 +225,4 @@ Given the following text element:
 </div>
 ```
 
-![example1.png](Now the absolute positioned element does not appear at all, and the clamped element looks just like example 1.)
+![Now the absolute positioned element does not appear at all, and the clamped element looks just like example 1.](example1.png)
