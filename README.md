@@ -6,6 +6,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 
 * [CSS selector :has() pseudo class](/css/has/README.md)
 * [CSS Highlights for find-in-page](/css/active-search-inactive-search/README.md)
+* [CSS `line-clamp` property](/css/line-clamp/README.md)
 
 ## HTML / Custom Handlers
 
