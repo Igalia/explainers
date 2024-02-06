@@ -68,144 +68,145 @@ Alternatively, given that the implementation of the “collapse approach” prop
 
 Given the following text element:
 
-```
-    <div id="clamped">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    </div>
+```html
+<div id="clamped">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</div>
 ```
 
 ### Example 1: Setting a maximum number of lines
 
-```
-     #clamped {
-        border: 1px solid black;
-        background-color: skyblue;
-        width: 500px;
+```css
+#clamped {
+  border: 1px solid black;
+  background-color: skyblue;
+  width: 500px;
 
-        line-clamp: 3;
-      }
+  line-clamp: 3;
+}
 ```
 ### Example 2: Interaction with float elements
 
-```
-      #float {
-        width: 300px;
-        float: right;
-        border: 1px solid red;
-      }
+```html
+<style>
+  #float {
+    width: 300px;
+    float: right;
+    border: 1px solid red;
+  }
+</style>
 
-      <div id="clamped">
-         <div id="float">This element is float</div>
-         Lorem ipusom ....
-      </div>
-
-```
-
-```
-      #float {
-        width: 300px;
-        float: right;
-        border: 1px solid red;
-      }
-
-      <div id="clamped">
-         Lorem ipusom ....
-         <div id="float">This element is float</div>
-      </div>
-
+<div id="clamped">
+    <div id="float">This element is a float</div>
+    Lorem ipsum ....
+</div>
 ```
 
+```html
+<style>
+  #float {
+    width: 300px;
+    float: right;
+    border: 1px solid red;
+  }
+</style>
+
+<div id="clamped">
+    Lorem ipsum ....
+    <div id="float">This element is a float</div>
+</div>
+```
 
 ### Example 3: Interaction with relative positioned elements
 
-```
-      #relpos {
-        width: 300px;
-        position: relative;
-        top: 100px;
-        border: 1px solid red;
-      }
-      <div id="clamped">
-         <div id="float">This element is float</div>
-         Lorem ipusom ....
-      </div>
+```html
+<style>
+  #relpos {
+    width: 300px;
+    position: relative;
+    top: 100px;
+    border: 1px solid red;
+  }
+</style>
 
+<div id="clamped">
+    <div id="relpos">This element is relative positioned</div>
+    Lorem ipsum ....
+</div>
 ```
 
-```
-      #relpos {
-        width: 300px;
-        position: relative;
-        top: -100px;
-        border: 1px solid red;
-      }
-      <div id="clamped">
-         Lorem ipusom ....
-         <div id="float">This element is float</div>
-      </div>
+```html
+<style>
+  #relpos {
+    width: 300px;
+    position: relative;
+    top: -100px;
+    border: 1px solid red;
+  }
+</style>
+
+<div id="clamped">
+    Lorem ipsum ....
+    <div id="relpos">This element is relative positioned</div>
+</div>
 
 ```
 
 ### Example 4: Interaction with absolute positioned elements
 
-```
-     #abspos {
-        width: 200px;
-        position: absolute;
-        top: 75px;
-        border: 1px solid red;
-      }
-
-      <div id="clamped">
-         Lorem ipusom ....
-         <div id="float">This element is float</div>
-      </div>
+```css
+#abspos {
+  width: 200px;
+  position: absolute;
+  top: 75px;
+  border: 1px solid red;
+}
 ```
 
+```html
+<div id="clamped">
+    Lorem ipsum ....
+    <div id="abspos">This element is absolute positioned</div>
+</div>
 ```
-     #abspos {
-        width: 200px;
-        position: absolute;
-        top: 75px;
-        border: 1px solid red;
-      }
 
-      <div id="clamped">
-         <div id="float">This element is float</div>
-         Lorem ipusom ....
-      </div>
+```html
+<div id="clamped">
+    <div id="abspos">This element is absolute positioned</div>
+    Lorem ipsum ....
+</div>
 ```
 
 ### Example 5: Interaction with non-text content (i.e. a table)
 
-```
-    <div id="clamped">
-        <p>First line.</p>
+```html
+<div id="clamped">
+    <p>First line.</p>
 
-        <table>
-            <tr>
-                <td>Lorem ipsum ...</td>
-                <td>Lorem ipsum ...</td>
-            </tr>
-            <tr>
-                <td>Lorem ipsum ...</td>
-                <td>Lorem ipsum ...</td>
-            </tr>
-        </table>
+    <table>
+        <tr>
+            <td>Lorem ipsum ...</td>
+            <td>Lorem ipsum ...</td>
+        </tr>
+        <tr>
+            <td>Lorem ipsum ...</td>
+            <td>Lorem ipsum ...</td>
+        </tr>
+    </table>
 
-       <p>Lorem ipsum ...</p>
-    </div>
+    <p>Lorem ipsum ...</p>
+</div>
 ```
 
 ### Example 6: Setting a maximum height
 
-```
-     #clamped {
-        border: 1px solid black;
-        background-color: skyblue;
-        width: 500px;
-        max-height: 75px:
+```css
+#clamped {
+  border: 1px solid black;
+  background-color: skyblue;
+  width: 500px;
+  max-height: 75px:
 
-        line-clamp: auto;
-      }
+  line-clamp: auto;
+}
 ```
