@@ -85,39 +85,80 @@ Given the following text element:
   line-clamp: 3;
 }
 ```
-### Example 2: Interaction with float elements
+
+![example1.png](Only three lines of the text are shown, with an ellipsis at the end of the third line.)
+
+### Example 2: Setting a maximum height
+
+```css
+#clamped {
+  border: 1px solid black;
+  background-color: skyblue;
+  width: 500px;
+  max-height: 75px:
+
+  line-clamp: auto;
+}
+```
+
+![example2.png](Four lines of the text are shown, since 75 pixels is only slightly more than four lines with this font and font size.)
+
+### Example 3: Interaction with non-text content (i.e. a table)
 
 ```html
-<style>
-  #float {
-    width: 300px;
-    float: right;
-    border: 1px solid red;
-  }
-</style>
-
 <div id="clamped">
-    <div id="float">This element is a float</div>
-    Lorem ipsum ....
+    <p>First line.</p>
+
+    <table>
+        <tr>
+            <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+            <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+        </tr>
+        <tr>
+            <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+            <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+        </tr>
+    </table>
+
+    <p>Lorem ipsum ....</p>
 </div>
 ```
 
-```html
-<style>
-  #float {
-    width: 300px;
-    float: right;
-    border: 1px solid red;
-  }
-</style>
+![example3.png](The first line and the table show in full, and only two lines of the text after it shows. Even though the table has two lines in each of its cells, those lines don't count.)
 
+### Example 4: Interaction with float elements
+
+*(These screenshots are according to the collapse variant, and this behavior is still pending discussion by the CSSWG.)*
+
+```css
+#float {
+  width: 50px;
+  float: right;
+  border: 1px solid red;
+}
+```
+
+```html
 <div id="clamped">
-    Lorem ipsum ....
-    <div id="float">This element is a float</div>
+  <div id="float">This element is a float</div>
+  Lorem ipsum ....
 </div>
 ```
 
-### Example 3: Interaction with relative positioned elements
+![example4-1.png](Even though the regular text is still clamped to three lines, the float has four lines and overflows the element without being cut or clamped.)
+
+```html
+<div id="clamped">
+  Lorem ipsum ....
+  <div id="float">This element is a float</div>
+</div>
+```
+
+![example1.png](Now the float does not appear at all, and the clamped element looks just like example 1.)
+
+### Example 5: Interaction with relative positioned elements
+
+*(These screenshots are according to the collapse variant, and this behavior is still pending discussion by the CSSWG.)*
 
 ```html
 <style>
@@ -135,6 +176,8 @@ Given the following text element:
 </div>
 ```
 
+![example5-1.png](The relative positioned element shows up outside of the clamped element. Additionally, since the relative positioned element has one line, the lorem ipsum text clamps after only two lines.)
+
 ```html
 <style>
   #relpos {
@@ -146,13 +189,16 @@ Given the following text element:
 </style>
 
 <div id="clamped">
-    Lorem ipsum ....
-    <div id="relpos">This element is relative positioned</div>
+  Lorem ipsum ....
+  <div id="relpos">This element is relative positioned</div>
 </div>
-
 ```
 
-### Example 4: Interaction with absolute positioned elements
+![example1.png](Now the relative positioned element does not appear at all, and the clamped element looks just like example 1.)
+
+### Example 6: Interaction with absolute positioned elements
+
+*(These screenshots are according to the collapse variant, and this behavior is still pending discussion by the CSSWG.)*
 
 ```css
 #abspos {
@@ -165,48 +211,18 @@ Given the following text element:
 
 ```html
 <div id="clamped">
-    Lorem ipsum ....
-    <div id="abspos">This element is absolute positioned</div>
+  <div id="abspos">This element is absolute positioned</div>
+  Lorem ipsum ....
 </div>
 ```
+
+![example6-1.png](The absolute positioned element shows up outside of the clamped element. The clamped element clamps after three lines, even though the absolute positioned element has two lines.)
 
 ```html
 <div id="clamped">
-    <div id="abspos">This element is absolute positioned</div>
-    Lorem ipsum ....
+  Lorem ipsum ....
+  <div id="abspos">This element is absolute positioned</div>
 </div>
 ```
 
-### Example 5: Interaction with non-text content (i.e. a table)
-
-```html
-<div id="clamped">
-    <p>First line.</p>
-
-    <table>
-        <tr>
-            <td>Lorem ipsum ...</td>
-            <td>Lorem ipsum ...</td>
-        </tr>
-        <tr>
-            <td>Lorem ipsum ...</td>
-            <td>Lorem ipsum ...</td>
-        </tr>
-    </table>
-
-    <p>Lorem ipsum ...</p>
-</div>
-```
-
-### Example 6: Setting a maximum height
-
-```css
-#clamped {
-  border: 1px solid black;
-  background-color: skyblue;
-  width: 500px;
-  max-height: 75px:
-
-  line-clamp: auto;
-}
-```
+![example1.png](Now the absolute positioned element does not appear at all, and the clamped element looks just like example 1.)
