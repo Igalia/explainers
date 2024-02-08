@@ -26,7 +26,7 @@ The `line-clamp` property is part of the CSS Overflow Level 4 specification. The
 
 In the spec, `line-clamp` is defined as a shorthand of 3 CSS properties:  [`continue`](https://drafts.csswg.org/css-overflow-4/#continue), [`max-lines`](https://drafts.csswg.org/css-overflow-4/#max-lines) and [`block-ellipsis`](https://drafts.csswg.org/css-overflow-4/#block-ellipsis).
 
-There is also an [issue](github.com/w3c/csswg-drafts/issues/7708) of the CSS Overflow spec to discuss an alternative way of implementing the feature, which is known as the “collapse variant” (a.k.a. `continue: collapse`). This variant differs from the “discard variant” in the following aspects:
+There is also an [issue](https://github.com/w3c/csswg-drafts/issues/7708) of the CSS Overflow spec to discuss an alternative way of implementing the feature, which is known as the “collapse variant” (a.k.a. `continue: collapse`). This variant differs from the “discard variant” in the following aspects:
 
 - Rather than being based on fragmentation, it is based on not painting the clamped content (as if it had `visibility: hidden`), and letting it overflow the container.
 - Any lines, block elements, floats and positioned elements after the clamp point are not painted. Additionally, when they overflow the element with the `line-clamp` property, they do not cause scrollbars to appear in its containers.
