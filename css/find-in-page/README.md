@@ -1,4 +1,4 @@
-# Explainer:  CSS pseudo-elements `::active-search` and `::inactive-search`
+# Explainer: CSS highlight pseudos for find-in-page results
 
 - Contents:
   - [Authors](#authors)
