@@ -13,12 +13,12 @@
 
 ## Introduction
 
-`::active-search` and `::inactive-search` allow CSS styling of the highlighted fragments shown when using a browsers find-in-page feature.
+`::active-search` and `::inactive-search` allow CSS styling of the search results shown when using a browser’s find-in-page feature.
 
-The proposed pseudo elements are classified as [Highlight Pseudo Elements](https://drafts.csswg.org/css-pseudo/#highlight-pseudos), and they follow the same mechanism as other highlight pseudo-elements.
-That is, they can be styled by [a limited set of CSS properties](https://drafts.csswg.org/css-pseudo/#highlight-styling), represent the active portions of the [highlight overlays](https://drafts.csswg.org/css-pseudo/#highlight-overlay) and use the [Highlight Inheritance model](https://drafts.csswg.org/css-pseudo/#highlight-cascade).
+The proposed pseudo elements are classified as [Highlight Pseudo-elements](https://drafts.csswg.org/css-pseudo/#highlight-pseudos), and they follow the same rules as other highlight pseudo-elements.
+That is, they can be styled by [a limited set of CSS properties](https://drafts.csswg.org/css-pseudo/#highlight-styling), represent the active portions of their [highlight overlays](https://drafts.csswg.org/css-pseudo/#highlight-overlay), and use the [highlight inheritance model](https://drafts.csswg.org/css-pseudo/#highlight-cascade).
 
-The search highlight pseudos do not modify the tick marks sometimes shown in the default browser scrollbars.
+The find-in-page highlight pseudos do not modify the tick marks sometimes shown in the default browser scrollbars.
 
 * This document status: Active
 * Current version: this document
@@ -27,10 +27,9 @@ The search highlight pseudos do not modify the tick marks sometimes shown in the
 ## Motivation
 
 Authors would like to customize the highlighted text from find-in-page to have a style consistent with that of the rest of the page. In particular, the existing find-in-page highlights may offer poor contrast, harming accessibility.
-There is an existing [proposal in the CSSWG](https://github.com/w3c/csswg-drafts/issues/3812) to add new pseudo-elements related to find-in-page feature.
-Two pseudos are proposed as browsers differentiate between the currently active search result and other search results.
+There is an existing [proposal in the CSSWG](https://github.com/w3c/csswg-drafts/issues/3812) to add new highlight pseudos for find-in-page results.
 
-Web developer have asked related questions on [Stack Overflow](https://stackoverflow.com/search?q=%5Bcss%5D+find-in-page),
+Web developers have asked related questions on [Stack Overflow](https://stackoverflow.com/search?q=%5Bcss%5D+find-in-page),
 though they do not have many votes:
 
 * [Someone directly asks for CSS styling of find-in-page](https://stackoverflow.com/questions/50309703/css-for-browsers-find-in-page).
@@ -38,6 +37,8 @@ though they do not have many votes:
 * [A user wants to hide find-in-page results](https://stackoverflow.com/questions/77458310/confuse-browsers-in-built-find-in-page-feature) and could do so by styling them as transparent.
 
 ## Proposed Syntax
+
+Two pseudos are proposed as browsers differentiate between the currently active search result and other search results.
 
 ```css
 ::active-search {
