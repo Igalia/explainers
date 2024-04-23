@@ -15,7 +15,7 @@
 
 `::search-text` allows for CSS styling of the search results shown when using a browser’s find-in-page feature.
 
-The proposed pseudo elements are classified as [Highlight Pseudo-elements](https://drafts.csswg.org/css-pseudo/#highlight-pseudos), and they follow the same rules as other highlight pseudo-elements.
+The proposed pseudo element is classified as [Highlight Pseudo-elements](https://drafts.csswg.org/css-pseudo/#highlight-pseudos), and it follows the same rules as other highlight pseudo-elements.
 That is, they can be styled by [a limited set of CSS properties](https://drafts.csswg.org/css-pseudo/#highlight-styling), represent the active portions of their [highlight overlays](https://drafts.csswg.org/css-pseudo/#highlight-overlay), and use the [highlight inheritance model](https://drafts.csswg.org/css-pseudo/#highlight-cascade).
 
 * This document status: Active
