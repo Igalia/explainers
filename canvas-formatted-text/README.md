@@ -160,8 +160,6 @@ ctx.beginPath(); ctx.arc(30, 16, 4.5, 0, 2 * Math.PI); ctx.fill();
 ctx.beginPath(); ctx.arc(54, 34, 4.5, 0, 2 * Math.PI); ctx.fill();
 ```
 outputs
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
 
 ![A submit button composed with an ellipse behind it and two circles "grabbing" the button](./canvas-submit-button.png).
 
