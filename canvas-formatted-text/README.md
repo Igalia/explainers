@@ -114,28 +114,30 @@ outputs
 * Is ```caretPositionForOffset``` needed? Can it be devised from ```getSelectionRects```? Yes and no. Without a dedicated function you would need to get the nound for each character and iterate to find out which one contained the offset (binary search). You could polyfill it though.
 
 
-## 2. placeElement / drawElement
+## 2. HTML in canvas: placeElement
 
 A fundamental capability missing from the web is the ability to complement Canvas with HTML elements. Adding this capability will enable Canvas surfaces to benefit from all of the styling, layout and behaviors of HTML, including interactive elements and built-in accessibility.
 
 ```c-like
 interface mixin CanvasElements {
-  undefined placeElement(HTMLElement el, double x, double y);
+  undefined placeElement(HTMLElement el, double x, double y, optional DomString origin);
 }
 
 CanvasRenderingContext2D includes CanvasElements;
 ```
-The ```placeElement(el, x, y)``` function would allow an ```HTMLElement``` (together with its subtree) that is a DOM child of the current Canvas to be composited (using the CTM and filters) into the canvas. ```placeElement``` also determines the rendering order of the element (in relation to the rest of the canvas operations). 
+The ```placeElement(el, x, y, origin)``` function composites an ```HTMLElement``` (together with its subtree) that is a DOM child of the current Canvas into the canvas (using the CTM and filters). ```placeElement``` also determines the rendering order of the element (in relation to the rest of the canvas operations). 
 
-After an element is placed (and until the canvas is reset), it’s considered “alive” and responds to all regular events and user interactions. The element gets repainted (together with the canvas) as needed. It supports all regular events, including form submission, click, text selection, find-in-page, inner scrolling, tab-order, etc...
+The ```x``` and ```y``` values give the canvas position of the ```origin``` of the element ```el```, where the origin is a string such as ```top-left``` or ```left-baseline```. The ```origin``` is proposed to simplify alignment of multiple placed elements by choosing a common reference point that captures that captures the desired aligned (such as aligning the baselines of the first row of text in each element, or centering elements about a common axis).
 
-The children elements of Canvas don’t impact the overall document layout and, before placeElement, are considered fallback content and ignored on modern browsers. When ```placeElement``` is called on an element: it becomes part of the layout (although isolated from the rest of the document), and gets CSS applied to them. Once the parent Canvas gets reset, the browser is allowed to put the placed elements “back to sleep” as they were before.
+After an element is placed (and until the canvas is reset), it is considered “alive” and responds to all regular events and user interactions. The element gets repainted (together with the canvas) as needed. It supports all regular events, including form submission, click, text selection, find-in-page, inner scrolling, tab-order, etc...
 
-When a canvas has an element placed, it becomes automatically tainted (the same as when it receives non-same-origin content), which prevents all read back functions (```getImageData```, ```toBlob```, ```toDataURL```, etc..) in order to prevent the application reading sensitive user content.
+The children elements of Canvas don’t impact the overall document layout and, before placeElement, are considered fallback content parsed for an accessible description of the canvas . When ```placeElement``` is called on an element it becomes part of the document layout (although isolated from the rest of the document), and has CSS applied. When the parent Canvas is reset, the browser is allowed to put the placed elements “back to sleep” as they were before.
 
-There are a few things that may be complex to initially support on this model, such as videos, animated GIFs, composited CSS animations, and cross-process iframes. They may have to be addressed in a follow up proposal.
+A canvas is automatically tainted when an element is placed (the same as when it receives non-same-origin content), which prevents all read back functions (```getImageData```, ```toBlob```, ```toDataURL```, etc..) in order to prevent the application reading sensitive user content.
 
-We also propose to limit this to ```HTMLCanvasElement``` for now (and hence not allow it on OffscreenCanvas and WebWorkers). Some of those limitations may be lifted in the future.
+There are some HTML elements and behaviors that may be complex to initially support on this model, such as videos, animated GIFs, composited CSS animations, and cross-process iframes. They will be addressed in a follow up proposal.
+
+We also propose to limit this functionality to ```HTMLCanvasElement``` for now (and hence not allow it on OffscreenCanvas and WebWorkers). Some of those limitations may be lifted in the future.
 
 
 ### Example usage
@@ -161,7 +163,7 @@ outputs
 <p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
 
 
-![alt_text](images/image2.png "image_tooltip")
+![A submit button composed with an ellipse behind it and two circles "grabbing" the button](./canvas-submit-button.png).
 
 
 Note that the submit button just works:
