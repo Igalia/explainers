@@ -86,7 +86,7 @@ The other functions operate in character ranges and return bounding boxes relati
 
 ```getSelectionRects()``` returns the set of rectangles that the UA would render as the selection background when a particular character range is selected.
 
-```getActualBoundingBox()``` returns the equivalent to ```TextMetric.actualBoundingBox``` restricted to the given range. That is, the bounding rectangle for the drawing of that range. Notice that this can be (and usually is) different from the selection rect, as the latter is about the flow and advance of the text. A font that is particularly slanted or whose accents go beyond the flow of text will have a different paint bounding box. For example: if you select this W, <it style="font-size: 150%">W</it>, you may see that the end of the W is outside the selection area, which would be covered by the paint (actual bounding box) area.
+```getActualBoundingBox()``` returns the equivalent to ```TextMetric.actualBoundingBox``` restricted to the given range. That is, the bounding rectangle for the drawing of that range. Notice that this can be (and usually is) different from the selection rect, as the latter is about the flow and advance of the text. A font that is particularly slanted or whose accents go beyond the flow of text will have a different paint bounding box. For example: if you select this W, <i style="font-size: 150%">W</i>, you may see that the end of the W is outside the selection area, which would be covered by the paint (actual bounding box) area.
 
 
 ### Example usage
