@@ -2,7 +2,7 @@
 
 ## _Fast Formatted Text for the Web_
 
-This doc: [Add self link]
+This doc: https://github.com/Igalia/explainers/tree/canvas-formatted-text/canvas-formatted-text
 
 Author: Fernando Serboncini and Stephen Chenney
 
@@ -12,10 +12,9 @@ Status: In review
 
 Other public docs: [MSEdgeExplainers/FormattedText.md at main](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Canvas/FormattedText.md), [GitHub - WICG/canvas-formatted-text](https://github.com/WICG/canvas-formatted-text#readme) 
 
-This document groups use cases for the Canvas Text WICG and provides high level explainers on the proposals for each area.
-The use cases are [Editing](#editing), [Styled and Accessible Text](#styled) and [Text As Art](#art).
+This document groups [use cases](#use-cases) for the Canvas Text WICG and provides high level explainers on the [proposals](#proposals) for each area. The use cases are [Editing](#editing), [Styled and Accessible Text](#styled) and [Text As Art](#art).
 
-# Use Cases
+# <a name="use-cases"></a> Use Cases
 
 ## <a name="editing"></a> 1. Selection and Caret Position for Canvas Text Metrics
 
@@ -53,7 +52,7 @@ There are numerous requested features covered by the concept of styled and acces
 In summary, users should be able to read multi-line text in canvas that provides correct i18n, a11y and all other capabilities usually expected from web content.
 
 
-## <a name="art"> 3. Text as Art
+## <a name="art"></a> 3. Text as Art
 
 In recent years we’ve seen increased demand for better text animation and control in canvas. 
 
@@ -65,22 +64,29 @@ Those use cases include:
 Users should be able to express advanced artistic/animated text rendered into canvas, comparable to SVG text support.
 
 
-# Proposals and Explainers
+# <a name="proposals"></a> Proposals and Explainers
 
 ## 1. Selection and Caret Position for Canvas Text Metrics
+
+We propose three new functions on the ```TextMetrics``` interface:
+
 ```c-like
 [Exposed=(Window,Worker)] interface TextMetrics {
   // ... extended from current TextMetrics.
   
+  unsigned long caretPositionFromOffset(double offset);
+  
   sequence<DOMRectReadOnly> getSelectionRects(unsigned long start, unsigned long end);
-  DOMRectReadOnly getActualBoundingBox(unsgined long start, unsigned long end);
+  DOMRectReadOnly getActualBoundingBox(unsigned long start, unsigned long end);
 };
 ```
-Both functions operate in character ranges and return bounding boxes relative to the text’s origin (i.e., ```textBaseline```/```textAlign``` is taken into account).
+The ```caretPositionFromOffset``` method returns the character offset for the character at the given ```offset``` distance from the start position of the text run (accounting for ```text-align```), in the writing direction.
 
-`getSelectionRects()` returns the set of rectangles that the UA would render as selection to select a particular character range.
+The other functions operate in character ranges and return bounding boxes relative to the text’s origin (i.e., ```textBaseline```/```textAlign``` is taken into account).
 
-`getActualBoundingBox()` returns an equivalent box to `TextMetric.actualBoundingBox`, i.e., the bounding rectangle for the drawing of that range. Notice that this can be (and usually is) different from the selection rect, as those are about the flow and advance of the text. A font that is particularly slanted or whose accents go beyond the flow of text will have a different paint bounding box. For example: if you select this:_W_ you may see that the end of the W is outside the selection area, which would be covered by the paint (actual bounding box) area.
+```getSelectionRects()``` returns the set of rectangles that the UA would render as the selection background when a particular character range is selected.
+
+```getActualBoundingBox()``` returns the equivalent to ```TextMetric.actualBoundingBox``` restricted to the given range. That is, the bounding rectangle for the drawing of that range. Notice that this can be (and usually is) different from the selection rect, as the latter is about the flow and advance of the text. A font that is particularly slanted or whose accents go beyond the flow of text will have a different paint bounding box. For example: if you select this W, <it style="font-size: 150%">W</it>, you may see that the end of the W is outside the selection area, which would be covered by the paint (actual bounding box) area.
 
 
 ### Example usage
@@ -97,16 +103,15 @@ const selection_for_third_word = tm.getSelectionRects(9, 13);
 ctx.fillStyle = "blue";
 for (const s of selection_for_third_word) ctx.fillRect(s.x, s.y, s.width, s.height);
 ctx.fillStyle = "black";
-ctx.fillText("please");
+ctx.fillText("let's do this");
 ```
 outputs
 
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
+!["let's do this" with a red rectangle tighly bounding "do" and a blue rectangle around "this" extending beyond the text](./canvas-text-1.png)
 
 ### Alternatives & Open Questions
-* We have not addressed "text index from position". The proposals above assume you know the range, but to get the range you would probably map the start and end point of a drag to the start and end text positions.
 * Return a pre-calculated map of ranges?
-* Is CaretPositionFromCursor needed? Can’t they be devised from getSelectionBox?
+* Is ```caretPositionForOffset``` needed? Can it be devised from ```getSelectionRects```? Yes and no. Without a dedicated function you would need to get the nound for each character and iterate to find out which one contained the offset (binary search). You could polyfill it though.
 
 
 ## 2. placeElement / drawElement
