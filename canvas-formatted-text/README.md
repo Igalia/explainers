@@ -129,9 +129,19 @@ The ```placeElement(el, x, y, origin)``` function composites an ```HTMLElement``
 
 The ```x``` and ```y``` values give the canvas position of the ```origin``` of the element ```el```, where the origin is a string such as ```top-left``` or ```left-baseline```. The ```origin``` is proposed to simplify alignment of multiple placed elements by choosing a common reference point that captures that captures the desired aligned (such as aligning the baselines of the first row of text in each element, or centering elements about a common axis).
 
-After an element is placed (and until the canvas is reset), it is considered “alive” and responds to all regular events and user interactions. The element gets repainted (together with the canvas) as needed. It supports all regular events, including form submission, click, text selection, find-in-page, inner scrolling, tab-order, etc...
+The child elements of Canvas don’t impact the overall document layout and, before ```placeElement``` is invoked for the element, are considered "sleeping", or ```display: none```. 
 
-The children elements of Canvas don’t impact the overall document layout and, before placeElement, are considered fallback content parsed for an accessible description of the canvas . When ```placeElement``` is called on an element it becomes part of the document layout (although isolated from the rest of the document), and has CSS applied. When the parent Canvas is reset, the browser is allowed to put the placed elements “back to sleep” as they were before.
+After a child element is placed (and until the canvas is reset), it is considered “alive” and responds to all regular events and user interactions. The element gets repainted (together with the canvas) as needed. It supports all regular events, including form submission, click, text selection, find-in-page, inner scrolling, tab-order, etc...
+
+In other words, when ```placeElement``` is called on an element it becomes part of the document layout (although isolated from the rest of the document), and has CSS applied and executing script. The containing block and other layout context comes from the canvas element itself.
+
+Note: What about viewport-relative CSS units?
+
+Note: Currently child elements of the canvas are fallbacks used to provide accessibility support (the chidren should somehow describe the canvas content when processed by assistive technologies). Though needs to go into how to correctly retain this model for non-```placeElement``` content while also incorprating the placed content.
+
+Note: Does this mean we can only place direct children of the canvas element? What if the same element is placed more than once? Does the first placement disappear? How are element references in JS handled in this situation? 
+
+When the parent Canvas is reset, the browser is allowed to put the placed elements “back to sleep” as they were before.
 
 A canvas is automatically tainted when an element is placed (the same as when it receives non-same-origin content), which prevents all read back functions (```getImageData```, ```toBlob```, ```toDataURL```, etc..) in order to prevent the application reading sensitive user content.
 
