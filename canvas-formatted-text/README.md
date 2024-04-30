@@ -170,17 +170,15 @@ Note that the submit button just works:
 * It can be focused and show a focus ring
 * It is available to accessibility APIs
 
+### The next step: drawElement
 
-### Follow up proposals
+The current proposal limits ```placeElement``` to Canvas2D, since it’s the only context where we can still keep track of the "final" position of an element on a 2D page. There are dozens of very important use cases that depend on similar functionality for 3D contexts (WebGL/WebGPU/).
 
-The current proposal also limits placeElement to Canvas2D, since it’s the only context where we can still keep track of the "final" position of an element on a page. There are dozens of very important use cases that depend on similar functionality for 3D contexts (WebGL/WebGPU).
+The need for support in workers and 3D contexts suggests a method for treating HTML content more like a generated image. The ```drawElement()``` function is similar to ```placeElement()``` but it does not keep the element alive. Instead, the element is painted immediately on the canvas without any follow up. ```drawElement()``` would be easier to integrate into 3D APIs such as WebGPU and WebGL, support use cases such as drawing the same element multiple times, and allow for transferring images to a worker to be rendered async.
 
-A follow up proposal would be to introduce a ```drawElement()``` function that works similarly to ```placeElement()``` but that doesn’t keep the element alive. Instead, the element gets painted immediately on the canvas without any follow up. ```drawElement()``` would be easier to integrate into 3D APIs such as WebGPU and WebGL, support use cases such as drawing the same element multiple times, and allow for transferring images to a worker to be rendered async.
+The ```drawElement``` function addresses static HTML content but requires additional support for funtionality like event propogation (such as mouse clicks) and invalidation on changes to the DOM. Responsibility for handling user actions and repaints would fall to the page’s JS (repainting on rAF, for example), and propagating user interactions.
 
-To make ```drawElement()``` more useful, we’d have to develop other primitives to allow event propagation (like mouse clicks), and a way to signal that the element’s paint has been invalidated. In this mode, the page’s JS would be responsible for re-painting (calling it on rAF), propagating user interactions, etc.
-
-To support this in 3D contexts, we would also have to figure out a privacy/security model that doesn’t allow extra leaking of information from the HTML being rendered.
-
+The insertion of HTML content that does not taint the canvas is an important use case, and ```drawElement``` may be a simpler framework for non-tainting because the content is not alive (no spell checking or autofill, for example). Such a security model is also a pre-requisite for use in 3D contexts.
 
 ## 3. Text as Art
 
@@ -223,10 +221,7 @@ while (pos < text.length) {
 
 outputs
 
-
-
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image3.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
+![A smiley face followed by "AWAY" with a gradient fill](./canvas-text-as-art.png).
 
 ### Follow up proposals
 
