@@ -137,7 +137,7 @@ In other words, when ```placeElement``` is called on an element it becomes part 
 
 Note: What about viewport-relative CSS units?
 
-Note: Currently child elements of the canvas are fallbacks used to provide accessibility support (the chidren should somehow describe the canvas content when processed by assistive technologies). Though needs to go into how to correctly retain this model for non-```placeElement``` content while also incorprating the placed content.
+Note: Currently child elements of the canvas are fallbacks used to provide accessibility support (the chidren should somehow describe the canvas content when processed by assistive technologies). Thought needs to go into how to correctly retain this model for non-```placeElement``` content while also incorprating the placed content.
 
 Note: Does this mean we can only place direct children of the canvas element? What if the same element is placed more than once? Does the first placement disappear? How are element references in JS handled in this situation? 
 
