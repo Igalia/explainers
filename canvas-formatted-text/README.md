@@ -6,7 +6,7 @@ This doc: https://github.com/Igalia/explainers/tree/canvas-formatted-text/canvas
 
 Author: Fernando Serboncini and Stephen Chenney
 
-Last Modified: April 25, 2024
+Last Modified: April 29, 2024
 
 Status: In review
 
