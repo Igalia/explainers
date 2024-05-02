@@ -10,6 +10,7 @@
 
 * Jihye Hong \<jihye@igalia.com\>
 * Stephen Chenney \<schenney@igalia.com\>
+* Delan Azabani \<dazabani@igalia.com\>
 
 ## Introduction
 
