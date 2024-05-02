@@ -1,4 +1,4 @@
-# Explainer:  CSS pseudo-elements `::active-search` and `::inactive-search`
+# Explainer: CSS highlight pseudos for find-in-page results
 
 - Contents:
   - [Authors](#authors)
@@ -10,14 +10,14 @@
 
 * Jihye Hong \<jihye@igalia.com\>
 * Stephen Chenney \<schenney@igalia.com\>
+* Delan Azabani \<dazabani@igalia.com\>
 
 ## Introduction
 
-`::active-search` and `::inactive-search` allow CSS styling of the highlighted fragments shown when using a browsers find-in-page feature.
+`::search-text` allows for CSS styling of the search results shown when using a browser’s find-in-page feature.
 
-The proposed pseudo elements are classified as [Highlight Pseudo Elements](https://drafts.csswg.org/css-pseudo/#highlight-pseudos), and they follow the same mechanism as other highlight pseudo-elements. That is, they can be styled by [a limited set of CSS properties](https://drafts.csswg.org/css-pseudo/#highlight-styling), represent the active portions of the [highlight overlays](https://drafts.csswg.org/css-pseudo/#highlight-overlay) and use the [Highlight Inheritance model](https://drafts.csswg.org/css-pseudo/#highlight-cascade).
-
-The search highlight pseudos do not modify the tick marks sometimes shown in the default browser scrollbars.
+The proposed pseudo element is classified as [Highlight Pseudo-elements](https://drafts.csswg.org/css-pseudo/#highlight-pseudos), and it follows the same rules as other highlight pseudo-elements.
+That is, they can be styled by [a limited set of CSS properties](https://drafts.csswg.org/css-pseudo/#highlight-styling), represent the active portions of their [highlight overlays](https://drafts.csswg.org/css-pseudo/#highlight-overlay), and use the [highlight inheritance model](https://drafts.csswg.org/css-pseudo/#highlight-cascade).
 
 * This document status: Active
 * Current version: this document
@@ -26,38 +26,47 @@ The search highlight pseudos do not modify the tick marks sometimes shown in the
 ## Motivation
 
 Authors would like to customize the highlighted text from find-in-page to have a style consistent with that of the rest of the page. In particular, the existing find-in-page highlights may offer poor contrast, harming accessibility.
-There is an existing [proposal in the CSSWG](https://github.com/w3c/csswg-drafts/issues/3812) to add new pseudo-elements related to find-in-page feature.
-Two pseudos are proposed as browsers differentiate between the currently active search result and other search results.
+There is an existing [proposal in the CSSWG](https://github.com/w3c/csswg-drafts/issues/3812) to add new highlight pseudos for find-in-page results.
 
-Web developer have asked related questions on [Stack Overflow](https://stackoverflow.com/search?q=%5Bcss%5D+find-in-page),
+Web developers have asked related questions on [Stack Overflow](https://stackoverflow.com/search?q=%5Bcss%5D+find-in-page),
 though they do not have many votes:
+
 * [Someone directly asks for CSS styling of find-in-page](https://stackoverflow.com/questions/50309703/css-for-browsers-find-in-page).
 * [Another direct question](https://stackoverflow.com/questions/18666075/how-to-style-detect-highlighted-boxes-generated-from-browser-native-search-in-pa).
 * [A user wants to hide find-in-page results](https://stackoverflow.com/questions/77458310/confuse-browsers-in-built-find-in-page-feature) and could do so by styling them as transparent.
 
 ## Proposed Syntax
 
-```css
-::active-search {
-  /* ... */
-}
+[We propose](https://github.com/w3c/csswg-drafts/issues/10212) adding a single highlight pseudo [with a pseudo-class](https://drafts.csswg.org/selectors/#pseudo-element-states) for the active state.
+Browsers differentiate between the currently active search result and other search results, but these states are mutually exclusive, so they need not be two separate pseudo-elements and highlight overlays.
 
-::inactive-search {
-  /* ... */
+```css
+::search-text {
+  /* Styles for all search results */
+}
+::search-text:active {
+  /* Styles for the active search result */
+}
+::search-text:not(:active) {
+  /* Styles for other search results */
 }
 ```
+
+[We propose](https://github.com/w3c/csswg-drafts/issues/10213) that find-in-page highlights paint on top of all existing highlights.
+Painting them over ::target-text reflects an explicit user intent to identify the search string that is stronger than ::target-text; for ::target-text, you only need to click on a link.
+Painting them over ::selection improves compat with [current Firefox and Safari behaviour](https://github.com/w3c/csswg-drafts/issues/3812#issuecomment-2047241516).
+
+We do not propose that find-in-page highlight styles have any effect on the tick marks that are sometimes shown in the default browser scrollbars.
 
 ## Example
 
 ```css
-::active-search {
+::search-text {
   background-color: purple;
   color: white;
 }
-
-::inactive-search {
+::search-text:active {
   background-color: gray;
-  color: black;
 }
 ```
 
@@ -90,11 +99,5 @@ Find-in-page UIs vary across browsers. For example,
   - If "Highlight All" is checked in the UI, all inactive matches are shown in purple, with an active one in green
   - The behavior is the most consistent of the browsers discussed here.
  
-The Safari behavior is the biggest risk to achieving compatibility. There may be limitations as to how the highlight may be styled given that it must be rendered over the top of an otherwise darkened page.
-
-### Priority of the highlight pseudo-elements
-
-This isn't a risk per se, but a default priority for `::active-search` and `::inactive-search` among all highlight pseudo-elements must be defined. We propose that the search highlights paint over everything except selection, due to the fact that it reflects a distinct user intent to identify the search string and should not be obscured.
-
-There is a [related discussion in CSSWG](https://github.com/w3c/csswg-drafts/issues/4594).
-
+The Safari behavior is the biggest risk to achieving compatibility.
+There may be limitations as to how the highlight may be styled given that it must be rendered over the top of an otherwise darkened page.
