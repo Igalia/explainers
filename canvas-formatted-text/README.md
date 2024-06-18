@@ -180,6 +180,20 @@ Note that the submit button just works:
 * It can be focused and show a focus ring
 * It is available to accessibility APIs
 
+### Accessibility
+
+Elements in fallback content which are passed to `placeElement()`
+are still exposed to assistive technology APIs,
+just like all other canvas fallback content.
+
+If authors wish to use canvas fallback content as a "staging area"
+for content which may later be shown to sighted users using `placeElement()`,
+they should take care to hide that content from assistive technology.
+This can be done with any of the usual techniques
+for hiding content from assistive technology,
+such as using the `hidden`, `inert` or `aria-hidden` attributes,
+or applying a `display: none` or `display: hidden` style.
+
 ### The next step: drawElement
 
 The current proposal limits ```placeElement``` to Canvas2D, since it’s the only context where we can still keep track of the "final" position of an element on a 2D page. There are dozens of very important use cases that depend on similar functionality for 3D contexts (WebGL/WebGPU/).
