@@ -16,12 +16,12 @@ This document groups use cases for the Canvas Text WICG and provides high level 
 
 ## <a name="Editing"></a>Editing
 
-[New Canvas Text Metrics APIs](#text-metrics-additions) will support selection and editing of text in canvas, reducing the need for javascript solutions.
+[New Canvas Text Metrics APIs](./text-metrics-additions.md) will support selection and editing of text in canvas, reducing the need for javascript solutions.
 
 ## <a name="placeELement"></a>HTML-in-Canvas
 
-[APIs for placing html content into a canvas](#html-in-canvas.md) support rich, interactive HTML content in a canvas context. We also provide [notes on a chromium implementation](#chromium-implementation-notes.md).
+[APIs for placing html content into a canvas](./html-in-canvas.md) support rich, interactive HTML content in a canvas context. We also provide [notes on a chromium implementation](./chromium-implementation-notes.md).
 
 ## <n name="ArtDesign"/></a>Text in Art and Design
 
-[New Canvas Text Metrics APIs](#text-art.md) enable precise placement of individual graphemes, even when they do no correspond to a single character in a text string.
+[New Canvas Text Metrics APIs](./text-art.md) enable precise placement of individual graphemes, even when they do no correspond to a single character in a text string.
