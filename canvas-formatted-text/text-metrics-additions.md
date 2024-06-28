@@ -2,16 +2,16 @@
 
 ## <a name="use-cases"></a> Editing Use Cases: Selection and Caret Position for Canvas Text Metrics
 
-Selection and caret position are two building blocks for editing text. Consider the sequence of dragging out a text selection with a mouse or touch, then copying and pasting into a new location. Determining which characters are part of the selection requires mapping a point into a caret position in the text and drawing the selected region requires the selection area. Inserting again requires mapping a point into a location within a character string.
+Selection and caret position are two building blocks for editing text. Consider the sequence of dragging out a text selection with a mouse or touch, then copying and pasting into a new location. Determining which characters are part of the selection requires mapping a point onto a string, then to a caret position in the text. Drawing the selected region requires the selection area. Inserting again requires mapping a point into a location within a character string.
 
 Both selection bounds and caret position are missing from canvas text metrics and must be implemented today using javascript.
 
 We propose additional text metrics to enable editing functionality, specifically:
-* bounding box 
+* bounding box for a range
 * mouse position to character index reverse mapping, allowing authors to determine where a caret should be placed within the string.
 * selection box geometry indexed by character range (for instance, see this [Stack Overflow question](https://stackoverflow.com/questions/1451635/how-to-make-canvas-text-selectable))
 
-DOM APIs also provide text measurement functionality. Such functionality should also be available on canvas ```measureText``` and return equivalent values for equivalent strings and styling. ```measureText``` will always be limited to a single style, and therefore has the potential to be much faster (as it doesn’t need layout).
+DOM APIs also provide text measurement functionality. Such functionality should be available on canvas ```measureText``` and return equivalent values for equivalent strings and styling to the maximum extent possible. ```measureText``` will always be limited to a single style, and therefore has the potential to be much faster (as it doesn’t need layout).
 
 Addressing this use case requires: 
 * new metrics APIs
@@ -24,7 +24,7 @@ Users should be able to interact with canvas-based text input (like Google Docs,
 
 We propose three new functions on the ```TextMetrics``` interface:
 
-```c-like
+```javascript
 [Exposed=(Window,Worker)] interface TextMetrics {
   // ... extended from current TextMetrics.
   
@@ -36,7 +36,7 @@ We propose three new functions on the ```TextMetrics``` interface:
 ```
 The ```caretPositionFromPoint``` method returns the character offset for the character at the given ```offset``` distance from the start position of the text run (accounting for ```text-align```) with offset always increasing
 left to right (so negative offsets are valid). Values to the left or right of the text bounds will return 0 or
-```num_characters``` depending on the writing direction. The functionality is similar but not idetical to [```document.caretPositionFromPoint```](https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint).
+```num_characters``` depending on the writing direction. The functionality is similar but not identical to [```document.caretPositionFromPoint```](https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint).
 
 The other functions operate in character ranges and return bounding boxes relative to the text’s origin (i.e., ```textBaseline```/```textAlign``` is taken into account).
 

@@ -3,7 +3,7 @@
 Here is a summary of the implementation details of this spec in Chromium. Its function is to illustrate some of the potential challenges of a placeElement implementation.
 
 ## Render Canvas Descendants
-The following changes are needed to layout and paint canvas descendants so their image can be used by drawImage/texImage2D/externalTexImage2D:
+The following changes are needed to layout and paint canvas descendants so their image can be used by placeElement and drawImage/texImage2D/externalTexImage2D:
 
 * **Layout for canvas children:** Generally children of replaced elements are ignored by layout. The exception to this has been video elements which use a shadow DOM to render controls: LayoutMedia::CanHaveChildren. If a canvas uses the proposed APIs above, this mode will be supported for canvas as well.
 

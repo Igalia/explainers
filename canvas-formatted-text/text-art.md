@@ -1,8 +1,8 @@
-# Canvas Supporting Text in Art and Design
+# Canvas Text in Art and Design
 
-## <a name="use-cases"></a>Text in Art and Desiogn
+## <a name="use-cases"></a>Uses for Text in Art and Design
 
-In recent years we’ve seen increased demand for better text animation and control in canvas. Of particular concerns are text strings where the mapping from character positions to rendered characters is complex or not known at the time of authoring due to font localization.
+In recent years we’ve seen increased demand for better text animation and control in canvas. Of particular concern are text strings where the mapping from character positions to rendered characters is complex or not known at the time of authoring due to font localization.
 
 The use cases include:
 * The ability to control how individual graphemes are rendered (over a path or as part of an animation, for example). Consider a case of having text trace the outline of a logo, or letters animating to come together for a word.
@@ -13,9 +13,9 @@ Users should be able to express advanced artistic/animated text rendered into ca
 
 # <a name="proposal"></a>Proposal: Grapheme Cluster Support
 
-We propose supporting the ability to render minimal grapheme clusters.
+We propose APIs to decompose a string into minimal grapheme clusters for rendering.
 
-```c-like
+```javascript
 [Exposed=(Window,Worker)] interface TextMetrics {
   // ... extended from current TextMetrics.
   
