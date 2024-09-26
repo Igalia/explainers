@@ -16,13 +16,10 @@ This document groups use cases for new HTML Canvas features and provides high le
 
 [APIs for placing html content into a canvas](https://github.com/WICG/canvas-place-element) support rich, interactive HTML content in a canvas context.
 
-## <a name="Editing"></a>Editing
+## <a name="Editing"></a>Editing, Art and Design
 
-[New Canvas Text Metrics APIs](./text-metrics-additions.md) will support selection and editing of text in canvas, reducing the need for javascript solutions.
-
-## <n name="ArtDesign"/></a>Text in Art and Design
-
-[New Canvas Text Metrics APIs](./text-art.md) enable precise placement of individual graphemes, even when they do no correspond to a single character in a text string.
+[New Canvas Text Metrics APIs](./text-metrics-additions.md) will support selection and editing of text in canvas, reducing the need for javascript solutions. We also propose
+methods for more flexible rendering of complex text strings.
 
 Previous proposals: [MSEdgeExplainers/FormattedText.md at main](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Canvas/FormattedText.md)
 

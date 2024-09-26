@@ -105,7 +105,6 @@ ctx.fillStyle = "black";
 ctx.fillText("let's do this");
 ```
 Expected output:
-
 !["let's do this" with a red rectangle tighly bounding "do" and a blue rectangle around "this" extending beyond the text](./canvas-text-1.png)
 
 `getSelectionRects()` and `getActualBoundingBox()` can be used on Chrome Canary (starting from version `127.0.6483.0` and `128.0.6573.0` respectively) by enabling the feature with `--enable-features=ExtendedTextMetrics` (or the general `--enable-experimental-web-platform-features`). `caretPositionFromPoint()` is available in Chrome Canary from version `128.0.6587.0`.
@@ -130,9 +129,7 @@ for(let cluster of clusters) {
     ctx.fillTextCluster(cluster);
 }
 ```
-
 Expected output:
-
 ![A text string containing emoji with each character colored differently](./text-clusters-output.png).
 
 
