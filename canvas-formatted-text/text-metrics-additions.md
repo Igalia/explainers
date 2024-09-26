@@ -56,7 +56,7 @@ interface TextCluster {
   sequence<TextCluster> getTextClusters(unsigned long start, unsigned long end, optional TextAnchorPoint anchor_point);
 };
 ```
-In addition, a new method on `CanvasRenderingContext2D` support filling grapheme clusters:
+In addition, a new method on `CanvasRenderingContext2D` supports filling grapheme clusters:
 ```webidl
 interface CanvasRenderingContext2D {
     // ... extended from current CanvasRenderingContext2D.
@@ -82,7 +82,7 @@ For `text_align` specifically, the position is calculated in regards of the adva
 
 To guarantee that the shaping of each cluster is indeed the same as it was when measured, it's necessary to use the whole string as context when rendering each cluster. That is why the complete text is referenced in the `TextCluster` objects, since the proposed `fillTextCluster()` API for the Canvas2D context requires it for rendering.
 
-### Example usage
+### Bounding Boxes Example
 
 ```javascript
 const canvas = document.getElementById("c");
@@ -109,6 +109,8 @@ Expected output:
 
 `getSelectionRects()` and `getActualBoundingBox()` can be used on Chrome Canary (starting from version `127.0.6483.0` and `128.0.6573.0` respectively) by enabling the feature with `--enable-features=ExtendedTextMetrics` (or the general `--enable-experimental-web-platform-features`). `caretPositionFromPoint()` is available in Chrome Canary from version `128.0.6587.0`.
 
+### Text Cluster Example:
+
 ```javascript
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -130,6 +132,9 @@ for(let cluster of clusters) {
 }
 ```
 Expected output:
+
 ![A text string containing emoji with each character colored differently](./text-clusters-output.png).
 
+### Editing Example
 
+An toy text editor making use of these features is available at https://blogs.igalia.com/schenney/html/editing-canvas-demo.html
