@@ -47,7 +47,7 @@ interface TextCluster {
 [Exposed=(Window,Worker)] interface TextMetrics {
   // ... extended from current TextMetrics.
   
-  unsigned long caretPositionFromPoint(double offset);
+  unsigned long indexFromOffset(double offset);
   
   sequence<DOMRectReadOnly> getSelectionRects(unsigned long start, unsigned long end);
   DOMRectReadOnly getActualBoundingBox(unsigned long start, unsigned long end);
@@ -63,9 +63,9 @@ interface CanvasRenderingContext2D {
     void fillTextCluster(TextCluster textCluster, double x, double y);
 };
 ```
-The `caretPositionFromPoint` method returns the character offset for the character at the given `offset` distance from the start position of the text run (accounting for `textAlign` and `textBaseline`) with offset always increasing
+The `indexFromOffset` method returns the strign indext for the character at the given `offset` distance from the start position of the text run (accounting for `textAlign` and `textBaseline`) with offset always increasing
 left to right (so negative offsets are valid). Values to the left or right of the text bounds will return 0 or
-`num_characters` depending on the writing direction. The functionality is similar but not identical to [`document.caretPositionFromPoint`](https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint). In particular, there is no need to return the element containing the caret and offsets beyond the boundaries of the string are acceptable.
+`string.length` depending on the writing direction. The functionality is similar but not identical to [`document.caretPositionFromPoint`](https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint). In particular, there is no need to return the element containing the caret and offsets beyond the boundaries of the string are acceptable.
 
 The other functions operate in character ranges and return bounding boxes relative to the text’s origin (i.e., `textBaseline`/`textAlign` is taken into account).
 
@@ -104,7 +104,7 @@ ctx.fillText("let's do this");
 Expected output:
 !["let's do this" with a red rectangle tighly bounding "do" and a blue rectangle around "this" extending beyond the text](./canvas-text-1.png)
 
-`getSelectionRects()` and `getActualBoundingBox()` can be used on Chrome Canary (starting from version `127.0.6483.0` and `128.0.6573.0` respectively) by enabling the feature with `--enable-features=ExtendedTextMetrics` (or the general `--enable-experimental-web-platform-features`). `caretPositionFromPoint()` is available in Chrome Canary from version `128.0.6587.0`.
+`getSelectionRects()` and `getActualBoundingBox()` can be used on Chrome Canary (starting from version `127.0.6483.0` and `128.0.6573.0` respectively) by enabling the feature with `--enable-features=ExtendedTextMetrics` (or the general `--enable-experimental-web-platform-features`). `indexFromOffset()` is recent name. The previous name was `caretPositionFromPoint()` and is available in Chrome Canary from version `128.0.6587.0`.
 
 ### Text Cluster Example:
 
