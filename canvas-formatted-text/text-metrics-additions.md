@@ -65,7 +65,7 @@ interface CanvasRenderingContext2D {
     void fillTextCluster(TextCluster textCluster, double x, double y, optional TextClusterOptions options);
 };
 ```
-The `getIndexFromOffset` method returns the string index for the character at the given `offset` distance from the start position of the text run (accounting for `textAlign` and `textBaseline`) with offset always increasing
+The `getIndexFromOffset` method returns the string index for the character at the given `offset` distance in (CSS pixels) from the start position of the text run (accounting for `textAlign` and `textBaseline`) with offset always increasing
 left to right (so negative offsets are valid). Values to the left or right of the text bounds will return 0 or
 `string.length` depending on the writing direction. The functionality is similar but not identical to [`document.caretPositionFromPoint`](https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint). In particular, there is no need to return the element containing the caret and offsets beyond the boundaries of the string are acceptable.
 
@@ -75,9 +75,9 @@ The other functions operate in character ranges and return bounding boxes relati
 
 `getActualBoundingBox()` returns the equivalent to `TextMetric.actualBoundingBox` restricted to the given range. That is, the bounding rectangle for the drawing of that range. Notice that this can be (and usually is) different from the selection rect, as the latter is about the flow and advance of the text. A font that is particularly slanted or whose accents go beyond the flow of text will have a different paint bounding box. For example: if you select this: ***W*** you may see that the end of the W is outside the selection highlight, which would be covered by the paint (actual bounding box) area.
 
-`getTextClusters()` provides the ability to render minimal grapheme clusters (in conjunction with a new method for the canvas rendering context, more on that later). That is, for the character range given as in input, it returns the minimal rendering operations broken down as much as logically possible, with their corresponding positional data. The position is calculated with the original anchor point for the text as reference, while the `align` and `baseline` parameters in the options dictionary determine the desired alignment of each cluster.
+`getTextClusters()` provides the ability to render minimal grapheme clusters (in conjunction with a new method for the canvas rendering context, more on that later). That is, for the character range given as in input, it returns the clusters corresponding to the minimal rendering operations broken down as much as logically possible, with their corresponding positional data. The position is calculated with the original anchor point for the text as reference, while the `align` and `baseline` parameters in the options dictionary determine the desired alignment of each cluster.
 
-To actually render these clusters on the screen, a new method for the rendering context is proposed: `fillTextCluster()`. It renders the cluster with the `align` and `baseline` stored in the object, ignoring the values set in the context. Additionally, to guarantee that the rendered cluster is accurate with the measured text, the rest of the `CanvasTextDrawingStyles` must be applied as they were when `ctx.measureText()` was called, regardless of any changes in these values on the context since. Note that to guarantee that the shaping of each cluster is indeed the same as it was when measured, it's necessary to use the whole string as context when rendering each cluster.
+To actually render these clusters on the screen, a new method for the rendering context is proposed: `fillTextCluster()`. It renders the cluster with the `align` and `baseline` stored in the options object, ignoring the values set in the context. Additionally, to guarantee that the rendered cluster is accurate with the measured text, the rest of the `CanvasTextDrawingStyles` must be applied as they were when `ctx.measureText()` was called, regardless of any changes in these values on the context since. Note that to guarantee that the shaping of each cluster is indeed the same as it was when measured, it's necessary to use the whole string as context when rendering each cluster.
 
 For `align` specifically, the position is calculated in regards of the advance of said grapheme cluster in the text. For example: if the `align` passed to the function is `center`, for the letter **T** in the string **Test**, the position returned will be not exactly be in the middle of the **T**. This is because the advance is reduced by the kerning between the first two letters, making it less than the width of a **T** rendered on its own.
 
@@ -122,7 +122,7 @@ ctx.textBaseline = 'middle';
 
 const text = 'Colors 🎨 are 🏎️ fine!';
 let tm = ctx.measureText(text);
-let clusters = tm.getTextClustersForRange(0, text.length);
+let clusters = tm.getTextClusters(0, text.length);
 
 const colors = ['orange', 'navy', 'teal', 'crimson'];
 for(let cluster of clusters) {
