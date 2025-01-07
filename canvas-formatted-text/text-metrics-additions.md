@@ -65,7 +65,7 @@ interface CanvasRenderingContext2D {
     void fillTextCluster(TextCluster textCluster, double x, double y, optional TextClusterOptions options);
 };
 ```
-The `getIndexFromOffset` method returns the string index for the character at the given `offset` distance in (CSS pixels) from the start position of the text run (accounting for `textAlign` and `textBaseline`) with offset always increasing
+The `getIndexFromOffset` method returns the string index for the character at the given `offset` distance (in CSS pixels) from the start position of the text run (accounting for `textAlign` and `textBaseline`) with offset always increasing
 left to right (so negative offsets are valid). Values to the left or right of the text bounds will return 0 or
 `string.length` depending on the writing direction. The functionality is similar but not identical to [`document.caretPositionFromPoint`](https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint). In particular, there is no need to return the element containing the caret and offsets beyond the boundaries of the string are acceptable.
 
