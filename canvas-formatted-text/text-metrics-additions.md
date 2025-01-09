@@ -130,7 +130,7 @@ for(let cluster of clusters) {
     ctx.fillTextCluster(cluster, 0, 0);
 }
 ```
-Expected output:
+Expected output (on macOS, default serif fonts on other systems may yield different results):
 
 ![A text string containing emoji with each character colored differently](./text-clusters-output.png).
 
