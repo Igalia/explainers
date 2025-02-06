@@ -26,12 +26,6 @@ Therefore, the new API would be needed to manipulate the custom dictionary.
 ## <a name="motivation"></a> Proposal
 
 ```
-enum DictionaryControllerAction {
-    "addword",
-    "checkword",
-    "removeword",
-};
-
 [Exposed=Window]
 partial interface DictionaryController {
   void addWord(DOMString word, DOMString language);
@@ -42,13 +36,11 @@ partial interface DictionaryController {
 [Exposed=Window]
 interface DictionaryEvent : UIEvent {
     constructor(DOMString type, optional DictionaryEventInit eventInitDict = {});
-    readonly attribute DictionaryControllerAction action;
     readonly attribute DOMString word;
     readonly attribute DOMString language;
 };
 
 dictionary DictionaryEventInit : UIEventInit {
-    DictionaryControllerAction action = null;
     DOMString word = "";
     DOMString language = "";
 };
@@ -59,6 +51,18 @@ dictionary DictionaryEventInit : UIEventInit {
 - `removeWord()` removes a word from the custom dictionary
 - Dictionary Event is triggered when there is any attempt to custom dictionary
 - preventDefault() for the event is disabling to access the custom dictionary
+
+### Navigation Event Types
+
+addword
+checkword
+removeword
+
+| Event      | Iterface | Interesting targets | Description |
+| :--------- | :------: | :----: | :---- |
+| addword    |  UIEvent | Window | Fired at the Window when a new word is added to the browser's custom dictionary. |
+| checkword  |  UIEvent | Window | Fired at the Window when the user checks the word list in the browser's custom dictionary. |
+| removeword |  UIEvent | Window | Fired at the Window when a word is removed from the browser's custom dictionary. |
 
 ### Example
 
@@ -74,9 +78,36 @@ window.dictionaryController.removeWord("TBH", "en-GB");
 
 ```
 
-#### Example 2. Get the dictionary manipulation action from the event
+#### Example 2. Use Navigation event handler to get information on the added word
 
 ```js
+window.addEventListener("addword", (event) => {
+    const word = event.word;
+    const lang = event.language;
 
+    console.log(`Word ${word} in ${lang} is added to the custom dictionary`);
+  },
+);
+```
+#### Example 3. Disable access to the custom dictionary
+
+```js
+window.addEventListener("addword", (event) => {
+    event.preventDefault();
+  },
+);
+window.addEventListener("checkword", (event) => {
+    event.preventDefault();
+  },
+);
+window.addEventListener("removeword", (event) => {
+    event.preventDefault();
+  },
+);
 
 ```
+## Discussion
+
+1. Overall syntax is exposed to `window` object. Do you think it's the right approach?
+2. Having Navigation event can solve the concerns about privacy violations?
+3. Having Navigation event separately as the proposal or making it one of the UIEvent types?
