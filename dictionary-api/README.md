@@ -4,7 +4,7 @@
   - [Authors](#authors)
   - [Introduction](#introduction)
   - [Motivation](#motivation)
-  - [Design](#design)
+  - [Proposal](#proposal)
 
 ## <a name="authors"></a> Authors
 
@@ -54,10 +54,6 @@ dictionary DictionaryEventInit : UIEventInit {
 
 ### Navigation Event Types
 
-addword
-checkword
-removeword
-
 | Event      | Iterface | Interesting targets | Description |
 | :--------- | :------: | :----: | :---- |
 | addword    |  UIEvent | Window | Fired at the Window when a new word is added to the browser's custom dictionary. |
@@ -69,11 +65,11 @@ removeword
 #### Example 1. Manipulate the custom dictionary
 ```js
 
-\\ Add a word to the dictionary
+// Add a word to the dictionary
 window.dictionaryController.addWord("IRL", "en-GB");
 window.dictionaryController.addWord("TBH", "en-GB");
 
-\\ Delete a word from the dictionary
+// Delete a word from the dictionary
 window.dictionaryController.removeWord("TBH", "en-GB");
 
 ```
