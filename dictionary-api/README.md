@@ -23,7 +23,7 @@ The added words need to be removed at some point if those aren't necessary.
 Current specs such as [`element.spellcheck` attribute](https://html.spec.whatwg.org/multipage/interaction.html#attr-spellcheck) and [`::spelling-error` CSS pseudo-element](https://drafts.csswg.org/css-pseudo/#selectordef-spelling-error) manage the words already in the dictionary.
 Therefore, the new API would be needed to manipulate the custom dictionary.
 
-## <a name="motivation"></a> Proposal
+## <a name="proposal"></a> Proposal
 
 ```
 [Exposed=Window]
