@@ -27,29 +27,29 @@ Therefore, the new API would be needed to manipulate the custom dictionary.
 
 ```
 [Exposed=Window]
-partial interface DictionaryController {
+partial interface CustomDictionaryController {
   void addWord(DOMString word, DOMString language);
-  void checkWord(DOMString word, DOMString language);
+  boolean hasWord(DOMString word, DOMString language);
   void removeWord(DOMString word, DOMString language);
 };
 
 [Exposed=Window]
-interface DictionaryEvent : UIEvent {
-    constructor(DOMString type, optional DictionaryEventInit eventInitDict = {});
+interface CustomDictionaryEvent : UIEvent {
+    constructor(DOMString type, optional CustomDictionaryEventInit eventInitDict = {});
     readonly attribute DOMString word;
     readonly attribute DOMString language;
 };
 
-dictionary DictionaryEventInit : UIEventInit {
+dictionary CustomDictionaryEventInit : UIEventInit {
     DOMString word = "";
     DOMString language = "";
 };
 ```
 
-- `checkWord()` checks for the words in the custom dictionary
+- `checkWord()` checks for the words in the custom dictionary. Returns `true` if a word is already in the custom dictionary.
 - `addWord()` adds a word to the custom dictionary
 - `removeWord()` removes a word from the custom dictionary
-- Dictionary Event is triggered when there is any attempt to custom dictionary
+- Custom Dictionary Event is triggered when there is any attempt to custom dictionary
 - preventDefault() for the event is disabling to access the custom dictionary
 
 ### Navigation Event Types
@@ -57,7 +57,7 @@ dictionary DictionaryEventInit : UIEventInit {
 | Event      | Iterface | Interesting targets | Description |
 | :--------- | :------: | :----: | :---- |
 | addword    |  UIEvent | Window | Fired at the Window when a new word is added to the browser's custom dictionary. |
-| checkword  |  UIEvent | Window | Fired at the Window when the user checks the word list in the browser's custom dictionary. |
+| hadword  |  UIEvent | Window | Fired at the Window when the user checks the word list in the browser's custom dictionary. |
 | removeword |  UIEvent | Window | Fired at the Window when a word is removed from the browser's custom dictionary. |
 
 ### Example
@@ -66,11 +66,11 @@ dictionary DictionaryEventInit : UIEventInit {
 ```js
 
 // Add a word to the dictionary
-window.dictionaryController.addWord("IRL", "en-GB");
-window.dictionaryController.addWord("TBH", "en-GB");
+window.customDictionaryController.addWord("IRL", "en-GB");
+window.customDictionaryController.addWord("TBH", "en-GB");
 
 // Delete a word from the dictionary
-window.dictionaryController.removeWord("TBH", "en-GB");
+window.customDictionaryController.removeWord("TBH", "en-GB");
 
 ```
 
@@ -92,7 +92,7 @@ window.addEventListener("addword", (event) => {
     event.preventDefault();
   },
 );
-window.addEventListener("checkword", (event) => {
+window.addEventListener("hasword", (event) => {
     event.preventDefault();
   },
 );
