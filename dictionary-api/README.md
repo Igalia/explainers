@@ -18,6 +18,9 @@ Also, events are triggered when there is any action related to the custom dictio
 ## <a name="motivation"></a> Motivation
 
 There is a need to add some words to the browser's custom dictionary so that those are not marked as spelling errors by the browser.
+
+Some websites focus on specific topics. For instance, a website dedicated to Pokémon might feature the names of various Pokémon characters, such as Pikachu and Charmander. Similarly, there are websites that provide information about South Korea and may include Korean words or terms presented in English pronunciation. In both cases, the words mustn't be presented as spelling errors.
+
 The added words need to be removed at some point if those aren't necessary.
 
 Current specs such as [`element.spellcheck` attribute](https://html.spec.whatwg.org/multipage/interaction.html#attr-spellcheck) and [`::spelling-error` CSS pseudo-element](https://drafts.csswg.org/css-pseudo/#selectordef-spelling-error) manage the words already in the dictionary.
@@ -46,7 +49,7 @@ dictionary CustomDictionaryEventInit : UIEventInit {
 };
 ```
 
-- `checkWord()` checks for the words in the custom dictionary. Returns `true` if a word is already in the custom dictionary.
+- `hasWord()` checks for the words in the custom dictionary. Returns `true` if a word is already in the custom dictionary.
 - `addWord()` adds a word to the custom dictionary
 - `removeWord()` removes a word from the custom dictionary
 - Custom Dictionary Event is triggered when there is any attempt to custom dictionary
