@@ -5,6 +5,8 @@
   - [Introduction](#introduction)
   - [Motivation](#motivation)
   - [Proposal](#proposal)
+  - [Security Considerations](#security)
+  - [Discussion](#discuss)
 
 ## <a name="authors"></a> Authors
 
@@ -52,9 +54,10 @@ window.customDictionaryController.addWord("TBH", "en-GB");
 
 // Delete a word from the dictionary
 window.customDictionaryController.removeWord("TBH", "en-GB");
-
 ```
 
-## Discussion
+## <a name="security"></a> Security Considerations
+The custom dictionary data won't be loaded cross-origin. User agents must use the potentially [CORS-enabled fetch method](https://fetch.spec.whatwg.org/#http-cors-protocol) to implement this feature.
 
+## <a name="discuss"></a> Discussion
 1. Overall syntax is exposed to `window` object. Do you think it's the right approach?
