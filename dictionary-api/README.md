@@ -5,7 +5,8 @@
   - [Introduction](#introduction)
   - [Motivation](#motivation)
   - [Proposal](#proposal)
-  - [Security Considerations](#security)
+  - [Security and Privacy Considerations](#security)
+  - [Future Work](#future)
   - [Discussion](#discuss)
 
 ## <a name="authors"></a> Authors
@@ -14,7 +15,8 @@
 
 ## <a name="introduction"></a> Introduction
 
-The proposed Dictionary APIs enable users to access the browser's custom dictionary. Users can add, remove, and check words in the custom dictionary.
+The proposed Dictionary APIs enable users to modify the custom dictionary provided by the browser. Users can add, remove, and check words in the custom dictionary.
+This feature ensures that the words in the custom dictionary won't be marked as spelling errors by the browser. 
 
 ## <a name="motivation"></a> Motivation
 
@@ -29,6 +31,7 @@ Therefore, the new API would be needed to manipulate the custom dictionary.
 
 ## <a name="proposal"></a> Proposal
 
+### Syntax
 ```
 [Exposed=Window]
 partial interface CustomDictionaryController {
@@ -43,6 +46,9 @@ partial interface CustomDictionaryController {
 - `removeWord()` removes a word from the custom dictionary
 
 
+### Data Storage
+In terms of minimizing the risk of data leakage, the data related to the custom dictionary is managed by non-persistent browser sessions.
+
 ### Example
 
 #### Example 1. Manipulate the custom dictionary
@@ -56,8 +62,12 @@ window.customDictionaryController.addWord("TBH", "en-GB");
 window.customDictionaryController.removeWord("TBH", "en-GB");
 ```
 
-## <a name="security"></a> Security Considerations
+## <a name="security"></a> Security and Privacy Considerations
 The custom dictionary data won't be loaded cross-origin. User agents must use the potentially [CORS-enabled fetch method](https://fetch.spec.whatwg.org/#http-cors-protocol) to implement this feature.
 
+## <a name="future"></a> Future Work
+### Persistently store data
+To enrich the user experience, the data needs to be stored persistently inside the browser.
+Using a scheme such as IndexedDB is under consideration.
+
 ## <a name="discuss"></a> Discussion
-1. Overall syntax is exposed to `window` object. Do you think it's the right approach?
