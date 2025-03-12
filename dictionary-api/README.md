@@ -16,7 +16,7 @@
 ## <a name="introduction"></a> Introduction
 
 The proposed Dictionary APIs enable users to modify the custom dictionary provided by the browser. Users can add, remove, and check words in the custom dictionary.
-This feature ensures that the words in the custom dictionary won't be marked as spelling errors by the browser. 
+This feature ensures the browser does not mark words in the custom dictionary as spelling errors. 
 
 ## <a name="motivation"></a> Motivation
 
@@ -33,11 +33,12 @@ Therefore, the new API would be needed to manipulate the custom dictionary.
 
 ### Syntax
 ```
-[Exposed=Window]
-partial interface CustomDictionaryController {
-  void addWord(DOMString word, DOMString language);
+[LegacyOverrideBuiltIns]
+partial interface Document {
+  // user interaction
+  undefined addWord(DOMString word, DOMString language);
   boolean hasWord(DOMString word, DOMString language);
-  void removeWord(DOMString word, DOMString language);
+  undefined removeWord(DOMString word, DOMString language);
 };
 ```
 
@@ -47,7 +48,7 @@ partial interface CustomDictionaryController {
 
 
 ### Data Storage
-In terms of minimizing the risk of data leakage, the data related to the custom dictionary is managed by non-persistent browser sessions.
+To minimize the risk of data leakage, the data related to the custom dictionary is managed by non-persistent browser sessions.
 
 ### Example
 
@@ -55,15 +56,15 @@ In terms of minimizing the risk of data leakage, the data related to the custom 
 ```js
 
 // Add a word to the dictionary
-window.customDictionaryController.addWord("IRL", "en-GB");
-window.customDictionaryController.addWord("TBH", "en-GB");
+document.addWord("IRL", "en-GB");
+document.addWord("TBH", "en-GB");
 
 // Delete a word from the dictionary
-window.customDictionaryController.removeWord("TBH", "en-GB");
+document.removeWord("TBH", "en-GB");
 ```
 
 ## <a name="security"></a> Security and Privacy Considerations
-The custom dictionary data won't be loaded cross-origin. User agents must use the potentially [CORS-enabled fetch method](https://fetch.spec.whatwg.org/#http-cors-protocol) to implement this feature.
+The custom dictionary data won't be loaded cross-origin. To implement this feature, user agents must use the potentially [CORS-enabled fetch method](https://fetch.spec.whatwg.org/#http-cors-protocol).
 
 ## <a name="future"></a> Future Work
 ### Persistently store data
