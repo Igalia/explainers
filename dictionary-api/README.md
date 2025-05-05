@@ -22,7 +22,12 @@ This feature ensures the browser does not mark words in the custom dictionary as
 
 Some words need to be added to the browser's custom dictionary so that the browser does not mark them as spelling errors.
 
-Some websites focus on specific topics. For instance, a website dedicated to Pokémon might feature the names of various Pokémon characters, such as Pikachu and Charmander. Similarly, some websites provide information about South Korea and may include Korean words or terms presented in English pronunciation. In both cases, the words mustn't be presented as spelling errors.
+Some websites focus on specific topics. For instance, 
+- The website dedicated to Pokémon might feature the names of various Pokémon characters, such as Pikachu and Charmander.
+- The website provides information about South Korea and may include Korean words or terms presented in English pronunciation.
+- The website related to analyzing economic market status would include the terminology related to the company's names and products
+
+The words mustn't be presented as spelling errors in the cases above.
 
 The added words need to be removed at some point if those aren't necessary.
 
