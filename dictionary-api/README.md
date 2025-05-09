@@ -68,6 +68,14 @@ document.addWord("TBH", "en-GB");
 document.removeWord("TBH", "en-GB");
 ```
 
+#### Example 2. Add the new proper noun word
+```js
+
+// Add a word to the dictionary
+document.addWord("Pikachu", navigator.language);
+
+```
+
 ## <a name="security"></a> Security and Privacy Considerations
 The custom dictionary data won't be loaded cross-origin. To implement this feature, user agents must use the potentially [CORS-enabled fetch method](https://fetch.spec.whatwg.org/#http-cors-protocol).
 
