@@ -38,17 +38,26 @@ Therefore, the new API would be needed to manipulate the custom dictionary.
 
 ### Syntax
 ```
-[LegacyOverrideBuiltIns]
-partial interface Document {
-  // user interaction
+User agents must create a CustomDictionary object whenever a document is created and associate it with that document.
+
+[Exposed=Window]
+interface Document : Node {
+  constructor();
+
+   ...
+
+  [SameObject] readonly attribute CustomDictionary customDictionary;
+};
+
+[Exposed=Window]
+interface CustomDictionary {
   undefined addWord(DOMString word, DOMString language);
-  boolean hasWord(DOMString word, DOMString language);
+  boolean containsWord(DOMString word, DOMString language);
   undefined removeWord(DOMString word, DOMString language);
 };
 ```
-
-- `hasWord()` checks for the words in the custom dictionary. Returns `true` if a word is already in the custom dictionary.
 - `addWord()` adds a word to the custom dictionary
+- `containsWord()` checks for the words in the custom dictionary. Returns `true` if a word is already in the custom dictionary.
 - `removeWord()` removes a word from the custom dictionary
 
 
@@ -61,18 +70,18 @@ To minimize the risk of data leakage, the data related to the custom dictionary 
 ```js
 
 // Add a word to the dictionary
-document.addWord("IRL", "en-GB");
-document.addWord("TBH", "en-GB");
+document.customDictionary.addWord("IRL", "en-GB");
+document.customDictionary.addWord("TBH", "en-GB");
 
 // Delete a word from the dictionary
-document.removeWord("TBH", "en-GB");
+document.customDictionary.removeWord("TBH", "en-GB");
 ```
 
 #### Example 2. Add the new proper noun word
 ```js
 
 // Add a word to the dictionary
-document.addWord("Pikachu", navigator.language);
+document.customDictionary.addWord("Pikachu", navigator.language);
 
 ```
 
