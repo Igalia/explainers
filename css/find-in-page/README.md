@@ -35,7 +35,7 @@ though they do not have many votes:
 * [Another direct question](https://stackoverflow.com/questions/18666075/how-to-style-detect-highlighted-boxes-generated-from-browser-native-search-in-pa).
 * [A user wants to hide find-in-page results](https://stackoverflow.com/questions/77458310/confuse-browsers-in-built-find-in-page-feature) and could do so by styling them as transparent.
 
-## Proposed Syntax
+## Syntax
 
 [We propose](https://github.com/w3c/csswg-drafts/issues/10212) adding a single highlight pseudo [with a pseudo-class](https://drafts.csswg.org/selectors/#pseudo-element-states) to distinguish the current match.
 Browsers differentiate between the currently matched search result and other search results, but these states are mutually exclusive, so they need not be two separate pseudo-elements and highlight overlays.
@@ -69,6 +69,10 @@ We do not propose that find-in-page highlight styles have any effect on the tick
   background-color: gray;
 }
 ```
+
+## Developer Testing
+
+The `::search-text` and `::search-text:current` pseudo classes are available in Chrome 135 and higher with "Experimental Web Platform Features" enabled in chrome://flags.
 
 ## Risks
 
