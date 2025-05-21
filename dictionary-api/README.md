@@ -60,6 +60,8 @@ interface CustomDictionary {
 - `containsWord()` checks for the words in the custom dictionary. Returns `true` if a word is already in the custom dictionary.
 - `removeWord()` removes a word from the custom dictionary
 
+### High-level Architecture
+![Flow diagram](dictionary_api_diagram.png)
 
 ### Data Storage
 To minimize the risk of data leakage, the data related to the custom dictionary is managed by non-persistent browser sessions.
