@@ -64,7 +64,10 @@ interface CustomDictionary {
 ![Flow diagram](dictionary_api_diagram.png)
 
 ### Data Storage
-To minimize the risk of data leakage, the data related to the custom dictionary is managed by non-persistent browser sessions.
+Custom dictionary data is managed in the format of `std::set<std::u16string>`, which is defined in [CustomDictionaryEngine](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/custom_dictionary_engine.h;l=14;bpv=1;bpt=1?q=custom_dictionary%20engine&ss=chromium).
+It is defined for a RenderProcess
+
+`document.customDictionary.addWord` or `document.customDictionary.removeWord` triggers [`CustomDictionaryEngine::OnCustomDictionaryChanged`](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/custom_dictionary_engine.cc;bpv=1;bpt=1) to insert or erase a word via `std::set<std::u16string>` type of custom dictionary.
 
 ### Example
 
@@ -89,6 +92,7 @@ document.customDictionary.addWord("Pikachu", navigator.language);
 
 ## <a name="security"></a> Security and Privacy Considerations
 The custom dictionary data won't be loaded cross-origin. To implement this feature, user agents must use the potentially [CORS-enabled fetch method](https://fetch.spec.whatwg.org/#http-cors-protocol).
+Also, the data related to the custom dictionary is managed by non-persistent browser sessions.
 
 ## <a name="future"></a> Future Work
 ### Persistently store data
