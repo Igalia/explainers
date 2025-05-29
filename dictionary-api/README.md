@@ -96,7 +96,8 @@ Also, the data related to the custom dictionary is managed by non-persistent bro
 
 ## <a name="future"></a> Future Work
 ### Persistently store data
-To enrich the user experience, the data needs to be stored persistently inside the browser.
+In terms of site optimization, saving custom dictionary data persistently would allow sites to have large dictionaries without set-up costs and the bandwidth to transmit dictionaries on every load.
+Also, it's helpful when Internet connections are flaky or non-existent.
 Using a scheme such as IndexedDB is under consideration.
 
 ## <a name="discuss"></a> Discussion
