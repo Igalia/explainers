@@ -28,9 +28,9 @@ This feature's main goal is to provide web authors with a way to make the child 
 
 ## Context
 
-In some scenarios, web authors would like the window created by `window.open` to follow the movement of the current window. The [Window object exposes](https://drafts.csswg.org/cssom-view/#extensions-to-the-window-interface) exposes some attributes to describe its position in the screen. And there are `moveTo` and `moveBy` functions, which could change the screen position. These make it possible to do it through JS, in the current window we could check the screen position of itself in every `requestAnimationFrame`, if the position has changed, move the child window by `moveTo` or `moveBy`. In this solution, we need to check the screen position in every `requestAnimationFrame`, which is not good for performance. And if the current window navigates to other URL, it is impossible to keep the connection, for the new page would have lost the reference to the sub windows.
+In some scenarios, web authors would like the window created by `window.open` to follow the movement of the current window. The [Window object](https://drafts.csswg.org/cssom-view/#extensions-to-the-window-interface) exposes some attributes to describe its position in the screen. And there are `moveTo` and `moveBy` functions, which could change the screen position. These make it possible to do it through JS: in the current window we could check the screen position of itself in every `requestAnimationFrame`, if the position has changed, move the child window by `moveTo` or `moveBy`. In this solution, we need to check the screen position in every `requestAnimationFrame`, which is not good for performance. And if the current window navigates to other URL, it is impossible to keep the connection, for the new page would have lost the reference to the sub windows.
 
-Furthermore, some engines are looking into hiding the screen position information due to privacy concerns, so the explained approach might be even impossible to implement on those cases.
+Furthermore, some engines are looking into hiding the screen position information due to privacy concerns, so the explained approach might even be impossible to implement on those cases.
 
 ## Motivation
 
@@ -137,7 +137,7 @@ promise_test(async t => {
 ## Risks
 
 ### The overlapping problem
-Sometimes windows are overlapping. We use the function `moveBy` to move the sticky windows, and this function can not move windows off-screen. So if our current window is touching the screen edge, the sticky window would overlap, and it follows the movement, so it could be completely covered sometimes. To fix this, we propose to stop the sticky window following the movement when they overlaps.
+Sometimes windows are overlapping. We use the function `moveBy` to move the sticky windows, and this function can not move windows off-screen. So if our current window is touching the screen edge, the sticky window would overlap, and it follows the movement, so it could be completely covered sometimes. To fix this, we propose to stop the sticky window following the movement when they overlap.
 
 ### The multiple display problem
 This scenario is common, and the sticky feature is handy. But the function `moveBy` can not move windows across the display, so we need to find some way to make the sticky window move across the display border. This issue hasn't solved on our prototype yet, but the idea is to identify the display_id of opener, and check if sticky window is intersecting with the display of opener, if yes, then we switch the sticky window to this display.
