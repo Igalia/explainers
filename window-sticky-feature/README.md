@@ -15,7 +15,7 @@
 * Cathie Chen \<cathiechen@igalia.com>
 
 
-This proposal is developed from the [onmove events proposal](https://github.com/Igalia/explainers/blob/main/onmove-event-handler/README.md) which we are not pursuing and this is a declarative approach as per the [discussion](https://github.com/w3c/csswg-drafts/issues/7693).
+This proposal is developed from the [onmove event proposal](https://github.com/Igalia/explainers/blob/main/onmove-event-handler/README.md) which we are no longer pursuing. This is an attempt to solve similar problems with a declarative approach, as per the [CSS WG discussion](https://github.com/w3c/csswg-drafts/issues/7693).
 
 ## Introduction
 
@@ -30,9 +30,11 @@ This feature's main goal is to provide web authors with a way to make the child 
 
 In some scenarios, web authors would like the window created by `window.open` to follow the movement of the current window. The [Window object exposes](https://drafts.csswg.org/cssom-view/#extensions-to-the-window-interface) exposes some attributes to describe its position in the screen. And there are `moveTo` and `moveBy` functions, which could change the screen position. These make it possible to do it through JS, in the current window we could check the screen position of itself in every `requestAnimationFrame`, if the position has changed, move the child window by `moveTo` or `moveBy`. In this solution, we need to check the screen position in every `requestAnimationFrame`, which is not good for performance. And if the current window navigates to other URL, it is impossible to keep the connection, for the new page would have lost the reference to the sub windows.
 
+Furthermore, some engines are looking into hiding the screen position information due to privacy concerns, so the explained approach might be even impossible to implement on those cases.
+
 ## Motivation
 
-There is a polyfil of this feature.
+The main use case for a feature like this would be to allow a popup window opened by a window to follow the movement of its parent. There is a demo on this repo to show this use case, using a polyfil of the feature.
 
 polyfil.html
 ```

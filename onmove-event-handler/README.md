@@ -1,5 +1,7 @@
 # Explainer: The 'onmove' Window Object event handler
 
+Update on 17/06/2025: As per the [CSS WG discussion](https://github.com/w3c/csswg-drafts/issues/7693), we are no longer pursuing this resolution. Instead, we are trying the declarative approach, see the [explainer](https://github.com/Igalia/explainers/blob/main/window-sticky-feature/README.md) for the window sticky feature.
+
 - Contents:
   - [Authors](#authors)
   - [Introduction](#introduction)
