@@ -143,7 +143,7 @@ Sometimes windows are overlapping. We use the function `moveBy` to move the stic
 This scenario is common, and the sticky feature is handy. But the function `moveBy` can not move windows across the display, so we need to find some way to make the sticky window move across the display border. This issue hasn't solved on our prototype yet, but the idea is to identify the display_id of opener, and check if sticky window is intersecting with the display of opener, if yes, then we switch the sticky window to this display.
 
 ### The virtual display problem
-This problem is similar to the previous one. If the current window moves to other virtual display, idealy the sticky windows should follow the movement.
+This problem is similar to the previous one. If the current window moves to another virtual display, ideally, the sticky windows should follow the movement.
 
 ### The cross-origin problem
 The sticky feature is only effective if the windows are not cross-origin. The connection will remain if they navigate inside the same origin. For the current window, the connection remains even after it navigates, which might be confusing sometimes.
