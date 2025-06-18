@@ -37,7 +37,7 @@ Furthermore, some engines are looking into hiding the screen position informatio
 The main use case for a feature like this would be to allow a popup window opened by a window to follow the movement of its parent. There is a demo on this repo to show this use case, using a polyfil of the feature.
 
 polyfil.html
-```
+```html
 <!doctype html>
 <script>
 let lastX;
@@ -73,7 +73,7 @@ function onWindowMove(movedX, movedY) {
 ```
 
 sub-001.html
-```
+```html
 <!doctype html>
 <title>sub-001</title>
 
@@ -93,7 +93,7 @@ The "sticky" feature will only be effective for windows in the same origin. And 
 
 With "sticky" supported, the code becomes much shorter.
 Sticky.html
-```
+```html
 <!doctype html>
 <script>
 function createSubWindow() {
