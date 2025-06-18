@@ -23,3 +23,8 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 ## Locale preferences
 
 * [Locale-related user preferences](/user-locale-preferences/README.md)
+
+## Window sticky feature
+
+* [The 'sticky' feature of window.open](https://github.com/Igalia/explainers/blob/main/window-sticky-feature/README.md)
+
