@@ -87,7 +87,7 @@ sub-001.html
 We propose adding a feature "sticky" to `window.open`. The newly created window would follow the movement of the current window. We can call it a sticky window.
 
 To implement, the current window's frame could keep a weak reference to the sticky window's frame, let's call it a sticky frame.
-When the screen rect of the current window changes, it checks its sticky frames and uses `moveBy` to move the sticky windows.
+When the screen rect of the current window changes, it checks its sticky frames and uses `moveBy` to move the sticky windows. The distance the sticky window moves should match the change in the origin of the current window’s outer position — that is, `window.left` and `window.top`. For example, if the current window moves from (x, y) to (x1, y1), the sticky window should be moved by `moveBy(x1 - x, y1 - y)`.
 
 The "sticky" feature will only be effective for windows in the same origin. And the connection remains if windows navigate inside the same origin.
 
@@ -111,7 +111,7 @@ function createSubWindow() {
 We also propose to add functions to manage the connection and without revealing sensitive information:
 For the current window, add a function: `removeAllStickyWindows()` to remove all the sticky windows.
 For the created windows, add funcitions:
-1. `addStickyFeature()`, to make itself a sticky window to its opener if they are inside same origin.
+1. `addStickyFeature()`, to make itself a sticky window to its opener if they are inside same origin. If the window does not meet the required constraints, an error will be thrown: "Failed to add sticky feature".
 2. `removeStickyFeature()`, to remove itself from its opener's sticky windows.
 
 ## Testing
@@ -137,10 +137,10 @@ promise_test(async t => {
 ## Risks
 
 ### The overlapping problem
-Sometimes windows are overlapping. We use the function `moveBy` to move the sticky windows, and this function can not move windows off-screen. So if our current window is touching the screen edge, the sticky window would overlap, and it follows the movement, so it could be completely covered sometimes. To fix this, we propose to stop the sticky window following the movement when they overlap.
+Sometimes windows are overlapping. We use the function `moveBy` to move the sticky windows, and this function can not move windows off-screen. So if our current window is touching the screen edge, the sticky window would overlap, and it follows the movement, so it could be completely covered sometimes. To fix this, we propose to stop the sticky window following the movement when they overlap. We use the outer window’s coordinate rectangle — defined by (left, top) and (outerWidth, outerHeight) — to check for overlap.
 
 ### The multiple display problem
-This scenario is common, and the sticky feature is handy. But the function `moveBy` can not move windows across the display, so we need to find some way to make the sticky window move across the display border. This issue hasn't solved on our prototype yet, but the idea is to identify the display_id of opener, and check if sticky window is intersecting with the display of opener, if yes, then we switch the sticky window to this display.
+This scenario is common, and the sticky feature is quite useful. However, the moveBy function cannot move windows across display boundaries. To address this, we need a way to move the sticky window across displays. In our prototype, the renderer side does not clip the sticky window’s destination when calling moveBy. On the browser side, it identifies the opener’s display_id and checks whether the sticky window’s outer coordinate rectangle intersects with the opener's display. If it does, the sticky window is moved to that display. Otherwise, it remains on the current display, and the destination rectangle is clipped to fit within the current display.
 
 ### The virtual display problem
 This problem is similar to the previous one. If the current window moves to another virtual display, ideally, the sticky windows should follow the movement.
