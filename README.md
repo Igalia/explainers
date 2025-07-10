@@ -28,3 +28,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 
 * [The 'sticky' feature of window.open](https://github.com/Igalia/explainers/blob/main/window-sticky-feature/README.md)
 
+## Document nodesFromRect
+
+* [`document.nodesFromRect()`](/nodes-from-rect/README.md)
+
