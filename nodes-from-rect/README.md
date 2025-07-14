@@ -18,18 +18,18 @@
 
 ## Introduction
 
-This feature's goal is to provide web developers the ability to get access to content within a specific area of the web page. This is useful for more custom interaction models beyond that provided by browsers. While this is possible today, the solutions are limited and require heavy lifting from developers.
+This feature's goal is to provide web developers the ability to get access to content within a specific area of a web page. This is useful for creating custom interaction models beyond those provided by browsers. While this is possible today, the solutions are limited and require heavy lifting from developers.
 
-To meet this goal its proposed that a new `document.nodesFromRect()` function is exposed, this would return all DOM nodes that intersect a given rectangle.
+To meet this goal, it is proposed that a new `document.nodesFromRect()` function be exposed. This would return all DOM nodes that intersect a given rectangle.
 
 - This document's status: Active
 - Expected venue and specification: CSSWG's [CSSOM View Module](https://drafts.csswg.org/cssom-view/#extensions-to-the-document-interface)
 
 ## User-Facing Problem
 
-Browsers provide a variety of built-in interaction modes for HTML content. However, there are use cases where these built-ins aren't enough, for example the browser selection mechanism only works in the text-flow direction.
+Browsers provide a variety of built-in interaction modes for HTML content. However, there are use cases where these built-ins aren't enough: for example, the browser’s selection mechanism only works in the text-flow direction.
 
-For certain websites users want to interact with content in more specialised ways, a common example is the ability to select an area of the screen to interact with a grouping of content (e.g. to copy it or to move its position).
+In certain contexts, users want to interact with content in more specialised ways. A common example is the ability to select an area of the screen to interact with a grouping of content (e.g. to copy it or to move its position).
 
 Example custom selection UIs in Web Apps:
 - Figma uses and renders a rectangle.
@@ -39,24 +39,24 @@ Example custom selection UIs in Web Apps:
 
 
 Example native apps with similar UIs:
-- JetBrains IDEs use a rectangular selection but renders line highlights.
+- JetBrains IDEs use a rectangular selection but render line highlights.
   ![](./images/clion.png)
 - Firefox offers a custom selection mode for tables which could be approximated as a rectangle selection.
   ![](./images/firefox.png)
 
 ### Goals
 
-- Expose information about DOM nodes (not just elements) within a rectangular region. To enable these more advanced interaction models.
+- Expose information about DOM nodes (not just elements) that intersect with a rectangular region, in order to enable more advanced interaction models.
 
 ### Non-Goals
 
-- Provide a solution to generate the input rectangle such as the custom selection UI.
-- Provide a solution to moving a grouping of DOM nodes.
-- Provide a solution to copy content from elements to the clipboard.
+- Providing a solution to generate the input rectangle, such as the custom selection UI.
+- Providing a solution to moving a grouping of DOM nodes.
+- Providing a solution to copy content from elements to the clipboard.
 
 ## Proposed Approach
 
-We propose adding a new `document.nodesFromRect()` function. This would take a rectangle (a [DOMRectInit](https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit)) representing the area that the website author wishes to query for elements and text.
+We propose adding a new `document.nodesFromRect()` function. This would take a rectangle (a [DOMRectInit](https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit)) representing the area of a web page that can be queried for elements and text.
 
 Note: Accepting a DOMRectInit means it can take a DOMRect, DOMRectReadOnly, or a plain object with the appropriate properties.
 
@@ -103,7 +103,7 @@ dictionary NodesFromRectOptions {
 }
 ```
 
-- The shadowRoots option allows results to include nodes inside the provided shadow roots, enabling controlled shadow DOM piercing.
+- The `shadowRoots` option allows results to include nodes inside the provided shadow roots, enabling controlled Shadow DOM piercing.
 
 Rough proposed algorithm:
 
@@ -125,25 +125,24 @@ Rough proposed algorithm:
 Questions?
 
 - Do we need a "contained" boolean option to exclude nodes that intersect but aren't contained within the rect?
-- Do we need a "tolerance" option, when paired with contained this would allow authors to get a filtered down output without losing nodes that intersect very closely with the selection?
+- Do we need a "tolerance" option, which when paired with "contained" would allow authors to get a filtered-down output without losing nodes that intersect very closely with the selection?
 
 ## Alternatives considered
 
 ### An advanced shape based API
 
-In some applications selection UI is more complex than a rectangular area, such as lasso selection tools. An API that handles more complex shapes for the query was considered but decided against (for this proposal) for two main reasons:
+In some applications, selection UI is more complex than a rectangular area, such as lasso selection tools. An API that handles more complex shapes for the query was considered but decided against (for this proposal) for two main reasons:
 - The web doesn't currently have any primitives for representing these more complex shapes. See discussion to add a [DOMPolygon](https://github.com/w3c/fxtf-drafts/issues/603).
-- Browsers don't have underlying mechanisms for doing this more advanced querying so it would require more implementation effort compared to rect based querying which browsers already support.
+- Browsers don't have underlying mechanisms for doing this more advanced querying, so it would require more implementation effort compared to rect-based querying, which browsers already support.
 
 ### `document.elementsFromRect()`
 
-The existing APIs in this area namely `document.elementFromPoint()` and `document.elementsFromPoint()` as the names suggest operate on Elements NOT Nodes, on the face of it this is okay but this runs into limitations which might not be desirable for this sort of feature. For example, text content
-slotted into a Shadow DOM isn't an element and so wouldn't be returned by an API scoped to Elements. This limitation was raised in https://github.com/w3c/csswg-drafts/issues/11605#issue-2819548585.
+The existing APIs in this area, namely `document.elementFromPoint()` and `document.elementsFromPoint()`, will only (as the names suggest) operate on Elements and **not** on Nodes. On the face of it, this is okay, but this runs into limitations which might not be desirable for this sort of feature. For example, text content slotted into a Shadow DOM isn't an Element, and so wouldn't be returned by an API scoped to Elements. This limitation was raised in https://github.com/w3c/csswg-drafts/issues/11605#issue-2819548585.
 
 
 ### `node.nodesFromRect()`
 
-A possible addition is the ability to scope the query to a specific sub-tree of the document. This would allow the browser to do more of the filtering of the resultant nodes up-front and potentially allow optimisations such as doing sub-tree re-layout. This hasn't been ruled out and is an addition rather than an alternative.
+A possible addition is the ability to scope the query to a specific sub-tree of the document. This would allow the browser to do more of the filtering of the resultant nodes up-front and potentially allow optimisations such as doing sub-tree re-layout. This hasn't been ruled out and is currently considered to be an addition rather than an alternative.
 
 ## Accessibility, Privacy, and Security Considerations
 
