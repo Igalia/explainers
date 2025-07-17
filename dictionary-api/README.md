@@ -15,11 +15,11 @@
 
 ## <a name="introduction"></a> Introduction
 
-The proposed Dictionary APIs enable users to modify the document local dictionary in the browser. Users can add, remove, and check words in the document local dictionary.
+The proposed APIs enable users to modify the document local dictionary in the browser. Users can add, remove, and check words in the document local dictionary.
 This feature ensures the browser does not mark words in the document local dictionary as spelling errors.
 
 The document local dictionary mentioned here differs from the browser's custom dictionary. 
-The browser process manages the browser's custom dictionary, which the user can modify via the settings panel of the Chrome browser.
+The browser process manages the browser's custom dictionary, which the user can modify via the Chrome browser's settings panel.
 The renderer process manages the document local dictionary.
 
 ## <a name="motivation"></a> Motivation
