@@ -1,4 +1,4 @@
-# Explainer: Dictionary API for handling the Document Local Dictionary
+# Explainer: API for handling the Document Local Dictionary
 
 - Contents:
   - [Authors](#authors)
