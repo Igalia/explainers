@@ -32,11 +32,12 @@ Some websites focus on specific topics. For instance,
 - A website related to analyzing economic market status would include the terminology related to the company's names and products
 
 Specific words shouldn't be presented as spelling errors in the cases above.
-
 It needs to be possible to remove added words if they become unnecessary.
 
 Current specs such as [`element.spellcheck` attribute](https://html.spec.whatwg.org/multipage/interaction.html#attr-spellcheck) and [`::spelling-error` CSS pseudo-element](https://drafts.csswg.org/css-pseudo/#selectordef-spelling-error) manage the words already in the dictionary.
-Therefore, a new API is needed to manipulate the document custom dictionary.
+Therefore, a new API is needed to manipulate the document local dictionary.
+
+In addition, usage of the document local dictionary will improve the functionality of [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#proofreader-api-explainer), which can find and correct errors such as grammar, spelling, and punctuation to generate an error-free text before it is published or shared. Proofreading behaviour can be more efficient by skipping specific words as they are present in the document local dictionary.
 
 ## <a name="proposal"></a> Proposal
 
