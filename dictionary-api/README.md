@@ -106,4 +106,23 @@ In terms of site optimization, persistently saving document local dictionary dat
 Also, it's helpful when Internet connections are flaky or non-existent.
 Using a scheme such as IndexedDB is under consideration.
 
+### Complementary implementation approach to provide a downloadable server URL for dictionary files
+
+Referring to [Electron's built-in support for Chromium's spellchecker](https://www.electronjs.org/docs/latest/tutorial/spellchecker), document local dictionary can be implemented by providing a dictionary server URL in the HTML header.
+
+Compared to Chromium's spellchecker, this approach gives a flexible, efficient way to fetch dictionaries.
+Therefore, it can be beneficial for performance, deployment, and privacy needs as below:
+
+1. Efficient fetching of dictionary files
+Chromium's spellchecker downloads the default hunspell dictionary files from a Google CDN by default. In this approach, the HTML header can tell where to download dictionary files from when needed. 
+
+2. Light-weight storage for dictionary data
+Keeping dictionaries for every language would be massive. By fetching only the dictionaries needed at runtime, you keep the storage size minimal and only download content as required.
+
+3. Flexibility of using dictionary data
+This approach allows developers to avoid downloading the default hunspell dictionary files, so they can only use document local dictionary.
+
+4. Security and Privacy
+By default, custom words are stored as plain text, which raises privacy risks. When adopting packages like [@standardnotes/electron-secure-spellchecker](https://www.npmjs.com/package/%40standardnotes/electron-secure-spellchecker), which encrypts custom words using [Electron’s safeStorage](https://www.electronjs.org/docs/latest/api/safe-storage), this approach can improve privacy matters.
+
 ## <a name="discuss"></a> Discussion
