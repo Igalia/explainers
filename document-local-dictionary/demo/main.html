@@ -1,0 +1,128 @@
+<h2>Document Local Dictionary API Demo</h2>
+
+<div style="margin-bottom:1em;">
+  <button id="loadBtn">Load Dictionary</button>
+  <button id="verifyBtn">Verify Words</button>
+</div>
+
+<textarea id="editor" rows="6" cols="50" spellcheck="true">
+Igalia has worked on project such as Wolvic, Orca, SpiderMonkey, Interop
+</textarea>
+
+<h3>Dictionary Status</h3>
+<ul id="status"></ul>
+
+<h3>Delete a Word</h3>
+<input type="text" id="deleteInput" placeholder="Word to delete" />
+<button id="deleteBtn">Delete Word</button>
+
+<script>
+const highlightEl = document.getElementById("highlight");
+const editorEl = document.getElementById("editor");
+const statusEl = document.getElementById("status");
+const DEFAULT_LANG = "en-US";
+
+async function loadDictionary() {
+  statusEl.innerHTML = "<li>Loading dictionary...</li>";
+
+  try {
+    const res = await fetch("dictionary-data/dict.json"); // Your dictionary JSON file
+    const data = await res.json();
+    const { language, words } = data;
+
+    statusEl.innerHTML = "";
+    for (const word of words) {
+      document.dictionary.add(word, language);
+      const li = document.createElement("li");
+      li.dataset.word = word;
+      li.dataset.lang = language;
+      li.innerHTML = `✅ Added: <b>${word}</b> (${language})`;
+      statusEl.appendChild(li);
+      console.log(`[Dictionary API] Added "${word}" for ${language}`);
+    }
+
+    renderHighlights(); // reflect additions immediately
+  } catch (err) {
+    console.error("Error loading dictionary:", err);
+    statusEl.innerHTML = `<li style="color:red;">Error: ${err}</li>`;
+  }
+}
+
+// Tokenize and underline words not present in document dictionary
+function renderHighlights() {
+    const text = editorEl.value;
+
+    // Split on word boundaries while keeping punctuation
+    // Tokens alternate: words and non-word separators
+    const tokens = text.split(/(\b)/);
+
+    const html = tokens.map(tok => {
+        // “Word” heuristic: letters/numbers/apostrophes/hyphens
+        if (/^[\p{L}\p{N}'-]+$/u.test(tok)) {
+          
+        try {
+            const ok = document.dictionary.has(tok, DEFAULT_LANG);
+            return ok ? tok : `<span class="spell-err">${escapeHtml(tok)}</span>`;
+        } catch {
+            return `<span class="spell-err">${escapeHtml(tok)}</span>`;
+        }
+        }
+        return escapeHtml(tok);
+    }).join("");
+
+    editorEl.innerHTML = html;
+}
+
+function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+}
+
+editorEl.addEventListener("input", renderHighlights);
+
+function verifyDictionary() {
+  const items = document.querySelectorAll("#status li[data-word]");
+  items.forEach((li) => {
+    const word = li.dataset.word;
+    const lang = li.dataset.lang;
+    const exists = document.dictionary.has(word, lang);
+    li.innerHTML = exists
+      ? `✅ Exists: <b>${word}</b> (${lang})`
+      : `<s>❌ Deleted: <b>${word}</b> (${lang})</s>`;
+  });
+
+  renderHighlights(); // reflect deletions/exists in overlay
+}
+
+function deleteWord() {
+  const input = document.getElementById("deleteInput");
+  const word = input.value.trim();
+  if (!word) return;
+
+  // Default to en-US for simplicity
+  const lang = "en-US";
+  const deleted = document.dictionary.delete(word, lang);
+
+  console.log(`[Dictionary API] Delete "${word}" result:`, deleted);
+
+  // Update status list
+  const li = document.querySelector(`#status li[data-word="${word}"][data-lang="${lang}"]`);
+  if (li) {
+    li.innerHTML = `<s>❌ Deleted: <b>${word}</b> (${lang})</s>`;
+  } else {
+    // If word wasn't in list, still show feedback
+    const statusEl = document.getElementById("status");
+    statusEl.innerHTML += `<li><s>❌ Deleted: <b>${word}</b> (${lang})</s></li>`;
+  }
+
+  input.value = "";
+  renderHighlights(); // reflect additions immediately
+}
+  
+document.getElementById("loadBtn").onclick = loadDictionary;
+document.getElementById("verifyBtn").onclick = verifyDictionary;
+document.getElementById("deleteBtn").onclick = deleteWord;
+
+renderHighlights(); // reflect deletions/exists in overlay
+</script>
