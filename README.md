@@ -14,7 +14,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 
 ## Dictionary API
 
-* [Dictionary API for handling the Document Custom Dictionary](/dictionary-api/README.md)
+* [Dictionary API for handling the Document Custom Dictionary](/document-local-dictionary/README.md)
 
 ## HTML / Custom Handlers
 
