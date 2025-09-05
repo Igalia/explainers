@@ -20,7 +20,7 @@
 ## Introduction
 
 
-This feature's main goal is to provide web authors with a way to get notice when all the resources needed for printing are loaded.
+This feature's main goal is to provide web authors with a way to get notified when all the resources needed for printing are loaded.
 
 
 * This document status: Active
@@ -171,7 +171,7 @@ window.addEventListener("load",  t.step_func(function () {
 
 ### The definition of `willPrintSoon`
 `willPrintSoon` is an existing function in Chromium. It seems WebKit and Gecko do not have functions similar yet.
-In Chromium, `willPrintSoon` basically loads `LoadAllImagesAndBlockLoadEvent` and `InitiateStyleOrLayoutDependentLoadForPrint` which switch the meida type and viewport size, `UpdateStyleAndLayout`, then load the resources solved by style.
+In Chromium, `willPrintSoon` basically loads `LoadAllImagesAndBlockLoadEvent` and `InitiateStyleOrLayoutDependentLoadForPrint` which switch the media type and viewport size, `UpdateStyleAndLayout`, then load the resources solved by style.
 
 
 ### `display:none` iframe print
@@ -181,7 +181,7 @@ window.preparePrint().then(() => {
        window.print();
    });
 ```
-Ideally, `preparePrint()` should block the effect from the owner element, update the layout tree and style, then load the resources. But currently, in `willPrintSoon`, the layout tree seems not be updated.
+Ideally, `preparePrint()` should block the effect from the owner element, update the layout tree and style, then load the resources. But currently, in `willPrintSoon`, the layout tree seems not to be updated.
 
 
 ## Security and Privacy Considerations
