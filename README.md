@@ -32,3 +32,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 
 * [`document.nodesFromRect()`](/nodes-from-rect/README.md)
 
+## preparePrint()
+
+* [The preparePrint() interface](https://github.com/Igalia/explainers/blob/main/prepare-print-interface/README.md)
+
