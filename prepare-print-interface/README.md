@@ -25,7 +25,7 @@ This feature's main goal is to provide web authors with a way to get notified wh
 
 * This document status: Active
 * Expected venue:
- - [Printing](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html?utm_source=chatgpt.com#printing)
+ - [Printing](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#printing)
 
 
 ## Context
