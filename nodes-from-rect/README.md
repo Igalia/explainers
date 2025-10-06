@@ -1,4 +1,4 @@
-# Explainer: `document.nodesFromRect()` function
+# Explainer: `documentOrShadowRoot.nodesFromRect()` function
 
 ## Authors:
 
@@ -20,7 +20,7 @@
 
 This feature's goal is to provide web developers the ability to get access to content within a specific area of a web page. This is useful for creating custom interaction models beyond those provided by browsers. While this is possible today, the solutions are limited and require heavy lifting from developers.
 
-To meet this goal, it is proposed that a new `document.nodesFromRect()` function be exposed. This would return all DOM nodes that intersect a given rectangle.
+To meet this goal, it is proposed that a new `documentOrShadowRoot.nodesFromRect()` function be exposed. This would return all DOM nodes that intersect a given rectangle, scoped to either the document tree or a specific shadow root tree.
 
 - This document's status: Active
 - Expected venue and specification: CSSWG's [CSSOM View Module](https://drafts.csswg.org/cssom-view/#extensions-to-the-document-interface)
@@ -56,7 +56,7 @@ Example native apps with similar UIs:
 
 ## Proposed Approach
 
-We propose adding a new `document.nodesFromRect()` function. This would take a rectangle (a [DOMRectInit](https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit)) representing the area of a web page that can be queried for elements and text.
+We propose adding new `document.nodesFromRect()` and `shadowRoot.nodesFromRect()` functions. These would take a rectangle (a [DOMRectInit](https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit)) representing the area of a web page that can be queried for elements and text.
 
 Note: Accepting a DOMRectInit means it can take a DOMRect, DOMRectReadOnly, or a plain object with the appropriate properties.
 
@@ -94,7 +94,7 @@ async function copyTableData(rect) {
 Extensions to the document Interface:
 
 ```webidl
-partial interface Document {
+partial interface mixin DocumentOrShadowRoot {
     sequence<Node> nodesFromRect(DOMRectInit rect, optional NodesFromRectOptions options = {});
 }
 
@@ -109,7 +109,7 @@ Rough proposed algorithm:
 
 1. Let *sequence* be a new empty sequence.
 2. If rect isn't valid (such as negative coords or inverted rects), return sequence.
-3. For each [box](https://drafts.csswg.org/css-display-4/#box) or [text sequence](https://drafts.csswg.org/css-display-4/#css-text-sequence) *item* in the [viewport](https://drafts.csswg.org/css2/#viewport%E2%91%A0), in paint order, starting with the topmost:
+3. For each [box](https://drafts.csswg.org/css-display-4/#box) or [text sequence](https://drafts.csswg.org/css-display-4/#css-text-sequence) *item* in the [viewport](https://drafts.csswg.org/css2/#viewport%E2%91%A0), in paint order, starting with the topmost: **Issue: Need to handle shadow root trees not just the viewport.**
     - 3.1. If *item* is a text sequence:
         - 3.1.1. For each text node *node* in *item*'s text nodes:
             - 3.1.1.1. Let *range* be a new Range.
