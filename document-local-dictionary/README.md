@@ -10,6 +10,7 @@
 ## <a name="authors"></a> Authors
 
 * Ziran Sun  \<zsun@igalia.com\>
+* Jihye Hong
 
 # <a name="motivation"></a> Motivation
 

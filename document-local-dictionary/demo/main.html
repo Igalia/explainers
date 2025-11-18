@@ -1,128 +1,182 @@
-<h2>Document Local Dictionary API Demo</h2>
+<!doctype html>
+<head>
+<meta charset="UTF-8" />
+<title>Dictionary - Web APIs</title>
 
-<div style="margin-bottom:1em;">
-  <button id="loadBtn">Load Dictionary</button>
-  <button id="verifyBtn">Verify Words</button>
+<style>
+.input-container {
+  display: flex; /* Enables flexbox for the container */
+  align-items: center; /* Aligns items vertically in the center */
+  gap: 5px; /* Adds space between the input and the button */
+}
+
+.input-container input {
+  flex-grow: 1; /* Allows the input to grow and fill available space */
+}
+
+.btn-group button {
+  display: block; /* Make the buttons appear below each other */
+  margin: 10px;  
+}
+
+.output {
+  overflow: scroll;
+  margin: 1rem 0;
+  height: 200px;
+}
+
+</style>
+
+
+<body>
+<h1>Document: dictionary Interface</h1>
+
+<p> The dictionary interface lets web application to add, remove own word list to the Document Local Dictionary.</p>
+<p> It also allows the web application to check if the local dictionary has already contained certain words. </p>
+ 
+<h2> Constructor </h2>
+
+<div><u><b>DOMLocalDictionary()</u></b></div>
+<div style="white-space: pre" />	Returns a new DOMLocalDictionary object. </div>
+
+<h2> Instance methods </h2>
+
+<div><u><b>Dictionary.add()</u></b><p>	- Adds a list of words (an array of strings) to the dictionary.</p></div>
+<div><p>- JS Syntax: add() with Parameter of a JS String Array.</p> </div>
+
+<div><u><b>Dictionary.delete()</u></b><p>	- Removes a list of words (an array of strings) from the dictionary.</p></div>
+<div><p>- JS Syntax: delete() with Parameter of a JS String Array.</p> </div>
+
+<div><u><b>Dictionary.has()</u></b><p>	- Checks if the dictionary has already contained a word (string).</p></div>
+<div><p>- JS Syntax: check() with Parameter of a JS String.</p> </div>
+
+<h2> Examples </h2>
+
+<h4 id="JavaScript">Adding words</h4>
+<div contenteditable rows="10" cols="50" style="background-color: #D3D3D3; width: max-content;">
+<pre><code>
+const dictionary = new DOMLocalDictionary();
+
+// Add a single word.
+dictionary.add(["Pikachu"], navigator.language);
+
+// Add a list of words.
+dictionary.add(["Igalia", "Wolvic", "Orca", "SpderMonkey", "Interop"], navigator.language);
+
+// Add from a Json file.
+const jsonObj = {
+    "language": "en-US",
+    "words": ["Pikachu", "Bulbasaur", "Ivysaur"]
+};
+const file = new Blob([JSON.stringify(jsonObj, null, 2)], {
+    type: 'application/json',
+});
+
+const reader = new FileReader();
+reader.onload = () => {
+    const { language, words } = JSON.parse(reader.result);
+    dictionary.add(words, language);
+};
+reader.readAsText(file);
+
+</code></pre > </div>
+<h2> Try it </h2>
+
+<div>
+<textarea id="editor" rows="10" cols="60" spellcheck="true" placeholder="Enter text...">
+Igalia has been working on projects such as Wolvic, Orca, SpiderMonkey, Interop...
+</textarea> </div>
+<!--<div>
+<button id="resetBtn" onclick="resetWords()">Reset</button> </span>
+</div>-->
+
+<h3> Add/Remove using Input</h3>
+
+<div class="input-container">
+<input type="text" id="addWords" placeholder="Words to add">
+<div class="btn-group">
+<button id="addBtn" onclick="addWords()">Add</button>
+</div>
 </div>
 
-<textarea id="editor" rows="6" cols="50" spellcheck="true">
-Igalia has worked on project such as Wolvic, Orca, SpiderMonkey, Interop
-</textarea>
+<div class="input-container">
+<input type="text" id="removeWords" placeholder="Words to delete">
+<div class="btn-group">
+<button id="remvBtn" onclick="removeWords()">Delete</button>
+</div>
 
-<h3>Dictionary Status</h3>
-<ul id="status"></ul>
+</div>
 
-<h3>Delete a Word</h3>
-<input type="text" id="deleteInput" placeholder="Word to delete" />
-<button id="deleteBtn">Delete Word</button>
+<h3> Add/Remove using file</h3>
+<div>
+<input id="input" type="file" />
+<div class="output"></div>
+
+<button id="addFileBtn" onclick="addFile()">Add</button>
+<button id="removeFileBtn" onclick="removeFile()">Delete</button>
+</div>
+</body>
 
 <script>
-const highlightEl = document.getElementById("highlight");
-const editorEl = document.getElementById("editor");
-const statusEl = document.getElementById("status");
-const DEFAULT_LANG = "en-US";
+const fileInput = document.getElementById("input");
+const output = document.querySelector(".output");
 
-async function loadDictionary() {
-  statusEl.innerHTML = "<li>Loading dictionary...</li>";
+document.getElementById("input").addEventListener("change", handleFiles, false);
 
-  try {
-    const res = await fetch("dictionary-data/dict.json"); // Your dictionary JSON file
-    const data = await res.json();
-    const { language, words } = data;
-
-    statusEl.innerHTML = "";
-    for (const word of words) {
-      document.dictionary.add(word, language);
-      const li = document.createElement("li");
-      li.dataset.word = word;
-      li.dataset.lang = language;
-      li.innerHTML = `✅ Added: <b>${word}</b> (${language})`;
-      statusEl.appendChild(li);
-      console.log(`[Dictionary API] Added "${word}" for ${language}`);
+function handleFiles() {
+    const dictionary = new DOMLocalDictionary();
+    const file = this.files[0];
+    if (file) {
+        output.innerText = file.text();
+        const reader = new FileReader();
+        reader.onload = () => {
+            output.textContent = reader.result;
+        };
+        reader.readAsText(file);
     }
-
-    renderHighlights(); // reflect additions immediately
-  } catch (err) {
-    console.error("Error loading dictionary:", err);
-    statusEl.innerHTML = `<li style="color:red;">Error: ${err}</li>`;
-  }
 }
 
-// Tokenize and underline words not present in document dictionary
-function renderHighlights() {
-    const text = editorEl.value;
 
-    // Split on word boundaries while keeping punctuation
-    // Tokens alternate: words and non-word separators
-    const tokens = text.split(/(\b)/);
+function addWords() {
+	var wordArray = Array();
+	const addInput = document.getElementById("addWords");
+	let splits = addInput.value.split(` `);
+	for (var i = 0; i < splits.length; i++) {
+	    wordArray.push(splits[i]);
+	}
+const dictionary = new DOMLocalDictionary();
 
-    const html = tokens.map(tok => {
-        // “Word” heuristic: letters/numbers/apostrophes/hyphens
-        if (/^[\p{L}\p{N}'-]+$/u.test(tok)) {
-          
-        try {
-            const ok = document.dictionary.has(tok, DEFAULT_LANG);
-            return ok ? tok : `<span class="spell-err">${escapeHtml(tok)}</span>`;
-        } catch {
-            return `<span class="spell-err">${escapeHtml(tok)}</span>`;
-        }
-        }
-        return escapeHtml(tok);
-    }).join("");
-
-    editorEl.innerHTML = html;
+dictionary.add(wordArray, navigator.language);
 }
 
-function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, c => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
+function removeWords() {
+	var wordArray = Array();
+	const addInput = document.getElementById("removeWords");
+	let splits = addInput.value.split(` `);
+	for (var i = 0; i < splits.length; i++) {
+	    wordArray.push(splits[i]);
+	}
+const dictionary = new DOMLocalDictionary();
+dictionary.delete(wordArray, navigator.language);
+
 }
 
-editorEl.addEventListener("input", renderHighlights);
 
-function verifyDictionary() {
-  const items = document.querySelectorAll("#status li[data-word]");
-  items.forEach((li) => {
-    const word = li.dataset.word;
-    const lang = li.dataset.lang;
-    const exists = document.dictionary.has(word, lang);
-    li.innerHTML = exists
-      ? `✅ Exists: <b>${word}</b> (${lang})`
-      : `<s>❌ Deleted: <b>${word}</b> (${lang})</s>`;
-  });
-
-  renderHighlights(); // reflect deletions/exists in overlay
+function addFile() {
+const { language, words } = JSON.parse(output.textContent);
+const dictionary = new DOMLocalDictionary();
+dictionary.add(words, language);
 }
 
-function deleteWord() {
-  const input = document.getElementById("deleteInput");
-  const word = input.value.trim();
-  if (!word) return;
-
-  // Default to en-US for simplicity
-  const lang = "en-US";
-  const deleted = document.dictionary.delete(word, lang);
-
-  console.log(`[Dictionary API] Delete "${word}" result:`, deleted);
-
-  // Update status list
-  const li = document.querySelector(`#status li[data-word="${word}"][data-lang="${lang}"]`);
-  if (li) {
-    li.innerHTML = `<s>❌ Deleted: <b>${word}</b> (${lang})</s>`;
-  } else {
-    // If word wasn't in list, still show feedback
-    const statusEl = document.getElementById("status");
-    statusEl.innerHTML += `<li><s>❌ Deleted: <b>${word}</b> (${lang})</s></li>`;
-  }
-
-  input.value = "";
-  renderHighlights(); // reflect additions immediately
+function removeFile() {
+const { language, words } = JSON.parse(output.textContent);
+const dictionary = new DOMLocalDictionary();
+dictionary.delete(words, language);
 }
-  
-document.getElementById("loadBtn").onclick = loadDictionary;
-document.getElementById("verifyBtn").onclick = verifyDictionary;
-document.getElementById("deleteBtn").onclick = deleteWord;
 
-renderHighlights(); // reflect deletions/exists in overlay
-</script>
+function reset() {
+}
+
+</script>          
+
+
