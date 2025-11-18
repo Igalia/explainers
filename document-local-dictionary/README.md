@@ -2,47 +2,39 @@
 
 - Contents:
   - [Authors](#authors)
-  - [Introduction](#introduction)
   - [Motivation](#motivation)
-  - [Proposal](#proposal)
-  - [Security and Privacy Considerations](#security)
-  - [Future Work](#future)
-  - [Discussion](#discuss)
+  - [Proposal](#proposal) 
+  - [The Per-Document Design](#per-document)
+  - [Security and Privacy Considerations](#security) 
 
 ## <a name="authors"></a> Authors
 
-* Jihye Hong \<jihye@igalia.com\>
+* Ziran Sun  \<zsun@igalia.com\>
 
-## <a name="introduction"></a> Introduction
+# <a name="motivation"></a> Motivation
 
-We propose a new concept called the *Document Local Dictionary*, which is a dictionary scoped to a single document.
-Proposed APIs enable users to modify the *Document Local Dictionary* in the browser. Users can add, remove, and check words in the *Document Local Dictionary*.
-This feature ensures that the browser does not mark words in the *Document Local Dictionary* as spelling errors.
+When spell-checking is enabled, browsers check the spellings of words against those installed dictionary/dictionaries(locally or at the server side).  The mispelled words will then be marked for spelling errors.
 
-The *Document Local Dictionary* mentioned here differs from the browser's custom dictionary. 
-The browser process manages the browser's custom dictionary, which the user can modify via the Chrome browser's settings panel.
-The renderer process manages the *Document Local Dictionary*.
+However, there are specific cases where words are not in the dictionaries but still valid. For example,
 
-## <a name="motivation"></a> Motivation
-
-Some words need to be added to the *Document Local Dictionary* so that the browser does not mark them as spelling errors.
-
-Some websites focus on specific topics. For instance, 
 - A website dedicated to Pokémon might feature the names of various Pokémon characters, such as Pikachu and Charmander.
-- A website that provides information about South Korea and may include Korean words or terms presented in English pronunciation.
-- A website related to analyzing the economic market status would include the terminology related to the company's names and products
+- A website related to analyzing the economic market status might include the terminology related to the company's names and products that do not come from standard dictionaries but are valid in the context.
 
-Specific words shouldn't be presented as spelling errors in the cases above.
-It needs to be possible to remove added words if they become unnecessary.
+When these "valid" words are marked for spelling errors in these kinds of circumstances, it could be misleading, annoying and distractive for some users.
 
-Current specs such as [`element.spellcheck` attribute](https://html.spec.whatwg.org/multipage/interaction.html#attr-spellcheck) and [`::spelling-error` CSS pseudo-element](https://drafts.csswg.org/css-pseudo/#selectordef-spelling-error) manage the words already in the dictionary.
-Therefore, a new API is needed to manipulate the *Document Local Dictionary*.
 
-In addition, usage of the *Document Local Dictionary* will improve the functionality of [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#proofreader-api-explainer), which can find and correct errors such as grammar, spelling, and punctuation to generate an error-free text before it is published or shared. Proofreading behaviour can be more efficient by skipping specific words as they are present in the *Document Local Dictionary*.
+# <a name="proposal"></a> Proposal
 
-## <a name="proposal"></a> Proposal
+### Document Local Dictionary
 
-### Syntax
+We are proposing a new concept: the "Document Local Dictionary". As the name says, it is a transient dictionary scoped local to a single document.
+
+Exposed API will allow the web page to add, remove and check words, typically those not in the dictionary/dictionaries that browsers already have, in the "Document Local Dictionary". During spelling check, spellchecker will also check words against this dictionary. This mechanism gives the pages an option to selectively suppress spell check violations on their own page.
+
+It is note that some browsers allow users to add/remove words via browsers' setting panel, which is normally managed via browser process. The Document Local Dictionary" API is a different concept. The Document Local Dictionary API fills the gap that allows pages to programmatically modify the dictionary on a per-document basis and it is managed by the render process.
+
+### API Syntax
+
 ```
 User agents must create a Dictionary object whenever a document is created and associate the object with that document.
 
@@ -57,77 +49,31 @@ interface Document : Node {
 
 [Exposed=Window]
 interface Dictionary {
-  undefined add(DOMString word, DOMString language);
-  undefined delete(DOMString word, DOMString language);
+  undefined add(sequence<DOMString> words, DOMString language);
+  undefined delete(sequence<DOMString> words, DOMString language);
   boolean has(DOMString word, DOMString language);
 };
 ```
-- `add()` adds a word to the *Document Local Dictionary*
-- `delete()` deletes a word from the *Document Local Dictionary*
+- `add()` adds a list of words to the *Document Local Dictionary*
+- `delete()` deletes a list of words from the *Document Local Dictionary*
 - `has()` returns `true` if the passed word is already present in the *Document Local Dictionary*. Otherwise `false`
 
-### High-level Architecture
-![Flow diagram](dictionary_api_diagram.png)
+## The Per-Document Design in Chromium
 
-### Data Storage
+The "Document Local Dictionary" is local to each document and the design needs to be per-document based. This concept fits in the spellchecker mechanism in Chromium.
 
-The *Document Local Dictionary* data is managed in the format of `std::set<std::u16string>`, which is defined in [CustomDictionaryEngine](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/custom_dictionary_engine.h;l=14;bpv=1;bpt=1?q=custom_dictionary%20engine&ss=chromium).
-It is defined per a `Document` object.
+In Chromium, the spell check functionality is primarily handled through an interaction between a [SpellCheckProvider](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/spellcheck_provider.h;l=43?q=spellcheckprovider&sq=&ss=chromium) in the renderer process and the [SpellCheckHost](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/common/spellcheck.mojom;drc=42cd44f4cbdfd33df896e190955b0987c431cd06;l=45) in the browser process, utilizing Mojo inter-process communication (IPC).
 
-`document.dictionary.add` or `document.dictionary.delete` triggers [`CustomDictionaryEngine::OnCustomDictionaryChanged`](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/custom_dictionary_engine.cc;bpv=1;bpt=1) to insert or erase a word via `std::set<std::u16string>` type of the local dictionary.
+The [SpellCheckProvider](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/spellcheck_provider.h;l=43?q=spellcheckprovider&sq=&ss=chromium) is an object in the Renderer process that interacts with Blink and handles the initial spellcheck request. [SpellCheckProvider](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/spellcheck_provider.h;l=43?q=spellcheckprovider&sq=&ss=chromium) is a RenderFrameObserver [[1]](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/spellcheck_provider.h;drc=caa07f2daae0a5dd10ccfc972f1bc4b21930af7b;l=43). This means that it has a 1:1 mapping to a RenderFrame, hence a 1:1 mapping to a frame/document as the RenderFrame represents the contents of one web document in a tab or subframe.
 
-### Example
+The [SpellCheckHost](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/common/spellcheck.mojom;drc=42cd44f4cbdfd33df896e190955b0987c431cd06;l=45) in the Browser process is bound as an associated interface with the RenderFrameHost [[2]](https://docs.google.com/document/d/1zncMkJLH_Yx63EVN94clXDfwS0sirSd6BR6EAa9JtFo/edit?tab=t.0#heading=h.7nki9mck5t64). It primarily opens files related to dictionaries and language data to perform its spelling check function. 
 
-#### Example 1. Manipulating the *Document Local Dictionary*
-```js
+Since Document Local Dictionary stores words in memory, no file operation is needed. It should be sufficient enough to keep all the functionalities within the renderer side where classes for spellchecking are owned by frames.
 
-// Add a word to the dictionary
-document.dictionary.add("IRL", "en-GB");
-document.dictionary.add("TBH", "en-GB");
+The basic concept for implementation is to introduce a new instance of [CustomDictionaryEngine](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/custom_dictionary_engine.h;l=14?q=custom_dictionary%20engine&ss=chromium). The [SpellCheckProvider](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/spellcheck_provider.h;l=43?q=spellcheckprovider&sq=&ss=chromium) monitors the changes on the Document Local Dictionary via the [CustomDictionaryEngine](https://source.chromium.org/chromium/chromium/src/+/main:components/spellcheck/renderer/custom_dictionary_engine.h;l=14?q=custom_dictionary%20engine&ss=chromium) instance, triggers spell checking operation against the updated Document Local dictionary and unmark the words that are included in the Document Local Dictionary.
 
-// Delete a word from the dictionary
-document.dictionary.delete("TBH", "en-GB");
-```
+## Security and Privacy Considerations
 
-#### Example 2. Adding a new proper noun
-```js
+The *Document Local Dictionary* data is transient and will be released once a document or tab is closed in Chromium.  
 
-// Add a word to the dictionary
-document.dictionary.add("Pikachu", navigator.language);
-
-```
-
-## <a name="security"></a> Security and Privacy Considerations
-The *Document Local Dictionary* data won't be loaded cross-origin. To implement this feature, user agents must use the potentially [CORS-enabled fetch method](https://fetch.spec.whatwg.org/#http-cors-protocol).
-Also, non-persistent browser sessions must manage data related to the *Document Local Dictionary*.
-
-## <a name="future"></a> Future Work
-### Persistently store data
-In terms of site optimization, persistently saving *Document Local Dictionary* data would allow sites to have large dictionaries without setup costs and the bandwidth to transmit dictionaries on every load.
-Also, it's helpful when Internet connections are flaky or non-existent.
-Using a scheme such as IndexedDB is under consideration.
-
-### Complementary implementation approach to provide a downloadable server URL for dictionary files
-
-Referring to [Electron's built-in support for Chromium's spellchecker](https://www.electronjs.org/docs/latest/tutorial/spellchecker), *Document Local Dictionary* can be implemented by providing a dictionary server URL in the HTML header.
-
-Compared to Chromium's spellchecker, this approach gives a flexible, efficient way to fetch dictionaries.
-Therefore, it can be beneficial for performance, deployment, and privacy needs as below:
-
-1. Efficient fetching of dictionary files
-
-Chromium's spellchecker downloads the default hunspell dictionary files from a Google CDN by default. In this approach, the HTML header can tell where to download dictionary files from when needed. 
-
-2. Light-weight storage for dictionary data
-
-Keeping dictionaries for every language would be massive. By fetching only the dictionaries needed at runtime, you keep the storage size minimal and only download content as required.
-
-3. Flexibility of using dictionary data
-
-This approach allows developers to avoid downloading the default hunspell dictionary files, so they can only use *Document Local Dictionary*.
-
-4. Security and Privacy
-
-By default, custom words are stored as plain text, which raises privacy risks. When adopting packages like [@standardnotes/electron-secure-spellchecker](https://www.npmjs.com/package/%40standardnotes/electron-secure-spellchecker), which encrypts custom words using [Electron’s safeStorage](https://www.electronjs.org/docs/latest/api/safe-storage), this approach can improve privacy matters.
-
-## <a name="discuss"></a> Discussion
+We are not foreseeing any particular network violation introduced.
