@@ -11,6 +11,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 ## Canvas
 
 * [Canvas Formatted Text](/canvas-formatted-text/README.md)
+* [Canvas Text Writing Mode Support](/canvas-writing-mode/README.md)
 
 ## Dictionary API
 
