@@ -83,6 +83,10 @@ requires custom solutions to achieve high quality vertical writing across browse
 This in turn will help users as we would expect greater utilization of localized
 writing modes when it is easier to achieve them.
 
+This feature will add no additonal personal information or fingerprinting risk beyond
+that already available through the CSS features and existing text rendering and metrics.
+HTMNL canvas accessibility is unchanged.
+
 ## Stakeholder Feedback / Opposition
 
 Pending.
