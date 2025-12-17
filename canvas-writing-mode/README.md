@@ -64,7 +64,9 @@ so their baselines are vertical offsets. We will allow only `left`, `right` and
 
 ### Example
 
-TODO
+![The effect of the proposed attributes on text rendering.](./attribute-output.png)
+
+![The effect of the proposed attributes on placement.](./align-baseline.png)
 
 ## Alternatives considered
 
@@ -75,6 +77,8 @@ specialized methods because it allows greater flexibility with fewer additions.
 We can add 2 attributes each with a few potential values rather than their cross-product of new methods. Borrowing CSS terminology also aids in developer
 familiarity and eases the use of existing browser code for implementation.
 
+An alternative for `textAlign` and `textBaseline` is to use the horizontal writing mode values, with `textAlign` controlling horizontal position and `textBaseline` controlling vertical. This may be simpler for authors to remember, even though now `start` and `end` would lose their meaning, as would most baseline values.
+
 ## Accessibility, Internationalization, Privacy, and Security Considerations
 
 This proposal will make internaitonalization of canvas content easier by enabling
@@ -82,6 +86,10 @@ wiriting mode support on par with that offered by CSS. Existing internationalizi
 requires custom solutions to achieve high quality vertical writing across browsers.
 This in turn will help users as we would expect greater utilization of localized
 writing modes when it is easier to achieve them.
+
+This feature will add no additonal personal information or fingerprinting risk beyond
+that already available through the CSS features and existing text rendering and metrics.
+HTML canvas accessibility is unchanged.
 
 ## Stakeholder Feedback / Opposition
 
