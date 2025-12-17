@@ -89,7 +89,7 @@ writing modes when it is easier to achieve them.
 
 This feature will add no additonal personal information or fingerprinting risk beyond
 that already available through the CSS features and existing text rendering and metrics.
-HTMNL canvas accessibility is unchanged.
+HTML canvas accessibility is unchanged.
 
 ## Stakeholder Feedback / Opposition
 
