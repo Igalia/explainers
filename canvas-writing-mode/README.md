@@ -77,7 +77,7 @@ specialized methods because it allows greater flexibility with fewer additions.
 We can add 2 attributes each with a few potential values rather than their cross-product of new methods. Borrowing CSS terminology also aids in developer
 familiarity and eases the use of existing browser code for implementation.
 
-An alternative for the `textAlign` and `textBaseline` is to use the horizontal writing mode values, with `textAlign` controlling horizontal position and `textBaseline` controlling vertical. This may be simpler for authors to remember, even though now `start` and `end` would lose their meaning, as would most basleine values.
+An alternative for `textAlign` and `textBaseline` is to use the horizontal writing mode values, with `textAlign` controlling horizontal position and `textBaseline` controlling vertical. This may be simpler for authors to remember, even though now `start` and `end` would lose their meaning, as would most baseline values.
 
 ## Accessibility, Internationalization, Privacy, and Security Considerations
 
