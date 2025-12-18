@@ -48,25 +48,24 @@ when a text string is shaped. The possible values will be `horizontal` (the defa
 possible values will be `mixed` (the default), `upright` or `sideways`.
 
 A text string shaped with these attributes will match the result of a single line
-styled with the corresponding CSS properties.
+styled with the corresponding CSS properties, with `vertical` mapping to `vertical-lr` and `sideways` mapping to `sideways-rl`.
 
 The `horizontal` `writingMode` value will render the same as current canvas text.
 
-A `writingMode` of `vertical` or `sideways` will produce a string that will render
-vertically if not explicitly rotated. That is, the bound will likely be higher than it
+A `writingMode` of `vertical` or `sideways` will produce a string that renders
+vertically unless explicitly rotated. That is, the bound will likely be higher than it
 is wide. The existing `textAlign` attribute will apply to the _vertical_ position of
-the text, chosen to be that way so that the existing `start` and `end` values
-for `textAlign` still make sense. We will then allow `top` and `bottom` as additional
-values. The `textBaseline` will control _horizontal_ position, but this is more
-challenging because most writing system still use vertically oriented characters,
-so their baselines are vertical offsets. We will allow only `left`, `right` and
-`center`, matching the existing `textAlign` behavior.
+the text, so that the existing `start` and `end` values
+for `textAlign` still make sense. The `left` and `right` values will then logically map to top and bottom. The `textBaseline` will control _horizontal_ position, but this is more challenging because most writing systems still use vertically oriented characters,
+so their baselines are vertical offsets. We will allow only `top`, `bottom` and
+`middle`, matching the existing `textBaseline` behavior. The values of `top` and `bottom` will map to right and left for vertical and sideways text. See the [CSS Abstract-to-Physical Mappings](https://drafts.csswg.org/css-writing-modes/#logical-to-physical), with `textAlign` values corresponding to `line-left` and `line-right` and `textBaseline` values corresponding to `over` and `under`, with the canvas `writingMode = "sideways"` mapping to CSS `sideways-rl`.
 
 ### Example
 
 ![The effect of the proposed attributes on text rendering.](./attribute-output.png)
 
-![The effect of the proposed attributes on placement.](./align-baseline.png)
+![The effect of the proposed attributes on placement for writing mode vertical.](./align-vertical.png)
+![The effect of the proposed attributes on placement for writing mode sideways.](./align-sideways.png)
 
 ## Alternatives considered
 
