@@ -19,16 +19,16 @@ This explainer proposes a new API, Spell Check Custom Dictionary API, to allow p
 
 ## <a name="user-problem"></a> User-Facing Problem
 
-When spell-checking is enabled, browsers check the spellings of words against those installed dictionary/dictionaries(locally or at the server side).  The misspelt words will then be marked for spelling errors.
+When spell-checking is enabled, browsers check the spellings of words against those in installed dictionary/dictionaries(locally or at the server side).  The misspelt words will then be marked for spelling errors.
 
 However, there are specific cases where words are not in the dictionaries but still valid. For example,
 
 - A website dedicated to Pokémon might feature the names of various Pokémon characters, such as Pikachu and Charmander.
-- A website related to analyzing the economic market status might include the terminology related to the company's names and products that do not come from standard dictionaries but are valid in the context.
+- A website related to analyzing the economic market status might include the terminology related to companies' names and products that do not come from standard dictionaries but are valid in the context.
 
 When the "valid" words are marked for spelling errors in these kinds of circumstances, it could be misleading, frustrating and distractive for some users.
 
-It would be useful that websites can have options to manipulate those "site specific" words to stop browsers' spell checkers from marking them for spelling errors.
+It would be useful that websites can have options to treat those "site specific" words as correct to prevent browsers' spell checkers from marking them for spelling errors.
 
 ## <a name="proposed-approach"></a> Proposed Approach
 
@@ -67,7 +67,7 @@ customDict.lang = 'en-GB';
 // The attribute is an ObservableArray.
 customDict.words = wordObjects;
 
-// Dynamically add/remove words in the dictionary.
+// Dynamically add or remove words in the dictionary.
 customDict.words.push(new CustomWord('Interop'));
 customDict.words.pop();
 
@@ -79,7 +79,7 @@ The spell check custom dictionary is a transient dictionary and lives no longer 
 
 ### Interop with other components
 
-Having a custom dictionary probably is not the use case only for spell checker. How the components work with each other and avoid overlapping as much as possible should be considered during implementations. As an example, we discussed this for Chromium at [Interop with other components](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.ei2z5z5y38p4).
+Handling customer or domain specific terminology/phrases/words probably is not the use case only for spell checker. For example, Web Speech has introduced [Contextural biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) to handle domain-specific terminology, proper nouns, or other words that are unlikely to appear in general conversation. How this work interops with other existing or future components and avoid overlapping as much as possible should be considered during implementations. We discussed about this for Chromium case at [Interop with other components](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.ei2z5z5y38p4).
 
 ## <a name="security"></a> Accessibility, Internationalization, Privacy, and Security Considerations
 
