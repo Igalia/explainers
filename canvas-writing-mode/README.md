@@ -21,7 +21,7 @@ already be familiar with.
 ## User-Facing Problem
 
 Users in regions where non-latin scripts are the norm are currently under-served
-by HTML canvas APIs to geenrate text in the appropriate writing mode (such as
+by HTML canvas APIs to generate text in the appropriate writing mode (such as
 vertical, reading left-to-right or right-to-left, with stategies for mixing
 latin text). We expect making things easier for developers will make it more likely that they serve all users. Those already trying to implement writing modes in script
 will be able to reduce their download size, also benefiting users.
@@ -34,7 +34,7 @@ semantics as much as possible.
 
 ### Non-goals
 
-We do not plan to address multi-line text as canvas does not support this even
+We do not plan to address multi-line text as canvas does not support this, even
 for horizontal writing.
 
 ## Proposed Approach
@@ -43,29 +43,32 @@ We propose the addition of two attributes to the HTML `CanvasTextDrawingStyles`
 interface:
 * `writingMode` to control the orientation of characters and their relative positions
 when a text string is shaped. The possible values will be `horizontal` (the default),
-`vertical` and  `sideways`.
+and `vertical`.
 * `textOrientation` to control the orientation of characters within the line. The
 possible values will be `mixed` (the default), `upright` or `sideways`.
 
 A text string shaped with these attributes will match the result of a single line
-styled with the corresponding CSS properties, with `vertical` mapping to `vertical-lr` and `sideways` mapping to `sideways-rl`.
+styled with the corresponding CSS properties, with `vertical` mapping to `vertical-lr`.
+Note we do not plan to support the CSS `sideways` value for `writingMode` because,
+in the absense of multi-line text, sideways rendering is identical to rotated
+horizontal text which is readily achieved with existing canvas functionality.
 
 The `horizontal` `writingMode` value will render the same as current canvas text.
 
-A `writingMode` of `vertical` or `sideways` will produce a string that renders
+A `writingMode` of `vertical` will produce a string that renders
 vertically unless explicitly rotated. That is, the bound will likely be higher than it
 is wide. The existing `textAlign` attribute will apply to the _vertical_ position of
 the text, so that the existing `start` and `end` values
 for `textAlign` still make sense. The `left` and `right` values will then logically map to top and bottom. The `textBaseline` will control _horizontal_ position, but this is more challenging because most writing systems still use vertically oriented characters,
-so their baselines are vertical offsets. We will allow only `top`, `bottom` and
-`middle`, matching the existing `textBaseline` behavior. The values of `top` and `bottom` will map to right and left for vertical and sideways text. See the [CSS Abstract-to-Physical Mappings](https://drafts.csswg.org/css-writing-modes/#logical-to-physical), with `textAlign` values corresponding to `line-left` and `line-right` and `textBaseline` values corresponding to `over` and `under`, with the canvas `writingMode = "sideways"` mapping to CSS `sideways-rl`.
+so their baselines are vertical offsets. In the absence of a compelling alternative, and to simplify
+the model for authors, we will still use the existing `textBaseline` values to
+control the _horizontal_ position of vertical text.
 
 ### Example
 
 ![The effect of the proposed attributes on text rendering.](./attribute-output.png)
 
 ![The effect of the proposed attributes on placement for writing mode vertical.](./align-vertical.png)
-![The effect of the proposed attributes on placement for writing mode sideways.](./align-sideways.png)
 
 ## Alternatives considered
 
