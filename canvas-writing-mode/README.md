@@ -23,7 +23,7 @@ already be familiar with.
 Users in regions where non-latin scripts are the norm are currently under-served
 by HTML canvas APIs to geenrate text in the appropriate writing mode (such as
 vertical, reading left-to-right or right-to-left, with stategies for mixing
-latin text). We expect making things easier for developers will make it more likely that the serve all users. Those already trying to implement writing modes in script
+latin text). We expect making things easier for developers will make it more likely that they serve all users. Those already trying to implement writing modes in script
 will be able to reduce their download size, also benefiting users.
 
 ### Goal
