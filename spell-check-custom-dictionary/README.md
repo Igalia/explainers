@@ -15,7 +15,7 @@
 
 ## <a name="introduction"></a> Introduction
 
-This explainer proposes a new API, Spell Check Custom Dictionary API, to allow pages to selectively suppress spell check violations.
+This explainer proposes a new API, Spell Check Custom Dictionary API, to allow pages to selectively suppress spell check violations, offer better spelling correction suggestions, and potentially enable user agents to explore additional future niceties.
 
 ## <a name="user-problem"></a> User-Facing Problem
 
