@@ -15,20 +15,21 @@
 
 ## <a name="introduction"></a> Introduction
 
-This explainer proposes a new API, Spell Check Custom Dictionary API, to allow pages to selectively suppress spell check violations.
+This explainer proposes a new API, Spell Check Custom Dictionary API, to allow pages to selectively suppress spell check violations, offer better spelling correction suggestions, and potentially enable user agents to explore additional future niceties.
 
-## <a name="user-problem"></a> User-Facing Problem
+## <a name="user-problem"></a> User-Facing Problems
 
-When spell-checking is enabled, browsers check the spellings of words against those in installed dictionary/dictionaries(locally or at the server side).  The misspelt words will then be marked for spelling errors.
+Browsers offer various things related to spell-checking, correction and completion.  Browsers accomplish this via comparison with words in installed dictionary/dictionaries(locally or at the server side). The misspelt words will then be marked for spelling errors, and/or offered as potential corrections, suggestions or completions.
 
-However, there are specific cases where words are not in the dictionaries but still valid. For example,
+However, there are specific cases where words are not in those existing dictionaries but still valid in the context of the page. For example,
 
 - A website dedicated to Pokémon might feature the names of various Pokémon characters, such as Pikachu and Charmander.
 - A website related to analyzing the economic market status might include the terminology related to companies' names and products that do not come from standard dictionaries but are valid in the context.
 
-When the "valid" words are marked for spelling errors in these kinds of circumstances, it could be misleading, frustrating and distractive for some users.
+When the "valid" words are marked for spelling errors in these kinds of circumstances, it could be misleading, frustrating and distracting.
 
-It would be useful that websites can have options to treat those "site specific" words as correct to prevent browsers' spell checkers from marking them for spelling errors.
+It would be useful for websites to have options to treat those "site specific" words as if they were in the known dictionaries.
+
 
 ## <a name="proposed-approach"></a> Proposed Approach
 
@@ -85,7 +86,10 @@ Handling customer or domain specific terminology/phrases/words probably is not t
 
 The *Spell Check Custom Dictionary* data is transient and will be released once a document or tab is closed in Chromium.  
 
-We are not foreseeing any particular network violation introduced.
+Browsers already use designs that prevent observation or detection of words in the local dictionaries through style or DOM observations.
+
+We do not foresee any particular network violation introduceds.
+
 
 ## <a name="stakeholder"></a> Stakeholder Feedback / Opposition
 ## <a name="reference"></a> References & Acknowledgements   
