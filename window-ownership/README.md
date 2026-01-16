@@ -76,3 +76,6 @@ When windows are attached in this hierarchy, the following behaviors are defined
 ## Security and Privacy Considerations
 This feature does not reveal extra sensitive information, and there is no data kept across browsing sessions.
 
+## Other resolution for an Embedded Web Applications
+For applications that embed web content within their views, an interface could be provided to notify the host application when a web page requests an owned window. This would allow applications to implement their own ownership behaviors, such as position synchronization, z-order, reactivation and lifespan management, according to their specific requirements.
+
