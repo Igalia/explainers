@@ -64,11 +64,35 @@ so their baselines are vertical offsets. In the absence of a compelling alternat
 the model for authors, we will still use the existing `textBaseline` values to
 control the _horizontal_ position of vertical text.
 
+The HTML Canvas `TextMetrics` object include many attributes that report lengths, distances
+and bounds. The `TextMetrics width` attribute will return the length of the text in the
+`inline dimension` as defined by the [CSS Writing Mode spec](https://drafts.csswg.org/css-writing-modes-4/#abstract-axes). Similarly, `TextMetrics` attributes that refer to ascents or descents measure in the `block dimension`. `Left` and `Right` refer to the `inline dimension`.
+
 ### Example
 
 ![The effect of the proposed attributes on text rendering.](./attribute-output.png)
 
 ![The effect of the proposed attributes on placement for writing mode vertical.](./align-vertical.png)
+
+## An Alternate, Minimalist Change
+
+An alternate approach adds only the `textOrientation` attribute. This controls the orientation of
+characters without rotating the text box when rendered. The biggest advantage of this proposal
+is that it requires no changes to the specification around `textAlign`, `textBaseline` or
+`TextMetrics`; the text box is still horizontal as it is now.
+
+One downside of this approach is that the `textOrientation` values of `upright` and `sideways` no
+longer match the rendered direction, which may be confusing to those accustomed to CSS. We could
+define new values, invert the CSS meaning of `sideways` and `upright` to match the visual result,
+or keep the CSS meaning. Note that CSS only applies `textOrientation` when the `writing-mode` is
+`vertical`. For this reason we propose using the CSS semantics for `upright` and `sideways`, meaning
+`upright` orients characters with their intrinsic axis aligned horizontally, with `sideways`
+aligning the intrinsic axis vertically. The `mixed` value aligns characters according to the
+orientation in the font specification.
+
+Another downside of this approach is the requirement for an explicit transform to get vertical text.
+This small extra cost comes with the benefit of much simpler semantics around alignment, baselines
+and metrics.
 
 ## Alternatives considered
 
