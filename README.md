@@ -15,7 +15,7 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 
 ## Dictionary API
 
-* [Dictionary API for handling the Document Custom Dictionary](/document-local-dictionary/README.md)
+* [Spell Check Custom Dictionary API](spell-check-custom-dictionary/README.md)
 
 ## HTML / Custom Handlers
 
