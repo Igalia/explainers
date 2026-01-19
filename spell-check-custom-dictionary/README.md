@@ -59,14 +59,17 @@ const wordData = [
 
 const wordObjects = wordData.map(p => new CustomWord(p.word));
 
-// Create the SpellCheckCustomDictionary instance.
-var customDict = new SpellCheckCustomDictionary();
-// Add language tag.
-customDict.lang = 'en-GB';
+// Create the CustomDictionary instance.
+var customDict = new CustomDictionary();
 
 // Assign the word objects to the dictionary instance.
 // The attribute is an ObservableArray.
 customDict.words = wordObjects;
+
+// Bind the dictionary to spellchecker.
+// With this binding, spellchecker will consult this dictionary during spell checking.
+var binding = new SpellCheckBinding();
+binding.bind(customDict);
 
 // Dynamically add or remove words in the dictionary.
 customDict.words.push(new CustomWord('Interop'));
