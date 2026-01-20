@@ -39,51 +39,63 @@ We are introducing a new interface: the SpellCheckCustomDictionary API. As the n
 
 It is noted that some browsers allow users to add/remove words via the browsers’ setting panel, which is normally managed via the browser process. The SpellCheckCustomDictionary API is a different concept. The SpellCheckCustomDictionary API fills the gap that allows pages to programmatically modify the dictionary on a per-document basis and it is managed by the render process.
 
-#### SpellCheckCustomDictionary.words attribute
+### Design Considerations on Interop
 
-Since the words in the dictionary are mutable, we are adopting the concept of ObservableArray. This observable array can be modified like a JavaScript Array.
+Handling domain specific terminology/phrases/words probably is not the use case only for spell checker. For example, Web Speech has introduced [Contextural biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) to handle domain-specific terminology, proper nouns, or other words that are unlikely to appear in general conversation. There might be other usages or requirements for custom dictionaries in other places or in the future.
 
-#### SpellCheckCustomDictionary.lang attribute
+Words/phrases in a custom dictionary for one component (e.g. spellchecker) in a specific domain could apply for another component (e.g. web speech). For words/phrases that are duplicate among the dictionaries of these components, it would make sense for developers to only update the word list once rather than looping through all the dictionaries in the components. For this reason, we are introducing generic interfaces for phrase and dictionary. A component has the option to bind to the dictionary for word/phrase updates. 
 
-Language tag for the dictionary.
+### New API Components
 
+#### `CustomPhrase` Interface
 
-### Example
+Represents a single phrase and an optional dictionary that contains the extra parameters associated with the phrase. The optional Dictionary data type attribute is introduced here to accommodate use cases that may require further specific parameters. For example, an extra parameter `boost` for web speech. 
 
-```js
-const wordData = [
-  { word: 'Igalia' },
-  { word: 'Wolvic' }, 
-  { word: 'Orca' }
+```json=
+new Customphrase('Igalia', {boost: 2.0})
+```
+
+#### CustomDictionary Interface
+
+##### CustomDictionary.words
+
+A`CustomPhrase` array. Since the words/phrases in the dictionary are mutable, we are adopting the concept of ObservableArray. This observable array can be modified like a JavaScript Array.
+
+```json=
+const customDict = new CustomDictionary();
+const phraseData = [
+  { phrase: 'Igalia' },
+  { phrase: 'Wolvic' }
 ];
 
-const wordObjects = wordData.map(p => new CustomWord(p.word));
+const phraseObjects = phraseData.map(p => new CustomPhrase(p.phrase));
+customDict.words = phraseObjects;
 
-// Create the CustomDictionary instance.
-var customDict = new CustomDictionary();
-
-// Assign the word objects to the dictionary instance.
-// The attribute is an ObservableArray.
-customDict.words = wordObjects;
-
-// Bind the dictionary to spellchecker.
-// With this binding, spellchecker will consult this dictionary during spell checking.
-var binding = new SpellCheckBinding();
-binding.bind(customDict);
-
-// Dynamically add or remove words in the dictionary.
-customDict.words.push(new CustomWord('Interop'));
+customDict.words.push(new Customphrase('Orca'));
 customDict.words.pop();
+```
+
+#### Component binding
+
+An interface between a component and a `CustomDictionary`.
+
+```json=
+cost customDict = new CustomDictionary();
+
+const spellChecker = new SpellCheckBinding();
+spellChecker.bind(customDict);
+
+const recognition = new SpeechRecognition();
+recognition.bind(customDict);
+
+
+customDict.words.push(Customphrase('Interop', {boost: 2.0}));
 
 ```
 
 ### Per-document based dictionary
 
 The spell check custom dictionary is a transient dictionary and lives no longer than the life cycle of the associated document. It is a per-document based in implementation. As an example, we have described the design for Chromium at [The Per-Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.5z9kcz3slooe).
-
-### Interop with other components
-
-Handling customer or domain specific terminology/phrases/words probably is not the use case only for spell checker. For example, Web Speech has introduced [Contextural biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) to handle domain-specific terminology, proper nouns, or other words that are unlikely to appear in general conversation. How this work interops with other existing or future components and avoid overlapping as much as possible should be considered during implementations. We discussed about this for Chromium case at [Interop with other components](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.ei2z5z5y38p4).
 
 ## <a name="security"></a> Accessibility, Internationalization, Privacy, and Security Considerations
 
