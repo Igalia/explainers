@@ -14,13 +14,13 @@
 ## Introduction
 In complex scenarios like financial trading platforms and design tools, users often need to open multiple windows across multiple monitors. Currently, the web lacks native support for coordinated window management, forcing users to operate each window individually, which is time-consuming and inefficient.
 
-There are several alternatives exist for creating pop-up UI elements, such as formatted boxes, dialogs, and popovers. However, these pop-up UI elements are limited to displaying content or enabling simple interactions within a single window. For complex applications that need to display substantial content (like tables), adjust window positioning, or navigate between related pages, they are insufficient.
+Several alternative exist for creating pop-up UI elements, such as formatted boxes, dialogs, and popovers. However, these pop-up UI elements are limited to displaying content or enabling simple interactions within a single window. For complex applications that need to display substantial content (like tables), adjust window positioning, or navigate between related pages, they are insufficient.
 
 Desktop operating systems provide "window ownership" that connects two windows as an owner window (parent window) and an owned window (child window). The owned window is attached to the owner window, allowing control over several aspects, like Z-order, lifespan, movement, reactivation, and so on. This provides significant convenience for complex applications.
 
 While browsers provide `window.open()` to create new windows with some connection to their creator, these windows lack the hierarchical relationship found in desktop operating systems. All browser windows are treated equally. They aren't grouped or organized in a parent-child structure. As a result, users must manage each window individually.
 
-Let's take a close look at the different window operation:
+Let's take a close look at the different window operations:
 
 Z-Order: When two browser windows overlap, there is no hierarchy-the active window is always on top. However, users often want to keep a small window visible while interacting with a larger window behind it. Although features like Picture-in-Picture exist, they are currently limited to media pages. With window ownership, owned windows could optionally stay on top of their owner window, making this pattern broadly available.
 
