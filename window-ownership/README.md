@@ -14,10 +14,14 @@
 ## Introduction
 In complex scenarios like financial trading platforms and design tools, users often need to open multiple windows across multiple monitors. Currently, the web lacks native support for coordinated window management, forcing users to operate each window individually, which is time-consuming and inefficient.
 
-Desktop operating systems provide "window ownership" that connects two windows as an owner window (parent window) and an owned window (child window). The owned window is attached to the owner window, allowing control over several aspects: Z-order, lifespan, movement, and reactivation. This provides significant convenience for complex applications.
+There are several alternatives exist for creating pop-up UI elements, such as formatted boxes, dialogs, and popovers. However, these pop-up UI elements are limited to displaying content or enabling simple interactions within a single window. For complex applications that need to display substantial content (like tables), adjust window positioning, or navigate between related pages, they are insufficient.
+
+Desktop operating systems provide "window ownership" that connects two windows as an owner window (parent window) and an owned window (child window). The owned window is attached to the owner window, allowing control over several aspects, like Z-order, lifespan, movement, reactivation, and so on. This provides significant convenience for complex applications.
+
 While browsers provide `window.open()` to create new windows with some connection to their creator, these windows lack the hierarchical relationship found in desktop operating systems. All browser windows are treated equally. They aren't grouped or organized in a parent-child structure. As a result, users must manage each window individually.
 
-Let's take a close look at the different window operation.
+Let's take a close look at the different window operation:
+
 Z-Order: When two browser windows overlap, there is no hierarchy-the active window is always on top. However, users often want to keep a small window visible while interacting with a larger window behind it. Although features like Picture-in-Picture exist, they are currently limited to media pages. With window ownership, owned windows could optionally stay on top of their owner window, making this pattern broadly available.
 
 Lifespan: Browser windows' lifespans are independent. In complex scenarios where several pop-up windows are related to a main window, users must close them individually or terminate the entire browser application, neither option is ideal. With window ownership, it is natural to connect their lifespan, windows could be naturally grouped: closing the owner window would automatically close all owned windows, streamlining window management.
@@ -41,7 +45,7 @@ We propose adding "window ownership" capabilities to the window interface, enabl
 
 When windows are attached in this hierarchy, the following behaviors are defined:
 
-- **Z-Order**: The owned window can remain on top of its owner window, even when the owner is active.
+- **Z-Order**: The owned window can be configured to remain on top of its owner window, even when the owner is active.
 - **Lifespan**: Closing the owner window automatically closes all its owned windows. Closing an owned window does not affect its owner.
 - **Movement**: The owned window can be configured to move automatically with its owner window, maintaining their relative positions.
 - **Reactivation**: Activating owner window brings owned windows to the foreground together.
@@ -68,7 +72,7 @@ When windows are attached in this hierarchy, the following behaviors are defined
 - **Browser Support Fragmentation**: Different browsers may implement window ownership features inconsistently, leading to varying behavior across platforms.
 - **Operating System Constraints**: Operating systems differ in their window ownership models. Some platforms may not support all proposed features, limiting what browsers can implement.
 - **Mobile Platforms**: Window ownership concepts don't translate well to mobile browsers with limited multi-window support. This feature may need to be restricted to desktop platforms.
-- **Window Manager Conflicts**: Browser-level window ownership may conflict with OS-level window management, particularly when the browser engine is embedded in applications with existing ownership hierarchies. The feature may need to be limited to standard browser scenarios.
+- **Window Manager Conflicts**: Browser-level window ownership may conflict with OS-level window management. For example, position synchronization could conflict with tiled window managers that automatically arrange windows. This requires careful coordination with platform-specific window management behaviors.
 
 ### Developer Complexity
 - **API Misuse**: Developers might create overly complex window hierarchies that become difficult to debug and maintain. However, the ownership constraint mitigates this risk by requiring that owned windows be created by their owner window. Since these windows already have an existing relationship through `window.open()`, the ownership API simply formalizes and strengthens this connection rather than introducing arbitrary relationships.
@@ -78,4 +82,3 @@ This feature does not reveal extra sensitive information, and there is no data k
 
 ## Other resolution for an Embedded Web Applications
 For applications that embed web content within their views, an interface could be provided to notify the host application when a web page requests an owned window. This would allow applications to implement their own ownership behaviors, such as position synchronization, z-order, reactivation and lifespan management, according to their specific requirements.
-
