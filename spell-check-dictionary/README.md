@@ -41,7 +41,6 @@ This interface provides a single observable array:
 SpellCheckDictionary.words = [
   "Igalia",
   "Wolvic",
-  "Ziran",
   "SpellCheckDictionary"
 ];
 ```
@@ -64,7 +63,7 @@ Key characteristics:
   - straightforward garbage collection,
   - minimal API surface.
 
-Note that "words" is losely defined and may include spaces or special characters.
+Note that "words" is loosely defined and may include spaces or special characters.
 
 A detailed description of the Chromium design is available in [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
 
@@ -76,11 +75,44 @@ A detailed description of the Chromium design is available in [The Per‑Documen
 
 Domain‑specific vocabulary is not unique to spell checking. Web Speech, for example, includes a [Contextual biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) for transcription of rare or domain‑specific terms. Text‑to‑Speech may eventually need similar mechanisms for pronunciation.
 
-We explored whether a unified `CustomDictionary` or shared class hierarchy could serve multiple features. However:
+We explored whether a unified `CustomDictionary` or shared class hierarchy could serve multiple features. For example -
+
+```js
+// Extra parameters for different features.
+dictionary CustomPhraseOptions {
+  float boost = 1.0; // boost value for Speech recognition.
+};
+
+interface CustomPhrase {
+    [RaisesException] constructor(DOMString phrase, optional CustomPhraseOptions options = {});
+    readonly attribute DOMString phrase;
+};
+
+interface CustomDictionary {
+    [CallWith=ScriptState] constructor();
+    attribute ObservableArray<CustomPhrase> words;
+};
+```
+
+
+Modules bind with the unified `CustomDictionary` to use like the follows -
+
+```const customDict = new CustomDictionary();
+
+spellChecker.bind(customDict);
+
+const recognition = new SpeechRecognition();
+recognition.bind(customDict);
+
+customDict.words.push(Customphrase('Interop', {boost: 2.0}));
+```
+
+However:
 
 - The shared abstraction becomes little more than a marker interface.  
 - Chromium already ships the biasing feature unprefixed, and Firefox is close behind, limiting room for redesign.  
-- Browsers can already treat Web Speech terms as valid for spell checking (or vice versa) *without* additional API surface.
+- Browsers could choose to treat Web Speech terms as valid for spell checking (or vice versa) *without* additional API surface.
+- The spellcheck dictionary data must be associated with a script realm for privacy and dynamic access, whereas speech data is sent to a unified location and is not dynamically modifiable by script.
 
 Given these constraints, a unified abstraction adds complexity without clear benefit.
 
