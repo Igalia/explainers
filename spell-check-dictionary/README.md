@@ -38,7 +38,7 @@ We propose introducing a per‑document, transient dictionary exposed via a new 
 This interface provides a single observable array:
 
 ```js
-SpellCheckDictionary.words = [
+window.spellCheckDictionary.words = [
   "Igalia",
   "Wolvic",
   "SpellCheckDictionary"
