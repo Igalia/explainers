@@ -50,7 +50,8 @@ We propose introducing a Spell Check Custom dictionary exposed via a new interfa
 ### `SpellCheckCustomDictionary`
 
 This interface provides a single observable array:
-```[
+```
+[
     Exposed=Window,
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
@@ -77,7 +78,7 @@ Key characteristics:
   
   ObservableArray offers developers a great choices of standard Array methods. This gives us the convinence of manipulating the dictionary with functionalities such  *.addwords()*, *removewords()* and *hasword()* etc. by calling standard Array methods. For example,
   
-```  
+```js
 const phraseData = [
   { phrase: 'Igalia' },
   { phrase: 'Wolvic' },
