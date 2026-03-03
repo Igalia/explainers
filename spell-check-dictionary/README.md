@@ -11,9 +11,9 @@
 
 Browsers provide spell checking by comparing text against built‑in dictionaries (local or server‑side). This works well for general language, but breaks down on pages that rely heavily on domain‑specific terminology—product names, proper nouns, fictional universes, technical jargon, and other vocabulary that is valid *in context* but absent from standard dictionaries. 
 
-These valid *in context* words are marked by the spellcker for spelling check errors. To allow users to selectively suppress this kind of spell check violations, some browsers introduce the *custom dictionary* concept that allow users to add own customed words via the browsers’ settings panels. For example, in Chromium-based browsers users can manage their custom spellcheck dictionary using the internal settings page(chrome://settings/editDictionary) or using Context Menu.
+These valid *in context* words are marked by the spellchecker for spelling check errors. To allow users to selectively suppress this kind of spell check violations, some browsers introduce the *custom dictionary* (refers as ***browser custom dictionary*** in the context of this proposal) concept that allow users to add own customed words via the browsers’ settings panels. For example, in Chromium-based browsers users can manage their custom spellcheck dictionary using the internal settings page(chrome://settings/editDictionary) or using Context Menu.
 
-This Spell Check Custom Dictionary API provides the functionality as the *custom dictionary* but fills the gap that allows pages to programmatically introduce the dictionary rather than from browsers' settings panels.
+This Spell Check Custom Dictionary API provides the functionality as the *browser custom dictionary* but fills the gap that allows pages to programmatically introduce the dictionary rather than from browsers' settings panels.
 
 ---
 
@@ -33,11 +33,11 @@ Authors need a way to treat domain‑specific words as “known” without requi
 
 ## Golals
 
-To provide the functionality as the *custom dictionary* but programmatically via an API. The spell check custom dictionary introduced by this API contains words string(s) that the page would like spell checker to **ignore** so that they will not be marked for spelling errors.
+To provide the functionality as the *browser custom dictionary* but available to the providing site, by way of a programmatic API. The spell check custom dictionary introduced by this API contains words string(s) that the page would like spell checker to **ignore** so that they will not be marked for spelling errors.
 
-The *custom dictionary* only contains added word strings. These added words apply across **all** the user enabled languages. The Spell Check Custom dictionary API is in line with *custom dictionary* at this aspect.
+*Browser custom dictionary* only contains added word strings. These added words apply across **all** the user enabled languages. The Spell Check Custom dictionary API is in line with *browser custom dictionary* at this aspect.
 
-The Spell Check Custom dictionary introduced by this API is **an addition** to the spell checking dictionaries, including the *custom dictionary*. It should NOT have impact on the roles of the existing dictionaries in spell check in the browser. The proposed API should be implementable on top of most common platforms’ spellchecking APIs(see references). The existing spelling check mechanism in browsers work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
+The Spell Check Custom dictionary introduced by this API is **an addition** to browsers' existing spell checking dictionaries, including *browser custom dictionary*. It should NOT have impact on the roles of the existing dictionaries in spell checking in the browsers. Browsers' usage of spellchecking APIs normally depends on the operating systems used. For example, Chromium uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. And for Linux & Android, these platforms primarily rely on the [Hunspell library](https://hunspell.github.io/) integrated. The existing spelling check mechanism in browsers work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
 
 The dictionary introduced by this API could be used outside of spelling check, such as autocorrect, refining suggestion list and [proofreader](https://github.com/webmachinelearning/proofreader-api/blob/main/README.md#customization-with-user-mutable-dictionary). Extending usages could be discussed in future proposals. 
 
@@ -107,9 +107,9 @@ SpellCheckCustomDictionary.words = SpellCheckCustomDictionary.words.filter(item 
 
 
 - **Per‑document lifecycle**  
-    This dictionary doesn't run in OS level. It is strictly local to the document it's associated with.
+The dictionary is strictly local to the document it's associated with.
     
-    The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it. A detailed description of the Chromium design is available in [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
+    The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it. It stores data in memory at the renderer side. The stored data stays at the renderer and does not pass around. A detailed description of the Chromium design is available in [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
 
 - **Render‑process managed**  
   Unlike user‑managed dictionaries (which live in browser settings and are global), this dictionary is scoped to the page and controlled programmatically.
@@ -234,11 +234,6 @@ We do not foresee accessibility or internationalization issues beyond those alre
 
 ## References & Acknowledgements
 
-- Chromium design document: [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)  
-- [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) 
-- [Spellchecking APIs for macOS](https://developer.apple.com/documentation/appkit/nsspellchecker)
-- [Spellchecking APIs for iOS](https://developer.apple.com/documentation/uikit/uitextchecker)
-- [Spellchecking APIs for Linux](https://linuxhint.com/grammar-spell-check-apps-linux/)
-- [Spellchecking APIs for Windows](https://learn.microsoft.com/en-us/visualstudio/ide/text-spell-checker?view=visualstudio)
-- [Spellchecking APIs for Andriod](https://developer.android.com/reference/android/view/textservice/TextServicesManager)
+* Chromium design document: [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)  
+* [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) 
 - Thanks to reviewers and collaborators across browser vendors and standards groups.
