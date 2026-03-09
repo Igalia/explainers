@@ -37,7 +37,7 @@ To provide the functionality as the *browser custom dictionary* but available to
 
 *Browser custom dictionary* only contains added word strings. These added words apply across **all** the user enabled languages. The Spell Check Custom dictionary API is in line with *browser custom dictionary* at this aspect.
 
-The Spell Check Custom dictionary introduced by this API is **an addition** to browsers' existing spell checking dictionaries, including *browser custom dictionary*. It should NOT have impact on the roles of the existing dictionaries in spell checking in the browsers. Browsers' usage of spellchecking APIs normally depends on the operating systems used. For example, Chromium uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. And for Linux & Android, these platforms primarily rely on the [Hunspell library](https://hunspell.github.io/) integrated. The existing spelling check mechanism in browsers work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
+The Spell Check Custom dictionary introduced by this API is **an addition** to browsers' existing spell checking dictionaries, including *browser custom dictionary*. It should NOT have impact on the roles of the existing dictionaries in spell checking in the browsers. Browsers' usage of spellchecking APIs normally depends on the operating systems used. For example, in Windows Chrome uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. For iOS, Chrome uses the [system spellchecker](https://developer.apple.com/documentation/uikit/uitextchecker) associated with WebKit. In Linux, it primarily relies on the [Hunspell library](https://hunspell.github.io/) integrated. Chrome for Android does not have its own independent spellcheck engine. Instead, it relies on the Android operating system's built-in [spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager) or [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid). The existing spelling check mechanism in browsers work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
 
 The dictionary introduced by this API could be used outside of spelling check, such as autocorrect, refining suggestion list and [proofreader](https://github.com/webmachinelearning/proofreader-api/blob/main/README.md#customization-with-user-mutable-dictionary). Extending usages could be discussed in future proposals. 
 
@@ -49,7 +49,7 @@ We propose introducing a Spell Check Custom dictionary exposed via a new interfa
 
 ### `SpellCheckCustomDictionary`
 
-This interface provides a single observable array:
+This interface provides a single observable array with *addWords()* and *removeWords()* methods:
 ```
 [
     Exposed=Window,
@@ -57,6 +57,8 @@ This interface provides a single observable array:
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
 ] interface SpellCheckCustomDictionary {
     attribute ObservableArray<DOMString> words;
+    [CallWith=ScriptState] void addWords(sequence<DOMString> words);
+    [CallWith=ScriptState] void removeWords(sequence<DOMString> words);
 };
 ```
 
@@ -69,6 +71,11 @@ window.spellCheckCustomDictionary.words = [
   "Wolvic",
   "SpellCheckCustomDictionary"
 ];
+
+window.spellCheckDictionary.addWords(["interop", "spidermonkey"]);
+
+window.spellCheckDictionary.removeWords(["Wolvic", "spidermonkey"]);
+
 ```
 
 Key characteristics:
@@ -76,7 +83,7 @@ Key characteristics:
 - **Observable array**  
   The browser’s spell checker observes changes to `.words` and incorporates them into its checks. Because the “.words” attribute in spell check Custom dictionary is mutable, we propose to use *ObservableArray* type as suggested [here](https://github.com/WebAudio/web-speech-api/pull/169#issuecomment-3006838443).
   
-  ObservableArray offers developers a great choices of standard Array methods. This gives us the convinence of manipulating the dictionary with functionalities such  *.addwords()*, *removewords()* and *hasword()* etc. by calling standard Array methods. For example,
+  ObservableArray offers developers a great choices of standard Array methods. This gives us the convinence of manipulating the dictionary with functionalities by calling standard Array methods. *.addwords()*, *removewords()* methods give the direct interfaces for adding/removing words from the dictionary. For example,
   
 ```js
 const phraseData = [
@@ -94,18 +101,22 @@ SpellCheckCustomDictionary.words = phraseObjects;
 SpellCheckCustomDictionary.words.includes("Igalia");
 
 // Second array
-const pokemon_family = ["Pikachu", "Togetic", "Pancham"];
+const pokemon_family1 = ["Pikachu", "Togetic", "Pancham"];
+const pokemon_family2 = ["Metapod", "Caterpie", "Squirtle"];
 
+// addWords() with standard array method.
+SpellCheckCustomDictionary.words.push(...pokemon_family1);
 
-// addWords()
-SpellCheckCustomDictionary.words.push(...pokemon_family);
+// Call addWords() method directly.
+SpellCheckCustomDictionary.addWords(pokemon_family2);
 
-// deleteWords()
-SpellCheckCustomDictionary.words = SpellCheckCustomDictionary.words.filter(item => !pokemon_family.includes(item))
+// Call removeWords() method directly.
+SpellCheckCustomDictionary.removeWords(pokemon_family1);
+
+// removeWords() with standard array method.
+SpellCheckCustomDictionary.words = SpellCheckCustomDictionary.words.filter(item => !pokemon_family1.includes(item))
 ```
   
-
-
 - **Per‑document lifecycle**  
 The dictionary is strictly local to the document it's associated with.
     
