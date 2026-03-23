@@ -47,16 +47,14 @@ The dictionary introduced by this API could be used outside of spelling check, s
 
 We propose introducing a Spell Check Custom dictionary exposed via a new interface. This dictionary is a per‑document based, transient dictionary resides in renderer process of the Browser.
 
-### `SpellCheckCustomDictionary`
+#### `SpellCheckCustomDictionary` with *addWords()* & *removeWords()* methods
 
-This interface provides a single observable array with *addWords()* and *removeWords()* methods:
 ```
 [
     Exposed=Window,
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
 ] interface SpellCheckCustomDictionary {
-    attribute ObservableArray<DOMString> words;
     [CallWith=ScriptState] void addWords(sequence<DOMString> words);
     [CallWith=ScriptState] void removeWords(sequence<DOMString> words);
 };
@@ -64,59 +62,16 @@ This interface provides a single observable array with *addWords()* and *removeW
 
 Example:
 
-
 ```js
-window.spellCheckCustomDictionary.words = [
-  "Igalia",
-  "Wolvic",
-  "SpellCheckCustomDictionary"
-];
 
-window.spellCheckDictionary.addWords(["interop", "spidermonkey"]);
+window.spellCheckDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"]);
 
 window.spellCheckDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
 
-Key characteristics:
+#### Key characteristics:
 
-- **Observable array**  
-  The browser’s spell checker observes changes to `.words` and incorporates them into its checks. Because the “.words” attribute in spell check Custom dictionary is mutable, we propose to use *ObservableArray* type as suggested [here](https://github.com/WebAudio/web-speech-api/pull/169#issuecomment-3006838443).
-  
-  ObservableArray offers developers a great choices of standard Array methods. This gives us the convinence of manipulating the dictionary with functionalities by calling standard Array methods. *.addwords()*, *removewords()* methods give the direct interfaces for adding/removing words from the dictionary. For example,
-  
-```js
-const phraseData = [
-  { phrase: 'Igalia' },
-  { phrase: 'Wolvic' },
-  { phrase: 'Orca' }
-  
-];
-
-const phraseObjects = phraseData.map(p => p.phrase);
-
-SpellCheckCustomDictionary.words = phraseObjects;
-
-// hasWord()
-SpellCheckCustomDictionary.words.includes("Igalia");
-
-// Second array
-const pokemon_family1 = ["Pikachu", "Togetic", "Pancham"];
-const pokemon_family2 = ["Metapod", "Caterpie", "Squirtle"];
-
-// addWords() with standard array method.
-SpellCheckCustomDictionary.words.push(...pokemon_family1);
-
-// Call addWords() method directly.
-SpellCheckCustomDictionary.addWords(pokemon_family2);
-
-// Call removeWords() method directly.
-SpellCheckCustomDictionary.removeWords(pokemon_family1);
-
-// removeWords() with standard array method.
-SpellCheckCustomDictionary.words = SpellCheckCustomDictionary.words.filter(item => !pokemon_family1.includes(item))
-```
-  
 - **Per‑document lifecycle**  
 The dictionary is strictly local to the document it's associated with.
     
@@ -125,14 +80,7 @@ The dictionary is strictly local to the document it's associated with.
 - **Render‑process managed**  
   Unlike user‑managed dictionaries (which live in browser settings and are global), this dictionary is scoped to the page and controlled programmatically.
 
-- **Simple, efficient design**  
-  A static interface with a single observable array allows:
-  - fast bulk assignment,
-  - efficient parsing of serialized lists,
-  - straightforward garbage collection,
-  - minimal API surface.
-
-Note that "words" is loosely defined and may include spaces or special characters.
+Note that "words" here is loosely defined and may include spaces or special characters.
 
 ---
 
