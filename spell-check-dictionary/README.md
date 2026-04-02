@@ -77,7 +77,7 @@ window.spellCheckDictionary.removeWords(["Wolvic", "spidermonkey"]);
 - **Per‑document lifecycle**  
 The dictionary is strictly local to the document it's associated with.
     
-    The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it. It stores data in memory at the renderer side. The stored data stays at the renderer and does not pass around. A detailed description of the Chromium design is available in [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
+    The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it. It stores data in memory at the renderer side. The stored data stays at the renderer and does not pass around. A detailed description of the Chromium design is available in [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4). In this document, we also discussed cases with iframe and extension.  An iframe is an element within a parent document, it always creates a separate document environment with its own windows and document objects. A Chromium extension’s own pages have their own RenderFrames and RenderProcesses to host its content. Hence, each extension has a separate spell check custom dictionary.
 
 - **Render‑process managed**  
   Unlike user‑managed dictionaries (which live in browser settings and are global), this dictionary is scoped to the page and controlled programmatically.
@@ -88,7 +88,17 @@ Note that "words" here is loosely defined and may include spaces or special char
 
 ## Alternatives Considered
 
-### 1. A Unified `CustomDictionary` Across Features
+### 1. An `ObservableArray` Type for the Dictionary
+
+The Spell check Custom dictionary is a collection of word strings. One option is to introduce an array attribute to represent the dictionary. Since the dictionary is mutable, an *ObservableArray* type as suggested [here](https://github.com/WebAudio/web-speech-api/pull/169#issuecomment-3006838443) could be ideal.
+
+ObservableArray offers developers a great choices of standard Array methods. This gives us the convinence of manipulating the dictionary with functionalities by calling standard Array methods. However, we decided not going to this route due to the following reasons -
+
+*  Avoid adding new fake arrays to the web platform
+*  "All of the spell check-related things are carefully designed to not be observable, it might be good to not have additional methods to see inside", as suggested by the [TAG review comments](https://github.com/w3ctag/design-reviews/issues/1191)
+* The content of the dictionary should not be accessible due to security and privacy risks.
+
+### 2. A Unified `CustomDictionary` Across Features
 
 Domain‑specific vocabulary is not unique to spell checking. Web Speech, for example, includes a [Contextual biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) for transcription of rare or domain‑specific terms. Text‑to‑Speech may eventually need similar mechanisms for pronunciation.
 
