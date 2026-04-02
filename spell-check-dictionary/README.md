@@ -97,13 +97,15 @@ The Spell Check Custom dictionary is a collection of word strings. One option is
 
 ### 2. A Unified `CustomDictionary` Across Features
 <details>
-Domain-specific vocabulary isn't unique to spell checking — the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. A shared `CustomDictionary` abstraction could in principle serve all of these.
+Domain-specific vocabulary isn't unique to spell checking — the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. The proposed [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features) also has a need for some kind of related features, as would, for example [translation APIs](https://github.com/webmachinelearning/translation-api/issues/9).
 
-We decided against this for the following reasons:
+Abstractly, a shared `CustomDictionary` abstraction could in principle serve all of these.
+
+However, we decided against this for the following reasons:
 
 * Chromium already ships the Web Speech biasing feature unprefixed, and Firefox is close behind, leaving little room for redesign.
 
-* Browsers can already choose to treat Web Speech terms as valid for spell checking (or vice versa) without any additional API surface, or via later convenience methods.
+* Browsers can already choose to treat Web Speech terms as valid for spell checking (or vice versa) without any additional API surface, or via later convenience methods.  That is, if it is clear this is always desired - but it is not.
 
 Authors who want to share vocabulary between both APIs today can do so simply:
 
