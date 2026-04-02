@@ -192,7 +192,7 @@ Details are discussed at [The Per‑Document Design in Chromium](https://docs.go
 * [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) 
 * [Hunspell library](https://hunspell.github.io/)
 * [Cocoa Spell Checking API](https://developer.apple.com/documentation/appkit/nsspellchecker)
-* [Windows native spellcheck API](https://issues.chromium.org/issues/40097238
+* [Windows native spellcheck API](https://issues.chromium.org/issues/40097238)
 * [MacOS system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) 
 * [Android's system-level spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager)
 * [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid)
