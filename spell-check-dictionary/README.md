@@ -11,9 +11,9 @@
 
 Browsers provide spell checking by comparing text against built‑in dictionaries (local or server‑side). This works well for general language, but breaks down on pages that rely heavily on domain‑specific terminology—product names, proper nouns, fictional universes, technical jargon, and other vocabulary that is valid *in context* but absent from standard dictionaries. 
 
-These valid *in context* words are marked by the spellchecker for spelling check errors. To allow users to selectively suppress this kind of spell check violations, some browsers introduce the *custom dictionary* (refers as ***browser custom dictionary*** in the context of this proposal) concept that allow users to add own customed words via the browsers’ settings panels. For example, in Chromium-based browsers users can manage their custom spellcheck dictionary using the internal settings page(chrome://settings/editDictionary) or using Context Menu.
+These valid *in context* words are marked by the spellchecker for spelling check errors. To allow users to selectively suppress this kind of spell check violations, some browsers introduce the *custom dictionary* concept that allow users to add their own custom words via the browsers’ settings panels. For example, in Chromium-based browsers users can manage their custom spellcheck dictionary using the internal settings page(chrome://settings/editDictionary) or using Context Menu.  We will refer to this as the ***browser custom dictionary*** in the rest of this explainer.
 
-This Spell Check Custom Dictionary API provides the functionality as the *browser custom dictionary* but fills the gap that allows pages to programmatically introduce the dictionary rather than from browsers' settings panels.
+This proposal adds a new Spell Check Custom Dictionary API which introduces an _additional_ dictionary with otherwise  equivalent functionality to the *browser custom dictionary*, but which allows pages to programmatically provide this context.
 
 ---
 
@@ -31,15 +31,17 @@ Authors need a way to treat domain‑specific words as “known” without requi
 
 ---
 
-## Golals
+## Goals
 
-To provide the functionality as the *browser custom dictionary* but available to the providing site, by way of a programmatic API. The spell check custom dictionary introduced by this API contains words string(s) that the page would like spell checker to **ignore** so that they will not be marked for spelling errors.
+To provide additional, but similar functionality to the *browser custom dictionary*, but provided by the site itself rather than the user or default dictionaries.  The spell check custom dictionary introduced by this API contains word string(s) that the page would like spell checker to **ignore** so that they will not be marked for spelling errors.
 
-*Browser custom dictionary* only contains added word strings. These added words apply across **all** the user enabled languages. The Spell Check Custom dictionary API is in line with *browser custom dictionary* at this aspect.
+Just as the *browser custom dictionary* applies to all user enabled languages, the words add by this API also apply across **all** the user enabled languages. 
 
-The Spell Check Custom dictionary introduced by this API is **an addition** to browsers' existing spell checking dictionaries, including the *browser custom dictionary*. It should NOT have impact on the roles of the existing dictionaries in spelling check and how the current spellcheckers, locally or at the server side, work in the browsers. Browsers' usage of spellchecking APIs normally depends on the operating systems used. For example, in Windows Chrome uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. For iOS, Chrome uses the [system spellchecker](https://developer.apple.com/documentation/uikit/uitextchecker) associated with WebKit. In Linux, it primarily relies on the [Hunspell library](https://hunspell.github.io/) integrated. Chrome for Android does not have its own independent spellcheck engine. Instead, it relies on the Android operating system's built-in [spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager) or [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid). The existing spelling check mechanisms in browsers work as they are. The additional part is that during spelling check, once the checks against all the existing dictionaries are done, the spellchecker will so check words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
+The Spell Check Custom dictionary introduced by this API does NOT have impact on the roles of the existing dictionaries in spell checking in the browsers. Browsers' usage of spell checking APIs normally depends on the operating systems used. For example, in Windows, Chrome uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. For iOS, Chrome uses the [system spellchecker](https://developer.apple.com/documentation/uikit/uitextchecker) associated with WebKit. In Linux, it primarily relies on the [Hunspell library](https://hunspell.github.io/) integrated. Chrome for Android does not have its own independent spellcheck engine. Instead, it relies on the Android operating system's built-in [spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager) or [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid). The existing spelling check mechanism in browsers work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
 
-The dictionary introduced by this API could be used outside of spelling check, such as autocorrect, refining suggestion list and [proofreader](https://github.com/webmachinelearning/proofreader-api/blob/main/README.md#customization-with-user-mutable-dictionary). Extending usages could be discussed in future proposals. 
+The dictionary introduced by this API could potentially be used outside of spelling check, such as autocorrect, refining suggestion list and [proofreader](https://github.com/webmachinelearning/proofreader-api/blob/main/README.md#customization-with-user-mutable-dictionary). 
+
+Extending usages could be discussed in future proposals. 
 
 ---
 
@@ -138,12 +140,11 @@ However:
 - Browsers could choose to treat Web Speech terms as valid for spell checking (or vice versa) *without* additional API surface.
 - The spellcheck dictionary data must be associated with a script realm for privacy and dynamic access, whereas speech data is sent to a unified location and is not dynamically modifiable by script.
 
-Given these constraints, a unified abstraction adds complexity without clear benefit.
+Given these constraints, a unified abstraction adds complexity without clear benefit.   If authors *do* want to share vocabulary between APIs, this is trivial today.
 
-### 3. Manual Synchronization Between Features
-
-If authors *do* want to share vocabulary between APIs, this is trivial today.  Given that 
-phrase objects have more robust information, it can be as simple as:
+<details>
+  <summary>Example</summary>  
+Given that Web Speech phrase objects have more robust information, it can be as simple as:
 
 ```js
 SpellCheckCustomDictionary.words =
@@ -167,11 +168,31 @@ SpellCheckCustomDictionary.words = dictionaryWords;
 const recognition = new SpeechRecognition();
 recognition.phrases = phraseObjects;
 ```
-
+</details>
 
 If this pattern is still taxing or inefficient, we can always consider adding a convenience method later.
 
 For now, keeping the API minimal avoids premature abstraction.
+
+## Declarative `<link>`
+
+A natural question seems be be whether we could just make this declarative.  Perhaps something like:
+
+```
+<link rel="custom-dictionary" href="lotr.words">
+```
+
+This would have several advantages in that it is very easy for most use cases for an author to use, and would automatically plug into the browsers many useful link related semantics. It could have ready answers to questions about preloading, blocking, CORS, priority and so on. It would come with its own optimizations, in a way, because if your browser didn't support that feature, it wouldn't even download.
+
+Given such a tag, we technically wouldn't even need an additional API surface as adding a link would add words to the dictionary and removing the link would remove them.
+
+On balance though, there are advantages to a JavaScript based interface and we believe it's worth doing that first for two reasons:
+
+  * As shown above, it makes it easier and more efficient to share terms among APIs with similar needs
+  * We currently lack a `rel` type or agreed serialization format, which also generally happen in a different space of browser architecture. `fetch` and `json` are pretty easy easy ways to achieve mostly similar results and require nothing new.
+
+Given this, while we believe it is a potentially worthwhile pursuit in future iterations, it makes the most sense to begin with the imperative API.
+
 
 ---
 
