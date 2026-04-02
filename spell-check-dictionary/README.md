@@ -37,9 +37,11 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 
 ## Non-Goals
 
-* This API does not aim to cover spell-check suggestions, autocorrect, or AI proofreading features — though the dictionary could potentially inform those in other proposals, and/or can integrate nicely with other features.
+* This API does not aim to cover spell-check suggestions, autocorrect, or AI proofreading features — though it could potentially inform those in other proposals, and/or can integrate nicely with other features.
 
 * Exceed the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
+
+* Ignored
 
 ## Proposed Approach
 
@@ -79,6 +81,7 @@ Browsers implement spell checking differently across operating systems.  This AP
 
 <details>
 	<summary>implementation notes</summary>
+
 The Spell Check Custom dictionary introduced by this API does NOT have impact on the roles of the existing dictionaries in spell checking in the browsers. Browsers' usage of spell checking APIs normally depends on the operating systems used. For example, in Windows, Chrome uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. For iOS, Chrome uses the [system spellchecker](https://developer.apple.com/documentation/uikit/uitextchecker) associated with WebKit. In Linux, it primarily relies on the [Hunspell library](https://hunspell.github.io/) integrated. Chrome for Android does not have its own independent spellcheck engine. Instead, it relies on the Android operating system's built-in [spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager) or [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid). The existing spelling check mechanism in browsers continues to work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
 </details>
 
@@ -86,6 +89,7 @@ The Spell Check Custom dictionary introduced by this API does NOT have impact on
 
 ### 1. An `ObservableArray` Type for the Dictionary
 <details>
+
 The Spell Check Custom dictionary is a collection of word strings. One option is to introduce an array attribute to represent the dictionary. Since the dictionary is mutable, an `ObservableArray` type as suggested [here](https://github.com/WebAudio/web-speech-api/pull/169#issuecomment-3006838443) could be ideal.
 
 `ObservableArray` offers developers a great choices of standard Array methods. This gives us the convenience of manipulating the dictionary with functionalities by calling standard Array methods. However, we decided not to take this route due to the following reasons -
@@ -97,6 +101,7 @@ The Spell Check Custom dictionary is a collection of word strings. One option is
 
 ### 2. A Unified `CustomDictionary` Across Features
 <details>
+
 Domain-specific vocabulary isn't unique to spell checking — the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. The proposed [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features) also has a need for some kind of related features, as would, for example [translation APIs](https://github.com/webmachinelearning/translation-api/issues/9).
 
 Abstractly, a shared `CustomDictionary` abstraction could in principle serve all of these.
@@ -185,5 +190,13 @@ Details are discussed at [The Per‑Document Design in Chromium](https://docs.go
 
 * Chromium design document: [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)  
 * [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) 
+* [Hunspell library](https://hunspell.github.io/)
+* [Cocoa Spell Checking API](https://developer.apple.com/documentation/appkit/nsspellchecker)
+* [Windows native spellcheck API](https://issues.chromium.org/issues/40097238
+* [MacOS system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) 
+* [Android's system-level spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager)
+* [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid)
+* [translation APIs proposal](https://github.com/webmachinelearning/translation-api/issues/9)
+* [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features)
 
 - Many thanks for valuable feedback and advice from reviews and collaborators across standards groups.
