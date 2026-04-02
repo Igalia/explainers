@@ -37,7 +37,7 @@ To provide the functionality as the *browser custom dictionary* but available to
 
 *Browser custom dictionary* only contains added word strings. These added words apply across **all** the user enabled languages. The Spell Check Custom dictionary API is in line with *browser custom dictionary* at this aspect.
 
-The Spell Check Custom dictionary introduced by this API is **an addition** to browsers' existing spell checking dictionaries, including *browser custom dictionary*. It should NOT have impact on the roles of the existing dictionaries in spell checking in the browsers. Browsers' usage of spellchecking APIs normally depends on the operating systems used. For example, in Windows Chrome uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. For iOS, Chrome uses the [system spellchecker](https://developer.apple.com/documentation/uikit/uitextchecker) associated with WebKit. In Linux, it primarily relies on the [Hunspell library](https://hunspell.github.io/) integrated. Chrome for Android does not have its own independent spellcheck engine. Instead, it relies on the Android operating system's built-in [spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager) or [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid). The existing spelling check mechanism in browsers work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
+The Spell Check Custom dictionary introduced by this API is **an addition** to browsers' existing spell checking dictionaries, including the *browser custom dictionary*. It should NOT have impact on the roles of the existing dictionaries in spelling check and how the current spellcheckers, locally or at the server side, work in the browsers. Browsers' usage of spellchecking APIs normally depends on the operating systems used. For example, in Windows Chrome uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. For iOS, Chrome uses the [system spellchecker](https://developer.apple.com/documentation/uikit/uitextchecker) associated with WebKit. In Linux, it primarily relies on the [Hunspell library](https://hunspell.github.io/) integrated. Chrome for Android does not have its own independent spellcheck engine. Instead, it relies on the Android operating system's built-in [spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager) or [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid). The existing spelling check mechanisms in browsers work as they are. The additional part is that during spelling check, once the checks against all the existing dictionaries are done, the spellchecker will so check words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
 
 The dictionary introduced by this API could be used outside of spelling check, such as autocorrect, refining suggestion list and [proofreader](https://github.com/webmachinelearning/proofreader-api/blob/main/README.md#customization-with-user-mutable-dictionary). Extending usages could be discussed in future proposals. 
 
@@ -75,7 +75,7 @@ window.spellCheckDictionary.removeWords(["Wolvic", "spidermonkey"]);
 - **Per‑document lifecycle**  
 The dictionary is strictly local to the document it's associated with.
     
-    The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it. It stores data in memory at the renderer side. The stored data stays at the renderer and does not pass around. A detailed description of the Chromium design is available in [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
+    The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it. It stores data in memory at the renderer side. The stored data stays at the renderer and does not pass around. A detailed description of the Chromium design is available in [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4). In this document, we also discussed cases with iframe and extension.  An iframe is an element within a parent document, it always creates a separate document environment with its own windows and document objects. A Chromium extension’s own pages have their own RenderFrames and RenderProcesses to host its content. Hence, each extension has a separate spell check custom dictionary.
 
 - **Render‑process managed**  
   Unlike user‑managed dictionaries (which live in browser settings and are global), this dictionary is scoped to the page and controlled programmatically.
@@ -86,7 +86,17 @@ Note that "words" here is loosely defined and may include spaces or special char
 
 ## Alternatives Considered
 
-### 1. A Unified `CustomDictionary` Across Features
+### 1. An `ObservableArray` Type for the Dictionary
+
+The Spell check Custom dictionary is a collection of word strings. One option is to introduce an array attribute to represent the dictionary. Since the dictionary is mutable, an *ObservableArray* type as suggested [here](https://github.com/WebAudio/web-speech-api/pull/169#issuecomment-3006838443) could be ideal.
+
+ObservableArray offers developers a great choices of standard Array methods. This gives us the convinence of manipulating the dictionary with functionalities by calling standard Array methods. However, we decided not going to this route due to the following reasons -
+
+*  Avoid adding new fake arrays to the web platform
+*  "All of the spell check-related things are carefully designed to not be observable, it might be good to not have additional methods to see inside", as suggested by the [TAG review comments](https://github.com/w3ctag/design-reviews/issues/1191)
+* The content of the dictionary should not be accessible due to security and privacy risks.
+
+### 2. A Unified `CustomDictionary` Across Features
 
 Domain‑specific vocabulary is not unique to spell checking. Web Speech, for example, includes a [Contextual biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) for transcription of rare or domain‑specific terms. Text‑to‑Speech may eventually need similar mechanisms for pronunciation.
 
@@ -130,7 +140,7 @@ However:
 
 Given these constraints, a unified abstraction adds complexity without clear benefit.
 
-### 2. Manual Synchronization Between Features
+### 3. Manual Synchronization Between Features
 
 If authors *do* want to share vocabulary between APIs, this is trivial today.  Given that 
 phrase objects have more robust information, it can be as simple as:
