@@ -45,7 +45,7 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 
 ## Proposed Approach
 
-We propose the addition of a new `SpellCheckCustomDictionary` object accessible via `window.spellCheckDictionary`, where users can manage sets of "words" via calls to its method `addWords()` or `removeWords()`.
+We propose the addition of a new `SpellCheckCustomDictionary` object accessible via `window.spellCheckCustomDictionary`, where users can manage sets of "words" via calls to its method `addWords()` or `removeWords()`.
 
 
 ```
@@ -63,9 +63,9 @@ Example:
 
 ```js
 
-window.spellCheckDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"]);
+window.spellCheckCustomDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"]);
 
-window.spellCheckDictionary.removeWords(["Wolvic", "spidermonkey"]);
+window.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
 
@@ -115,7 +115,7 @@ However, we decided against this for the following reasons:
 Authors who want to share vocabulary between both APIs today can do so simply:
 
 ```javascript
-window.spellCheckDictionary.addWords(recognition.phrases.map(p => p.phrase));
+window.spellCheckCustomDictionary.addWords(recognition.phrases.map(p => p.phrase));
 ``` 
 
 If this pattern is still taxing or inefficient, we can always consider adding a convenience method later.
