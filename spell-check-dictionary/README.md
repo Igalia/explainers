@@ -54,8 +54,8 @@ We propose the addition of a new `SpellCheckCustomDictionary` object accessible 
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
 ] interface SpellCheckCustomDictionary {
-    [CallWith=ScriptState] void addWords(sequence<DOMString> words);
-    [CallWith=ScriptState] void removeWords(sequence<DOMString> words);
+    void addWords(sequence<DOMString> words);
+    void removeWords(sequence<DOMString> words);
 };
 ```
 
