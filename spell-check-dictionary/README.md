@@ -69,7 +69,7 @@ window.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
 
-_Note that "words" is defined loosely — entries may include spaces or special characters, to accommodate multi-word proper nouns and hyphenated terms._
+_Note that "words" is defined loosely — validation of the entries matches how the *browser custom dictionary* works.
 
 The new dictionary has two key characteristics:
 
