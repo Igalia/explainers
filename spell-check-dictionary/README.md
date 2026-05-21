@@ -45,7 +45,7 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 
 ## Proposed Approach
 
-We propose the addition of a new `SpellCheckCustomDictionary` object accessible via `window.spellCheckCustomDictionary`, where users can manage sets of "words" via calls to its method `addWords()` or `removeWords()`.
+We propose the addition of a new `SpellCheckCustomDictionary` object accessible via `document.spellCheckCustomDictionary`, where users can manage sets of "words" via calls to its method `addWords()` or `removeWords()`.
 
 
 ```
@@ -63,9 +63,9 @@ Example:
 
 ```js
 
-window.spellCheckCustomDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"]);
+document.spellCheckCustomDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"]);
 
-window.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
+document.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
 
