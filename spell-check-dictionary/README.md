@@ -69,6 +69,8 @@ document.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
 
+_Note Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, or track evolving terminology, and prevent dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocalbulary leaks into subsequent view. 
+
 _Note that "words" is defined loosely — validation of the entries matches how the *browser custom dictionary* works.
 
 The new dictionary has two key characteristics:
@@ -99,7 +101,17 @@ The Spell Check Custom dictionary is a collection of word strings. One option is
 * The content of the dictionary should not be accessible due to security and privacy risks.
 </details>
 
-### 2. A Unified `CustomDictionary` Across Features
+### 2. A SetLike interface
+<details>
+For the interface, a natural alternative would be [SetLike<DOMString>], a Set-shaped surface (`add`, `delete`, `has`, `size`, `clear`, iteration) — familiar to authors who know JavaScript's `Set`. However, we chose not to use it because:
+
+* Privacy. Exposing the read operations of the interface lets any script with access to the dictionary enumerate or probe its contents.    
+* Batch shape matches caller intent and scales. SetLike's ```add(value)``` is single-element. In most common use cases, callers push lists, so on a SetLike surface they end up coalescing via forEach. Bespoke ```addWords(sequence<DOMString>)``` matches caller intent, batches cleanly, and remains a single operation.
+* The cost of a bespoke surface is a small ergonomic one — authors learn ```addWords / removeWords``` instead of ```add / delete```.
+    
+</details>
+    
+### 3. A Unified `CustomDictionary` Across Features
 <details>
 
 Domain-specific vocabulary isn't unique to spell checking — the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. The proposed [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features) also has a need for some kind of related features, as would, for example [translation APIs](https://github.com/webmachinelearning/translation-api/issues/9).
@@ -123,7 +135,7 @@ If this pattern is still taxing or inefficient, we can always consider adding a 
 For now, keeping the API minimal helps avoid premature abstraction.
 </details>
 
-### Declarative `<link>`
+### 4. Declarative `<link>`
 <details>
 A natural question seems be whether we could just make this declarative.  Perhaps something like:
 
@@ -139,10 +151,18 @@ On balance though, there are advantages to a JavaScript based interface and we b
 
   * As shown above, it makes it easier and more efficient to share terms among APIs with similar needs
   * We currently lack a `rel` type or agreed serialization format, which also generally happen in a different space of browser architecture. `fetch` and `json` are pretty easy ways to achieve mostly similar results and require nothing new.
-
+  * Some use cases involve runtime-fetched vocabularies — e.g., a financial-news application receiving symbol lists from a server, where words arrive in a JavaScript execution context and ```addWords(response)``` is the direct path. A declarative form would either require server-side rendering of the word list (not always feasible when content is per-user or per-session) or amount to writing JavaScript that creates DOM nodes to declare words — strictly more roundabout than the imperative call. 
+    
 Given this, while we believe it is a potentially worthwhile pursuit in future iterations, it makes the most sense to begin with the imperative API.
 </details>
 
+### 5. DOM subtree scoped
+
+<details>
+Choosing scope for the API largely depends on use cases. For example, Document-scoped is enough for whole-page vocabularies while subtree-scoped wins when multiple forms on one page need distinct vocabularies, or when web components want isolation. We would say that  Document scope and DOM-subtree scope are not mutually exclusive — they compose additively.
+
+We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice but leaves the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge. 
+</details>
 ---
 
 ## Accessibility, Internationalization, Privacy & Security
