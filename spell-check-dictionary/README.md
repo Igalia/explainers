@@ -34,7 +34,7 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 * Allow pages to suppress false spell-check positives for domain-specific vocabulary without requiring actions from users.
 
 * Leave all existing spell-check behavior — including browser, OS, and user dictionaries — completely unchanged. This API adds a layer; it does not replace or interfere with anything.
-
+* Provide a solution which, while not specifically about autocomplete, autocorrect or spelling suggestions, also can potentially inform and or integrate with other proposals. That is, to offer something that is not in conflict with those as possible future goals.
 ## Non-Goals
 
 * This API does not aim to cover spell-check suggestions, autocorrect, or AI proofreading features — though it could potentially inform those in other proposals, and/or can integrate nicely with other features.
