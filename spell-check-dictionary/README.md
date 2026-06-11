@@ -37,7 +37,7 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 * Provide a solution which, while not specifically about autocomplete, autocorrect or spelling suggestions, also can potentially inform and or integrate with other proposals. That is, to offer something that is not in conflict with those as possible future goals.
 ## Non-Goals
 
-* This API does not aim to cover spell-check suggestions, autocorrect, or AI proofreading features — though it could potentially inform those in other proposals, and/or can integrate nicely with other features.
+* This API does not itself aim to address spell-check suggestions, autocorrect, or AI proofreading features.
 
 * Exceed the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
 
