@@ -34,10 +34,10 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 * Allow pages to suppress false spell-check positives for domain-specific vocabulary without requiring actions from users.
 
 * Leave all existing spell-check behavior — including browser, OS, and user dictionaries — completely unchanged. This API adds a layer; it does not replace or interfere with anything.
-
+* Provide a solution which, while not specifically about autocomplete, autocorrect or spelling suggestions, also can potentially inform and or integrate with other proposals. That is, to offer something that is not in conflict with those as possible future goals.
 ## Non-Goals
 
-* This API does not aim to cover spell-check suggestions, autocorrect, or AI proofreading features — though it could potentially inform those in other proposals, and/or can integrate nicely with other features.
+* This API does not itself aim to address spell-check suggestions, autocorrect, or AI proofreading features.
 
 * Exceed the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
 
@@ -163,6 +163,27 @@ Given this, while we believe it is a potentially worthwhile pursuit in future it
 Choosing scope for the API largely depends on use cases. For example, Document-scoped is enough for whole-page vocabularies while subtree-scoped wins when multiple forms on one page need distinct vocabularies, or when web components want isolation. We would say that Document scope and DOM-subtree scope are not mutually exclusive — document scope is just the simplest form, which we can continue to build more specifically on in the future if so desired.
 
 We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice but leaves the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge. 
+</details>
+
+### 6. Fuzzy / pattern matching for entries
+
+<details>
+
+This proposal treats each entry as a literal word rather than a structured format carrying morphological information, matching the behavior of the existing browser custom dictionary. A natural question raised in [#94](https://github.com/Igalia/explainers/issues/94) is whether to allow some regexp-like syntax in this list, so that morphological variants collapse into a single entry rather than being enumerated one inflection at a time. For example:
+
+```
+"Nutrimatic('s)?",
+"Improbab(ility|le)",
+"jettison(ed)?",
+"babel(fish)?"
+```
+
+perhap with an optional `:i` sigil for case-insensitivity. The motivation is compelling — enumerating every inflection could be a real authoring burden.
+
+We propose to defer this to a later iteration and revisit patterns as it seems like a backward-compatible extension: the tokenizers treat those most necessary characters as word boundaries. If a fuzzy syntax or pattern matching is worth having, we think the natural next step would be specifying a strict mini-grammar — a closed set of special operators, with everything else treated as literal.
+
+Another reason to consider this as a follow on step is that it is unclear if and how these lists can and should be used by things like autocomplete or autosuggest, so we would like to leave this as simple as possible in the first iteration.
+
 </details>
 ---
 
