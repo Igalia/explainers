@@ -41,8 +41,6 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 
 * Exceed the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
 
-* Ignored
-
 ## Proposed Approach
 
 We propose the addition of a new `SpellCheckCustomDictionary` object accessible via `document.spellCheckCustomDictionary`, where users can manage sets of "words" via calls to its method `addWords()` or `removeWords()`.
@@ -68,14 +66,17 @@ document.spellCheckCustomDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"
 document.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
+_Note On platforms whose native spellcheck APIs distinguish *ignored* from *learned* words (e.g. *NSSpellChecker.ignoreWord:inSpellDocumentWithTag* in macOS/iOS, *mIgnoreTable* in Firefox), *learned* words are added permanently to the user's persistent dictionary, whereas *ignored* words are held only in a transient, in-memory list. This web API maps to the **ignored** semantics. Moreover, it exposes an explicit ```removeWords()``` and is *more tightly scoped* to the ```Document```.
 
-_Note Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, or track evolving terminology, and prevent dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocalbulary leaks into subsequent view. 
+_Note Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, and prevent dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocalbulary leaks into subsequent view. Unlike Native ignore lists are effectively add-only, a page-driven, long-lived document does not get the automatic reset that native ignore lists have, so it needs an explicit removal primitive to scope vocabulary to the current view and bound growth.
+
+_Note The custom dictionary is strictly **additive** and should not modify any underlying dictionary, such as OS dictionary in macOS.
 
 _Note that "words" is defined loosely — validation of the entries matches how the *browser custom dictionary* works.
 
 The new dictionary has two key characteristics:
 
-* *Per-document lifecycle*. The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it entirely. Each iframe and browser extension gets its own separate dictionary. See the [Chromium design document] for full details.
+* *Per-document lifecycle*. The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it entirely.
 
 * Render-process managed. Unlike the browser custom dictionary, which lives in browser settings and is global across all pages, this dictionary is scoped to the document and controlled entirely by page script.
 
@@ -159,7 +160,7 @@ Given this, while we believe it is a potentially worthwhile pursuit in future it
 ### 5. DOM subtree scoped
 
 <details>
-Choosing scope for the API largely depends on use cases. For example, Document-scoped is enough for whole-page vocabularies while subtree-scoped wins when multiple forms on one page need distinct vocabularies, or when web components want isolation. We would say that  Document scope and DOM-subtree scope are not mutually exclusive — they compose additively.
+Choosing scope for the API largely depends on use cases. For example, Document-scoped is enough for whole-page vocabularies while subtree-scoped wins when multiple forms on one page need distinct vocabularies, or when web components want isolation. We would say that Document scope and DOM-subtree scope are not mutually exclusive — document scope is just the simplest form, which we can continue to build more specifically on in the future if so desired.
 
 We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice but leaves the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge. 
 </details>
@@ -179,7 +180,8 @@ Words added via this API apply across all user-enabled languages, matching the b
   The custom dictionary is discarded when the document or tab closes.
 
 - **No dictionary probing**  
-  Browsers already prevent pages from detecting the contents of built‑in dictionaries via style or DOM observation. This API does not introduce new probing vectors.
+  This API exposes no read method to script and a page can only observe words it supplied itself. 
+    A known issue with a highlight side channel — which lets a page probe dictionary membership by timing `::spelling-error` / `::grammar-error` highlight rendering — is being addressed in [css-pseudo `#highlight-security`](https://drafts.csswg.org/css-pseudo/#highlight-security) and the [user-dictionary-leaks proposal](https://github.com/explainers-by-googlers/user-dictionary-leaks). The same highlight side channel could, in principle, be used to *guess the contents of the custom set itself*, so addressing it would benefit this API too.
 
 - **The dictionary is local to the document it's associated with**
 Details are discussed at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)
@@ -192,9 +194,27 @@ Details are discussed at [The Per‑Document Design in Chromium](https://docs.go
 
 - **No new attack surface**
   Words are supplied by the page itself; there is no mechanism for external input or cross-origin influence.
-  
----
 
+- **Third-party iframes**
+  Because the dictionary is scoped per document, every iframe — including cross-origin, third-party frames — gets its own independent dictionary. An embedded third party can only add or remove words for *its own* document. Detailed discussion for Chromium case can be found at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)​.
+
+- **Resource Limits and Abuse Mitigation**
+
+It is noted that rapid `addWords()` / `removeWords()` churns can cause waste of resources. To prevent a page from flooding or abusing the dictionary, it is recommended to introduce:
+  - Implementation-defined limits — a user agent may cap the number of words and the length of each word.
+  - Well-defined behavior at the limit — surplus words are ignored rather than corrupting existing state or breaking the page.
+
+## Relationship to Other Tools & APIs 
+   
+### Built-in AI APIs (Proofreader)                   
+
+The [Proofreader API](https://github.com/webmachinelearning/proofreader-api) explainer references this API as a potential model for handling proper names and acronyms, while stating it is "moving forward without integration with custom dictionaries until further exploration and evaluation are done." We take the same position from this side — the features are complementary but should ship independently first — for a few reasons:                                                                   
+- **Different operations.** This API suppresses a spell-check flag by matching a flat string set layered over the platform spellchecker. A proofreader is generative and contextual; "accept this word" there is a fuzzier operation than "don't flag this token," and is not simply a set-membership test.
+- **The surfaces are still early**. Questions are better resolved once both APIs are more settled.                      
+ 
+### Browser Extensions (Grammarly)                                                                         
+Writing-assistant extensions such as Grammarly and LanguageTool run their own checking engine, independently of the browser's built-in spellchecker. Because this API layers onto the *built-in* spellchecker, it should not have automatic effect on these extensions: an extension neither consults nor is bound by the page's custom dictionary, and keeps using its own per-user vocabulary.
+ 
 ## Stakeholder Feedback / Opposition
 
 | Stakeholder | Signal |
@@ -218,5 +238,10 @@ Details are discussed at [The Per‑Document Design in Chromium](https://docs.go
 * [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid)
 * [translation APIs proposal](https://github.com/webmachinelearning/translation-api/issues/9)
 * [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features)
-
+* [Grammarly privacy and security](https://support.grammarly.com/hc/en-us/articles/20916119474829-Privacy-and-security-FAQs)
+* [LanguageTool](https://languagetool.org/dev)
+* [Preventing User Dictionary Leaks via `::spelling-error` and `::grammar-error` (user-dictionary-leaks explainer)](https://explainers-by-googlers.github.io/user-dictionary-leaks/)
+* [WebKit standards-position #546 — User dictionary leaks via spelling/grammar pseudo-elements](https://github.com/WebKit/standards-positions/issues/546)
+* [CSS Pseudo-Elements — Highlight Security](https://drafts.csswg.org/css-pseudo/#highlight-security)
 - Many thanks for valuable feedback and advice from reviews and collaborators across standards groups.
+    
