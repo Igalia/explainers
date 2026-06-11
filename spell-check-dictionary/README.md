@@ -163,6 +163,23 @@ Choosing scope for the API largely depends on use cases. For example, Document-s
 
 We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice but leaves the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge. 
 </details>
+
+### 6. Fuzzy / pattern matching for entries
+
+<details>
+
+This proposal treats each entry as a literal word rather than a structured format carrying morphological information, matching the behavior of the existing browser custom dictionary. A natural question raised in [#94](https://github.com/Igalia/explainers/issues/94) is whether to allow some regexp-like syntax in this list, so that morphological variants collapse into a single entry rather than being enumerated one inflection at a time. For example:
+
+```
+"Nutrimatic('s)?",
+"Improbab(ility|le)",
+"jettison(ed)?",
+"babel(fish)?"
+```
+
+and with an optional `:i` sigil for case-insensitivity. The motivation is compelling — enumerating every inflection could be a real authoring burden. However, we propose to defer this to a later iteration and revisit patterns as a backward-compatible extension. If a fuzzy syntax or pattern matching is worth having, we think the natural next step would be specifying a strict mini-grammar — a closed set of special operators, with everything else treated as literal.
+
+</details>
 ---
 
 ## Accessibility, Internationalization, Privacy & Security
