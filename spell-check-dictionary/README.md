@@ -177,7 +177,11 @@ This proposal treats each entry as a literal word rather than a structured forma
 "babel(fish)?"
 ```
 
-and with an optional `:i` sigil for case-insensitivity. The motivation is compelling — enumerating every inflection could be a real authoring burden. However, we propose to defer this to a later iteration and revisit patterns as a backward-compatible extension. If a fuzzy syntax or pattern matching is worth having, we think the natural next step would be specifying a strict mini-grammar — a closed set of special operators, with everything else treated as literal.
+perhap with an optional `:i` sigil for case-insensitivity. The motivation is compelling — enumerating every inflection could be a real authoring burden.
+
+We propose to defer this to a later iteration and revisit patterns as it seems like a backward-compatible extension: the tokenizers treat those most necessary characters as word boundaries. If a fuzzy syntax or pattern matching is worth having, we think the natural next step would be specifying a strict mini-grammar — a closed set of special operators, with everything else treated as literal.
+
+Another reason to consider this as a follow on step is that it is unclear if and how these lists can and should be used by things like autocomplete or autosuggest, so we would like to leave this as simple as possible in the first iteration.
 
 </details>
 ---
