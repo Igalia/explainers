@@ -1,15 +1,15 @@
 # Explainer: Spell Check Custom Dictionary API
 
 ## Authors
-- [Ziran Sun](mailto:zsun@igalia.com) 
+- [Ziran Sun](mailto:zsun@igalia.com)
 - [Brian Kardell](mailto:bkardell@igalia.com)
-- Jihye Hong  
+- Jihye Hong
 
 ---
 
 ## Introduction
 
-Browsers provide spell checking by comparing text against built‑in dictionaries (local or server‑side). This works well for general language, but breaks down on pages that rely heavily on domain‑specific terminology—product names, proper nouns, fictional universes, technical jargon, and other vocabulary that is valid *in context* but absent from standard dictionaries. 
+Browsers provide spell checking by comparing text against built‑in dictionaries (local or server‑side). This works well for general language, but breaks down on pages that rely heavily on domain‑specific terminology—product names, proper nouns, fictional universes, technical jargon, and other vocabulary that is valid *in context* but absent from standard dictionaries.
 
 Some browsers let users address this by maintaining a personal custom dictionary through browser settings. But there is currently no way for a page to supply its own domain-specific vocabulary programmatically — meaning authors have no way to prevent their users from seeing distracting false positives for the spell checking of words that are perfectly valid in context.
 
@@ -21,9 +21,9 @@ This proposal introduces a SpellCheckCustomDictionary API that lets pages provid
 
 Spell checkers routinely flag words that are correct within a site’s domain but unknown to general dictionaries. Examples include:
 
-- A Pokémon wiki containing names like *Pikachu* or *Charmander*.  
-- A financial analysis dashboard referencing company‑specific product names or tickers.  
-- A medical or scientific tool using specialized terminology.  
+- A Pokémon wiki containing names like *Pikachu* or *Charmander*.
+- A financial analysis dashboard referencing company‑specific product names or tickers.
+- A medical or scientific tool using specialized terminology.
 
 False positives in these contexts are distracting, frustrating, misleading, and might even cause users to lose trust. While browsers allow users to add words via their personal custom dictionary in browser settings, this requires manual intervention for every user on every site, and is not a realistic solution for domain-specific vocabulary that the page author already knows is valid.
 
@@ -49,11 +49,14 @@ We propose the addition of a new `SpellCheckCustomDictionary` object accessible 
 ```
 [
     Exposed=Window,
-    SecureContext,
-    RuntimeEnabled=SpellCheckCustomDictionaryAPI
+    SecureContext
 ] interface SpellCheckCustomDictionary {
-    void addWords(sequence<DOMString> words);
-    void removeWords(sequence<DOMString> words);
+    undefined addWords(sequence<DOMString> words);
+    undefined removeWords(sequence<DOMString> words);
+};
+
+partial interface Document {
+    [SameObject] readonly attribute SpellCheckCustomDictionary spellCheckCustomDictionary;
 };
 ```
 
@@ -66,13 +69,13 @@ document.spellCheckCustomDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"
 document.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
-_Note On platforms whose native spellcheck APIs distinguish *ignored* from *learned* words (e.g. *NSSpellChecker.ignoreWord:inSpellDocumentWithTag* in macOS/iOS, *mIgnoreTable* in Firefox), *learned* words are added permanently to the user's persistent dictionary, whereas *ignored* words are held only in a transient, in-memory list. This web API maps to the **ignored** semantics. Moreover, it exposes an explicit ```removeWords()``` and is *more tightly scoped* to the ```Document```.
+**Note:** On platforms whose native spellcheck APIs distinguish *ignored* from *learned* words (e.g. *NSSpellChecker.ignoreWord:inSpellDocumentWithTag* in macOS/iOS, *mIgnoreTable* in Firefox), *learned* words are added permanently to the user's persistent dictionary, whereas *ignored* words are held only in a transient, in-memory list. This web API maps to the **ignored** semantics. Moreover, it exposes an explicit ```removeWords()``` and is *more tightly scoped* to the ```Document```.
 
-_Note Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, and prevent dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocalbulary leaks into subsequent view. Unlike Native ignore lists are effectively add-only, a page-driven, long-lived document does not get the automatic reset that native ignore lists have, so it needs an explicit removal primitive to scope vocabulary to the current view and bound growth.
+**Note:** Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, and prevent the dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocabulary leaks into subsequent view. Unlike native ignore lists, which are effectively add-only, a page-driven, long-lived document does not get the automatic reset that native ignore lists have, so it needs an explicit removal primitive to scope vocabulary to the current view and bound growth.
 
-_Note The custom dictionary is strictly **additive** and should not modify any underlying dictionary, such as OS dictionary in macOS.
+**Note:** The custom dictionary is strictly **additive** and should not modify any underlying dictionary, such as OS dictionary in macOS.
 
-_Note that "words" is defined loosely — validation of the entries matches how the *browser custom dictionary* works.
+**Note:** "words" is defined loosely — validation of the entries matches how the *browser custom dictionary* works.
 
 The new dictionary has two key characteristics:
 
@@ -106,12 +109,12 @@ The Spell Check Custom dictionary is a collection of word strings. One option is
 <details>
 For the interface, a natural alternative would be [SetLike<DOMString>], a Set-shaped surface (`add`, `delete`, `has`, `size`, `clear`, iteration) — familiar to authors who know JavaScript's `Set`. However, we chose not to use it because:
 
-* Privacy. Exposing the read operations of the interface lets any script with access to the dictionary enumerate or probe its contents.    
+* Privacy. Exposing the read operations of the interface lets any script with access to the dictionary enumerate or probe its contents.
 * Batch shape matches caller intent and scales. SetLike's ```add(value)``` is single-element. In most common use cases, callers push lists, so on a SetLike surface they end up coalescing via forEach. Bespoke ```addWords(sequence<DOMString>)``` matches caller intent, batches cleanly, and remains a single operation.
 * The cost of a bespoke surface is a small ergonomic one — authors learn ```addWords / removeWords``` instead of ```add / delete```.
-    
+
 </details>
-    
+
 ### 3. A Unified `CustomDictionary` Across Features
 <details>
 
@@ -128,8 +131,8 @@ However, we decided against this for the following reasons:
 Authors who want to share vocabulary between both APIs today can do so simply:
 
 ```javascript
-window.spellCheckCustomDictionary.addWords(recognition.phrases.map(p => p.phrase));
-``` 
+document.spellCheckCustomDictionary.addWords(recognition.phrases.map(p => p.phrase));
+```
 
 If this pattern is still taxing or inefficient, we can always consider adding a convenience method later.
 
@@ -138,7 +141,7 @@ For now, keeping the API minimal helps avoid premature abstraction.
 
 ### 4. Declarative `<link>`
 <details>
-A natural question seems be whether we could just make this declarative.  Perhaps something like:
+A natural question seems to be whether we could just make this declarative.  Perhaps something like:
 
 ```
 <link rel="custom-dictionary" href="lotr.words">
@@ -152,8 +155,8 @@ On balance though, there are advantages to a JavaScript based interface and we b
 
   * As shown above, it makes it easier and more efficient to share terms among APIs with similar needs
   * We currently lack a `rel` type or agreed serialization format, which also generally happen in a different space of browser architecture. `fetch` and `json` are pretty easy ways to achieve mostly similar results and require nothing new.
-  * Some use cases involve runtime-fetched vocabularies — e.g., a financial-news application receiving symbol lists from a server, where words arrive in a JavaScript execution context and ```addWords(response)``` is the direct path. A declarative form would either require server-side rendering of the word list (not always feasible when content is per-user or per-session) or amount to writing JavaScript that creates DOM nodes to declare words — strictly more roundabout than the imperative call. 
-    
+  * Some use cases involve runtime-fetched vocabularies — e.g., a financial-news application receiving symbol lists from a server, where words arrive in a JavaScript execution context and ```addWords(response)``` is the direct path. A declarative form would either require server-side rendering of the word list (not always feasible when content is per-user or per-session) or amount to writing JavaScript that creates DOM nodes to declare words — strictly more roundabout than the imperative call.
+
 Given this, while we believe it is a potentially worthwhile pursuit in future iterations, it makes the most sense to begin with the imperative API.
 </details>
 
@@ -162,29 +165,9 @@ Given this, while we believe it is a potentially worthwhile pursuit in future it
 <details>
 Choosing scope for the API largely depends on use cases. For example, Document-scoped is enough for whole-page vocabularies while subtree-scoped wins when multiple forms on one page need distinct vocabularies, or when web components want isolation. We would say that Document scope and DOM-subtree scope are not mutually exclusive — document scope is just the simplest form, which we can continue to build more specifically on in the future if so desired.
 
-We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice but leaves the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge. 
+We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice but leaves the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge.
 </details>
 
-### 6. Fuzzy / pattern matching for entries
-
-<details>
-
-This proposal treats each entry as a literal word rather than a structured format carrying morphological information, matching the behavior of the existing browser custom dictionary. A natural question raised in [#94](https://github.com/Igalia/explainers/issues/94) is whether to allow some regexp-like syntax in this list, so that morphological variants collapse into a single entry rather than being enumerated one inflection at a time. For example:
-
-```
-"Nutrimatic('s)?",
-"Improbab(ility|le)",
-"jettison(ed)?",
-"babel(fish)?"
-```
-
-perhap with an optional `:i` sigil for case-insensitivity. The motivation is compelling — enumerating every inflection could be a real authoring burden.
-
-We propose to defer this to a later iteration and revisit patterns as it seems like a backward-compatible extension: the tokenizers treat those most necessary characters as word boundaries. If a fuzzy syntax or pattern matching is worth having, we think the natural next step would be specifying a strict mini-grammar — a closed set of special operators, with everything else treated as literal.
-
-Another reason to consider this as a follow on step is that it is unclear if and how these lists can and should be used by things like autocomplete or autosuggest, so we would like to leave this as simple as possible in the first iteration.
-
-</details>
 ---
 
 ## Accessibility, Internationalization, Privacy & Security
@@ -197,27 +180,20 @@ Words added via this API apply across all user-enabled languages, matching the b
 
 ### Privacy
 
-- **Transient data**  
-  The custom dictionary is discarded when the document or tab closes.
+- **Transient data.** The custom dictionary is discarded when the document or tab closes.
 
-- **No dictionary probing**  
-  This API exposes no read method to script and a page can only observe words it supplied itself. 
-    A known issue with a highlight side channel — which lets a page probe dictionary membership by timing `::spelling-error` / `::grammar-error` highlight rendering — is being addressed in [css-pseudo `#highlight-security`](https://drafts.csswg.org/css-pseudo/#highlight-security) and the [user-dictionary-leaks proposal](https://github.com/explainers-by-googlers/user-dictionary-leaks). The same highlight side channel could, in principle, be used to *guess the contents of the custom set itself*, so addressing it would benefit this API too.
+- **No dictionary probing.** This API exposes no read method to script and a page can only observe words it supplied itself. A known issue with a highlight side channel — which lets a page probe dictionary membership by timing `::spelling-error` / `::grammar-error` highlight rendering — is being addressed in [css-pseudo `#highlight-security`](https://drafts.csswg.org/css-pseudo/#highlight-security) and the [user-dictionary-leaks proposal](https://github.com/explainers-by-googlers/user-dictionary-leaks). The same highlight side channel could, in principle, be used to *guess the contents of the custom set itself*, so addressing it would benefit this API too.
 
-- **The dictionary is local to the document it's associated with**
-Details are discussed at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)
+- **The dictionary is local to the document it's associated with.** Details are discussed at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)
 
 
 ### Security
 
-- **No new network exposure**  
-  The API does not require network access and does not introduce new privacy risks.
+- **No new network exposure.** The API does not require network access and does not introduce new privacy risks.
 
-- **No new attack surface**
-  Words are supplied by the page itself; there is no mechanism for external input or cross-origin influence.
+- **No new attack surface.** Words are supplied by the page itself; there is no mechanism for external input or cross-origin influence.
 
-- **Third-party iframes**
-  Because the dictionary is scoped per document, every iframe — including cross-origin, third-party frames — gets its own independent dictionary. An embedded third party can only add or remove words for *its own* document. Detailed discussion for Chromium case can be found at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)​.
+- **Third-party iframes.** Because the dictionary is scoped per document, every iframe — including cross-origin, third-party frames — gets its own independent dictionary. An embedded third party can only add or remove words for *its own* document. Detailed discussion for Chromium case can be found at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
 
 - **Resource Limits and Abuse Mitigation**
 
@@ -225,36 +201,36 @@ It is noted that rapid `addWords()` / `removeWords()` churns can cause waste of 
   - Implementation-defined limits — a user agent may cap the number of words and the length of each word.
   - Well-defined behavior at the limit — surplus words are ignored rather than corrupting existing state or breaking the page.
 
-## Relationship to Other Tools & APIs 
-   
-### Built-in AI APIs (Proofreader)                   
+## Relationship to Other Tools & APIs
 
-The [Proofreader API](https://github.com/webmachinelearning/proofreader-api) explainer references this API as a potential model for handling proper names and acronyms, while stating it is "moving forward without integration with custom dictionaries until further exploration and evaluation are done." We take the same position from this side — the features are complementary but should ship independently first — for a few reasons:                                                                   
+### Built-in AI APIs (Proofreader)
+
+The [Proofreader API](https://github.com/webmachinelearning/proofreader-api) explainer references this API as a potential model for handling proper names and acronyms, while stating it is "moving forward without integration with custom dictionaries until further exploration and evaluation are done." We take the same position from this side — the features are complementary but should ship independently first — for a few reasons:
 - **Different operations.** This API suppresses a spell-check flag by matching a flat string set layered over the platform spellchecker. A proofreader is generative and contextual; "accept this word" there is a fuzzier operation than "don't flag this token," and is not simply a set-membership test.
-- **The surfaces are still early**. Questions are better resolved once both APIs are more settled.                      
- 
-### Browser Extensions (Grammarly)                                                                         
+- **The surfaces are still early**. Questions are better resolved once both APIs are more settled.
+
+### Browser Extensions (Grammarly)
 Writing-assistant extensions such as Grammarly and LanguageTool run their own checking engine, independently of the browser's built-in spellchecker. Because this API layers onto the *built-in* spellchecker, it should not have automatic effect on these extensions: an extension neither consults nor is bound by the page's custom dictionary, and keeps using its own per-user vocabulary.
- 
+
 ## Stakeholder Feedback / Opposition
 
 | Stakeholder | Signal |
 |-------------|--------|
 | Chrome | Positive — implementation in progress |
-| Safari | No signal |
-| Firefox | No signal |
+| Safari | https://github.com/WebKit/standards-positions/issues/646 |
+| Firefox | https://github.com/mozilla/standards-positions/issues/1384 |
 | TAG | [Satisfied with Concerns](https://github.com/w3ctag/design-reviews/issues/1191) |
 
 ---
 
 ## References & Acknowledgements
 
-* Chromium design document: [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)  
-* [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) 
+* Chromium design document: [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)
+* [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md)
 * [Hunspell library](https://hunspell.github.io/)
 * [Cocoa Spell Checking API](https://developer.apple.com/documentation/appkit/nsspellchecker)
 * [Windows native spellcheck API](https://issues.chromium.org/issues/40097238)
-* [MacOS system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) 
+* [MacOS system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/)
 * [Android's system-level spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager)
 * [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid)
 * [translation APIs proposal](https://github.com/webmachinelearning/translation-api/issues/9)
@@ -265,4 +241,4 @@ Writing-assistant extensions such as Grammarly and LanguageTool run their own ch
 * [WebKit standards-position #546 — User dictionary leaks via spelling/grammar pseudo-elements](https://github.com/WebKit/standards-positions/issues/546)
 * [CSS Pseudo-Elements — Highlight Security](https://drafts.csswg.org/css-pseudo/#highlight-security)
 - Many thanks for valuable feedback and advice from reviews and collaborators across standards groups.
-    
+
