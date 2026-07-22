@@ -39,7 +39,7 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 
 * This API does not itself aim to address spell-check suggestions, autocorrect, or AI proofreading features.
 
-* Exceed the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
+* Exceeding the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
 
 ## Proposed Approach
 
@@ -88,7 +88,10 @@ Browsers implement spell checking differently across operating systems.  This AP
 <details>
 	<summary>implementation notes</summary>
 
-The Spell Check Custom dictionary introduced by this API does NOT have impact on the roles of the existing dictionaries in spell checking in the browsers. Browsers' usage of spell checking APIs normally depends on the operating systems used. For example, in Windows, Chrome uses [Windows native spellcheck API](https://issues.chromium.org/issues/40097238) by default and falls back to open-source [Hunspell library](https://hunspell.github.io/) the browser integrates. For macOS, the browser integrates directly with the [system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/) provided by Apple. For iOS, Chrome uses the [system spellchecker](https://developer.apple.com/documentation/uikit/uitextchecker) associated with WebKit. In Linux, it primarily relies on the [Hunspell library](https://hunspell.github.io/) integrated. Chrome for Android does not have its own independent spellcheck engine. Instead, it relies on the Android operating system's built-in [spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager) or [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid). The existing spelling check mechanism in browsers continues to work as it is apart from also checking words against the Spell Check Custom dictionary introduced by this API before marking spelling errors.
+The existing spell-check pipeline is unchanged. The custom set is consulted only when results are reconciled: a token that would otherwise be flagged is suppressed if it appears in the document's custom dictionary. The check is strictly **additive** — the custom dictionary can only suppress a flag, never create one. A word that overlaps with an underlying dictionary is expected and inert. `removeWords()` affects only the custom set and never the underlying dictionaries, so removing an overlapping word does not cause it to be flagged.
+
+How a word gets added so it is no longer flagged depends on the operating system, and the behavior is inconsistent. On some platforms such words are learned directly into a global, system-wide dictionary that persists and is shared with every application on the device; on others they are kept by the browser. This API sidesteps that entirely: rather than write into any underlying engine or system dictionary, the browser applies the custom dictionary as a suppression step over whatever results an engine returns. The dictionary lives entirely **within the browser, scoped to a single document** — so added words only filter what the browser renders, never persist, and never leak into the OS spellchecker or other applications.
+
 </details>
 
 ## Alternatives Considered
@@ -98,16 +101,13 @@ The Spell Check Custom dictionary introduced by this API does NOT have impact on
 
 The Spell Check Custom dictionary is a collection of word strings. One option is to introduce an array attribute to represent the dictionary. Since the dictionary is mutable, an `ObservableArray` type as suggested [here](https://github.com/WebAudio/web-speech-api/pull/169#issuecomment-3006838443) could be ideal.
 
-`ObservableArray` offers developers a great choices of standard Array methods. This gives us the convenience of manipulating the dictionary with functionalities by calling standard Array methods. However, we decided not to take this route due to the following reasons -
+`ObservableArray` offers developers great choices of standard Array methods. This gives us the convenience of manipulating the dictionary with functionalities by calling standard Array methods. However, we decided not to take this route because it re-exposes the read surface this API withholds. As [TAG review comments](https://github.com/w3ctag/design-reviews/issues/1191) noted, "All of the spell check-related things are carefully designed to not be observable, it might be good to not have additional methods to see inside". The write-only `addWords()`/`removeWords()` pair exists precisely so there is no enumerable object to probe.
 
-*  Avoid adding new fake arrays to the web platform
-*  "All of the spell check-related things are carefully designed to not be observable, it might be good to not have additional methods to see inside", as suggested by the [TAG review comments](https://github.com/w3ctag/design-reviews/issues/1191)
-* The content of the dictionary should not be accessible due to security and privacy risks.
 </details>
 
 ### 2. A SetLike interface
 <details>
-For the interface, a natural alternative would be [SetLike<DOMString>], a Set-shaped surface (`add`, `delete`, `has`, `size`, `clear`, iteration) — familiar to authors who know JavaScript's `Set`. However, we chose not to use it because:
+For the interface, a natural alternative would be `SetLike<DOMString>`, a Set-shaped surface (`add`, `delete`, `has`, `size`, `clear`, iteration) — familiar to authors who know JavaScript's `Set`. However, we chose not to use it because:
 
 * Privacy. Exposing the read operations of the interface lets any script with access to the dictionary enumerate or probe its contents.
 * Batch shape matches caller intent and scales. SetLike's ```add(value)``` is single-element. In most common use cases, callers push lists, so on a SetLike surface they end up coalescing via forEach. Bespoke ```addWords(sequence<DOMString>)``` matches caller intent, batches cleanly, and remains a single operation.
@@ -118,7 +118,7 @@ For the interface, a natural alternative would be [SetLike<DOMString>], a Set-sh
 ### 3. A Unified `CustomDictionary` Across Features
 <details>
 
-Domain-specific vocabulary isn't unique to spell checking — the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. The proposed [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features) also has a need for some kind of related features, as would, for example [translation APIs](https://github.com/webmachinelearning/translation-api/issues/9).
+Domain-specific vocabulary matters beyond spell checking — the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. The proposed [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features) also has a need for some kind of related features, as would, for example [translation APIs](https://github.com/webmachinelearning/translation-api/issues/9).
 
 Abstractly, a shared `CustomDictionary` abstraction could in principle serve all of these.
 
@@ -147,7 +147,7 @@ A natural question seems to be whether we could just make this declarative.  Per
 <link rel="custom-dictionary" href="lotr.words">
 ```
 
-This would have several advantages in that it is very easy for most use cases for an author to use, and would automatically plug into the browsers many useful link related semantics. It could have ready answers to questions about preloading, blocking, CORS, priority and so on. It would come with its own optimizations, in a way, because if your browser didn't support that feature, it wouldn't even download.
+This would have several advantages in that it is very easy for authors to use in most cases, gets link semantics, preloading, and CORS handling for free, and needs no script.
 
 Given such a tag, we technically wouldn't even need an additional API surface as adding a link would add words to the dictionary and removing the link would remove them.
 
@@ -191,8 +191,6 @@ Words added via this API apply across all user-enabled languages, matching the b
 
 - **No new network exposure.** The API does not require network access and does not introduce new privacy risks.
 
-- **No new attack surface.** Words are supplied by the page itself; there is no mechanism for external input or cross-origin influence.
-
 - **Third-party iframes.** Because the dictionary is scoped per document, every iframe — including cross-origin, third-party frames — gets its own independent dictionary. An embedded third party can only add or remove words for *its own* document. Detailed discussion for Chromium case can be found at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
 
 - **Resource Limits and Abuse Mitigation**
@@ -210,7 +208,7 @@ The [Proofreader API](https://github.com/webmachinelearning/proofreader-api) exp
 - **The surfaces are still early**. Questions are better resolved once both APIs are more settled.
 
 ### Browser Extensions (Grammarly)
-Writing-assistant extensions such as Grammarly and LanguageTool run their own checking engine, independently of the browser's built-in spellchecker. Because this API layers onto the *built-in* spellchecker, it should not have automatic effect on these extensions: an extension neither consults nor is bound by the page's custom dictionary, and keeps using its own per-user vocabulary.
+Writing-assistant extensions such as *Grammarly* and *LanguageTool* run their own checking engine, independently of the browser's built-in spellchecker. Because this API layers onto the *built-in* spellchecker, it should not have automatic effect on these extensions: an extension neither consults nor is bound by the page's custom dictionary, and keeps using its own per-user vocabulary.
 
 ## Stakeholder Feedback / Opposition
 
@@ -229,7 +227,7 @@ Writing-assistant extensions such as Grammarly and LanguageTool run their own ch
 * [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md)
 * [Hunspell library](https://hunspell.github.io/)
 * [Cocoa Spell Checking API](https://developer.apple.com/documentation/appkit/nsspellchecker)
-* [Windows native spellcheck API](https://issues.chromium.org/issues/40097238)
+* [Windows native spellcheck API](https://learn.microsoft.com/en-us/windows/win32/api/spellcheck/)
 * [MacOS system-level dictionaries](https://teamdev.com/jxbrowser/docs/guides/spell-checker/)
 * [Android's system-level spellchecker](https://developer.android.com/reference/android/view/textservice/TextServicesManager)
 * [individual Keyboard App](https://support.google.com/gboard/answer/6380730?hl=en&co=GENIE.Platform%3DAndroid)
