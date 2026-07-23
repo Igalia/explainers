@@ -93,6 +93,10 @@ With the helper methods, we can apply the opaque origin rule in `url::Origin::Cr
 
 The behavior is already applied to other browsers and this fixes the interoperability gap. There will not be any regression as the approach keeps existing behavior for the application-defined standard schemes.
 
+## Stakeholder Feedback / Opposition
+
+This is the standard behavior and has already shipped in Safari and Firefox.
+
 ## Security and Privacy Considerations
 
 This makes Chrome's behavior stricter for the affected cases (such as `blob:ftp://` or `blob:ws://`) since the origin of the blob URL becomes opaque, so it is no longer treated as same-origin with any other origin. This matches the URL standard and the behavior of other browsers.
