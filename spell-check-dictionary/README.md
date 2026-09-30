@@ -60,7 +60,7 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 
 * This API does not itself aim to address spell-check suggestions, autocorrect, or AI proofreading features.
 
-* Exceeding the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
+* Exceeding the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages that the spellchecker supports, exactly as they do today for user-added words — no more, no less.
 
 ## Proposed Approach
 
@@ -197,7 +197,11 @@ We propose to proceed with document-scoped first as it's a more conservative, ea
 This API has no direct effect on the accessibility tree or assistive technology. Reducing false spell-check positives may modestly benefit users who rely on screen readers, by reducing noise from incorrectly flagged words being announced as errors.
 
 ### Internationalization
-Words added via this API apply across all user-enabled languages, matching the behavior of the existing browser custom dictionary. Sites can simply load different dictionaries as appropriate if desired. No language-targeting beyond what already exists is introduced.
+The API is language-agnostic. It works across all user-enabled languages that the spellchecker supports. A site can add whichever word list is appropriate for the content it is showing.
+
+Matching is exact string comparison and locale-independent. As noted in [Non-Goals](#non-goals), the purpose of this proposal is to mirror how the browser custom dictionary works via a programmatic interface. No language-targeting beyond what already exists is introduced.
+
+Richer matching, such as stemming, is not required of implementations, nor is per-entry metadata; both are left to [Future Work](#future-work), where non-exact approaches are discussed under **Fuzzy matching**.
 
 ### Privacy
 
