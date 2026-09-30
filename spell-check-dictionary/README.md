@@ -199,6 +199,8 @@ This API has no direct effect on the accessibility tree or assistive technology.
 ### Internationalization
 Words added via this API apply across all user-enabled languages, matching the behavior of the existing browser custom dictionary. Sites can simply load different dictionaries as appropriate if desired. No language-targeting beyond what already exists is introduced.
 
+The [i18n review](https://github.com/w3c/i18n-actions/issues/222) suggests carrying optional language metadata on dictionary entries, so that user agents able to do language-specific processing have somewhere to read a language from. We have not included this in the initial IDL, but [Future Work](#future-work) sketches the extension in full and shows that it is a backward-compatible addition to the interface proposed here.
+
 ### Privacy
 
 - **Transient data.** The custom dictionary is discarded when the document or tab closes.
@@ -250,8 +252,68 @@ The current proposal is intentionally minimal in scope. A few directions have co
 
 * **Subtree-scoped dictionaries.** Today the dictionary is scoped to the whole `Document`. A `partial interface HTMLElement` (see [Alternatives Considered §5](#5-dom-subtree-scoped)) could let pages scope distinct vocabularies to individual forms or web components, for cases where a single page legitimately needs more than one vocabulary at once.  Note that this is neither how user dictionaries work today, nor is it currently well supported in spell-checking with regard to languages in general.  We imagine it being rather easy to adapt in terms of API by simply adding a lang as an optional secondary argument to each of the methods.
 
-* **Fuzzy matching.** Today the dictionary is based on exact matches for many reasons laid out in other sections.  This is not always the most author convenient way to express things, and, in fact does not offer real solutions for some languages.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features though, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  Exact matching should always still be possible, so let's start there.
+* **Language metadata on entries.** The [i18n review](https://github.com/w3c/i18n-actions/issues/222) suggests optional dictionary and word level language metadata to provide information for language-specific processing of an entry — normalization, casing, stemming, affix handling etc. The recommendation is to reserve that slot now, even with no normative behavior attached to it.
 
+  We agree with the motivation, and we think the minimal API already accommodates it. The shape the i18n WG recommends is the ["language value object"](https://w3c.github.io/string-meta/#single-linguistic-field), defined in WebIDL as [`Localizable`](https://w3c.github.io/string-meta/#webidl-definitions): a `value`, a `lang`, and a `dir`. We would reuse it unchanged. We do not expect `dir` to carry weight for spell-checking — direction is a property of how a string is displayed, not of its content, and a dictionary entry is matched against the text of the document rather than rendered — but it is an optional member that costs nothing to carry, and reusing the WG's structure as-is keeps entries interchangeable with other formats that adopt it. There are differences of opinion about what this API should ultimately look like, and the sketch below is intended to be forward compatible with all of them.
+
+  Adopting it here is an additive change to the interface as proposed, compatible with every call site the API permits today:
+
+  ```
+  // Localizable and TextDirection are defined by the W3C i18n WG in String
+  // Metadata for a "language value object". They are reproduced here for
+  // readability, not defined by this proposal; String Metadata writes `lang`
+  // as its LanguageTag typedef, inlined to DOMString below.
+  // https://w3c.github.io/string-meta/#webidl-definitions
+  // https://w3c.github.io/string-meta/#single-linguistic-field
+  // https://github.com/w3c/i18n-actions/issues/222#issuecomment-5646818794
+  enum TextDirection { "auto", "ltr", "rtl" };
+
+  dictionary Localizable {
+      DOMString value;
+      DOMString lang;  // BCP47 language tag
+      TextDirection dir = "auto";
+  };
+
+  // Language for a whole call — the common case, and the form we would expect
+  // authors to use.
+  dictionary SpellCheckCustomDictionaryAddWordsOptions {
+      DOMString lang;  // BCP47 language tag
+      TextDirection dir;
+  };
+
+  [
+      Exposed=Window,
+      SecureContext
+  ] interface SpellCheckCustomDictionary {
+      undefined addWords(
+          sequence<(DOMString or Localizable)> words,
+          optional SpellCheckCustomDictionaryAddWordsOptions options = {});
+      undefined removeWords(sequence<DOMString> words);
+  };
+  ```
+
+  ```js
+  // Language for the whole call. One call per language, which for most authors
+  // means one call in total.
+  document.spellCheckCustomDictionary.addWords(["Sarkom", "Karzinom"], { lang: "de" });
+  document.spellCheckCustomDictionary.addWords(["كلمة", "أخرى"], { lang: "ar" });
+
+  // Per-word metadata, for the less common case of a list that genuinely mixes
+  // languages.
+  document.spellCheckCustomDictionary.addWords([
+      "plain old string",
+      { value: "Wolvic", lang: "en" },
+      { value: "ويكي", lang: "ar" },
+  ]);
+  ```
+
+  `Localizable` does not mark `value` as required, so an entry whose `value` is absent or empty would be ignored, exactly as the bare string `""` is.
+
+  Bearing in mind that a user agent could use `lang` to process an entry, but never to restrict which text that entry suppresses. Also, neither `lang` nor `dir` would be part of an entry's identity, so `removeWords()` would still remove by string alone, and re-adding a word would simply record the newer metadata.
+
+  We consider this a future work item because the initial API attaches no behavior to the metadata, and an inert field is easy to add once there is a consumer for it, particularly while the i18n WG's own structure is still [mid-stream in aligning with JSON-LD](https://github.com/w3c/i18n-actions/issues/222#issuecomment-5646818794).
+
+* **Fuzzy matching.** Today the dictionary is based on exact matches for many reasons laid out in other sections.  This is not always the most author convenient way to express things. It doesn't scale evenly across languages, so a plain word list may be inadequate, as pointed out by the [i18n review](https://github.com/w3c/i18n-actions/issues/222).  Such matching is expected to be computed by the user agent rather than expressed in the word list; what it would need from an entry is its language, discussed above.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features though, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  Exact matching should always still be possible, so let's start there.
 
 * **Convenience integration with related APIs.** Sharing vocabulary with the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md), translation APIs, or a future [Proofreader API](https://github.com/webmachinelearning/proofreader-api) integration is possible today by passing the same word list to both APIs manually. If this pattern proves common or inefficient in practice, a convenience method to share vocabulary across APIs could be considered later.
 
@@ -278,4 +340,5 @@ None of these are required for an initial, useful version of the API, and we'd r
 * [Preventing User Dictionary Leaks via `::spelling-error` and `::grammar-error` (user-dictionary-leaks explainer)](https://explainers-by-googlers.github.io/user-dictionary-leaks/)
 * [WebKit standards-position #546 — User dictionary leaks via spelling/grammar pseudo-elements](https://github.com/WebKit/standards-positions/issues/546)
 * [CSS Pseudo-Elements — Highlight Security](https://drafts.csswg.org/css-pseudo/#highlight-security)
+* [i18n review](https://github.com/w3c/i18n-actions/issues/222)
 - Many thanks for valuable feedback and advice from reviews and collaborators across standards groups.
