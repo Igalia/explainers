@@ -21,6 +21,10 @@ This is a repo that may contain explainers from [Igalia](https://www.igalia.com)
 
 * [Permission automation for registerProtocolHandler](/custom-protocol-handlers/Permission-API/README.md)
 
+## HTML / Spelling and grammar checking
+
+* [Force spelling and grammar markers in automation](/force-spelling-grammar-markers/README.md)
+
 ## Locale preferences
 
 * [Locale-related user preferences](/user-locale-preferences/README.md)

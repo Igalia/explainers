@@ -18,11 +18,13 @@ The line-clamp feature allows clamping a block element to have at most a specifi
 
 Setting the `line-clamp: 3` property on a block element that contains more than three lines of text will cause it to not show any text after the third line and to display an ellipsis at the end of the third line. The hidden lines do not count for computing the element's height, and they are hidden regardless of the value of the `overflow` property. If the element would normally contain three or fewer lines, then this property would have no effect.
 
-This property can also be used to clamp based on a given height, rather than on a number of lines. When `line-clamp` is set together with a value for `height` or `max-height`, it will clamp the element's contents so that they don't overflow the given height. If used together with a number of lines, this will result in clamping by either that many lines or a height, whichever comes earlier. But it is possible to clamp only by a height, with `line-clamp: auto`.
+This property can also be used to clamp based on a given height, rather than on a number of lines, by setting `line-clamp: auto` together with a value for `height` or `max-height`. This will cause the element's contents to clamp so that the element doesn't overflow. It is also possible to clamp based on a height, up to a particular number of lines, with (e.g.)`line-clamp: 3 auto`.
 
 ### Context
 
 The `line-clamp` property is part of the CSS Overflow Level 4 specification. It is defined as a shorthand of 3 CSS properties:  [`continue`](https://drafts.csswg.org/css-overflow-4/#continue), [`max-lines`](https://drafts.csswg.org/css-overflow-4/#max-lines) and [`block-ellipsis`](https://drafts.csswg.org/css-overflow-4/#block-ellipsis).
+
+> **Note as of May 2026:** In Chromium's initial implementation, we plan to ship only `line-clamp` without its longhands; and ship the full version when we are more confident that the division of the value space across threse longhands is final in the CSSWG.
 
 Until April 2025, `line-clamp` was defined in the spec in terms of fragmentation (the mechanism that powers printing web content across multiple pages, as well as multi-column layout), where rather than creating a new page or column after the first one ends, the remaining content is discarded. However, this was different enough from the existing implementation of `-webkit-line-clamp` in all browsers, and implementing this new behavior currently does not seem to be possible without significant engineering effort.
 
@@ -39,7 +41,7 @@ Currently both of these variants are defined in the specification, with the `col
 
 The functionality to clamp a block element to a number of lines and show an ellipsis at the end was previously already available through `-webkit-line-clamp`. This property, however, had a number of shortcomings. For instance, it relied on two other deprecated properties for it to work (`display: -webkit-box` and `-webkit-box-orient: vertical`), it required `overflow: hidden` to be present so the clamped lines would be hidden, and it also only allowed clamping based on a number of lines, not a height.
 
-The existing `-webkit-line-clamp` seems to be a pain point for web developers, as can be seen in the blog post [“CSS Line-Clamp — The Good, the Bad and the Straight-up Broken”](https://medium.com/mofed/css-line-clamp-the-good-the-bad-and-the-straight-up-broken-865413f16e5). Furthermore, a Chrome use counter shows that uses of `-webkit-line-clamp` without the other properties that are needed for it to work [are at 3-4%](https://chromestatus.com/metrics/feature/timeline/popularity/3327), showing significant misuse in the wild. Given this, it makes sense to implement a version without these fallbacks.
+The existing `-webkit-line-clamp` seems to be a pain point for web developers, as can be seen in the blog post [“CSS Line-Clamp — The Good, the Bad and the Straight-up Broken”](https://medium.com/mofed/css-line-clamp-the-good-the-bad-and-the-straight-up-broken-865413f16e5). Furthermore, a Chrome use counter shows that uses of `-webkit-line-clamp` without the other properties that are needed for it to work [are at 4-5%](https://chromestatus.com/metrics/feature/timeline/popularity/3327), showing significant misuse in the wild. Given this, it makes sense to implement a version without these fallbacks.
 
 ## Risks
 
@@ -61,22 +63,25 @@ The “collapse approach” of the line-clamp feature can be implemented on top 
 
 The `line-clamp` property is a shorthand for three other properties, and its syntax is:
 
-    none | [ <integer [1,inf]> || <'block-ellipsis'> ]
+    none | [ <integer [1,∞]> || auto || <'block-ellipsis'> ] -webkit-legacy?
 
 Common values would be:
 
 - `line-clamp: none`. This is the initial value, which disables line clamping.
 - `line-clamp: 3`. Clamps to 3 lines.
-- `line-clamp: auto`. Clamps to whatever content fits the specified height constraints (e.g. `max-height`), if any. (`auto` is a keyword of the `block-ellipsis` property.)
+- `line-clamp: auto`. Clamps to whatever content fits the height, without overflowing. (If there are no height constraints, it does not clamp.)
+- `line-clamp: 3 auto`. Clamps to 3 lines, unless that would overflow, in which case it acts like `line-clamp: auto`.
 - `line-clamp: 3 no-ellipsis`. Clamps to 3 lines, but makes the third line not show an ellipsis.
 
 This is a shorthand for these three longhand properties:
 
-- `continue` is the property that enables the clamping behavior. Its values are `auto` (don't clamp), and `collapse` (do clamp, using the model based on hiding lines).
-- `max-lines` sets a maximum number of lines to clamp at. It can be a positive integer, or `none`.
-- `block-ellipsis` defines whether the line before clamp has an ellipsis. Its values are `auto` (use a regular ellipsis `…`), `no-ellipsis` (don't ellipsize), and a string value to use instead of an ellipsis.
+- `continue` is the property that enables the clamping behavior. Its values are `normal` (don't clamp), `collapse` (do clamp, using the model based on hiding lines), and `-webkit-legacy` (behaves like `collapse` with additional restrictions, see the next section).
+- `max-lines` sets where to clamp at. The values can be an integer (a number of lines), `auto` (clamp based on height), and `<integer> auto` (clamp based on the number of lines or height, whichever comes first).
+- `block-ellipsis` defines whether the line before clamp has an ellipsis. Its values are `ellipsis` (use a regular ellipsis `…`), `no-ellipsis` (don't ellipsize), and a string value to use instead of an ellipsis.
 
-Note that if you set `line-clamp: 3` together with `max-height`, it will clamp to either 3 lines, or to the height, if that is less than that. `line-clamp: auto` removes the lines restriction, so it sets `max-lines: none`.
+> **Note as of May 2026:** The division of the `line-clamp` value space across its longhands used to be different, until a change in [CSSWG issue #13670](https://github.com/w3c/csswg-drafts/issues/13670) needed to fix a web compatibility isssue. As of this writing, this division of space across the longhands, as well as their exact syntax and names, is not yet fully settled, which is why Chromium's initial implementation will not expose the longhands.
+>
+> Additionally, this initial implementation will also not ship `block-ellipsis: <string>`. Instead, it will be shipped in a later version together with `text-overflow: <string>`.
 
 ### Backward compatibility
 
