@@ -32,9 +32,9 @@
 
 Browsers provide spell checking by comparing text against built‑in dictionaries (local or server‑side). This works well for general language, but breaks down on pages that rely heavily on domain‑specific terminology—product names, proper nouns, fictional universes, technical jargon, and other vocabulary that is valid *in context* but absent from standard dictionaries.
 
-Some browsers let users address this by maintaining a personal custom dictionary through browser settings. But there is currently no way for a page to supply its own domain-specific vocabulary programmatically — meaning authors have no way to prevent their users from seeing distracting false positives for the spell checking of words that are perfectly valid in context.
+Some browsers let users address this by maintaining a personal custom dictionary through browser settings, but there is currently no way for a page to supply its own domain-specific vocabulary programmatically — meaning authors have no way to prevent their users from seeing distracting false positives for the spell checking of words that are perfectly valid in context.
 
-This proposal introduces a SpellCheckCustomDictionary API that lets pages provide exactly that: a per-document, programmatically managed dictionary that works alongside existing browser and user provided dictionaries to suppress false positives for domain-specific terms.
+This proposal introduces a SpellCheckCustomDictionary API that lets pages provide  a per-document, programmatically managed dictionary that works alongside existing browser and user provided dictionaries to suppress false positives for domain-specific terms.
 
 ---
 
@@ -53,18 +53,17 @@ False positives in these contexts are distracting, frustrating, misleading, and 
 ## Goals
 
 * Allow pages to suppress false spell-check positives for domain-specific vocabulary without requiring actions from users.
-
 * Leave all existing spell-check behavior — including browser, OS, and user dictionaries — completely unchanged. This API adds a layer; it does not replace or interfere with anything.
 * Provide a solution which, while not specifically about autocomplete, autocorrect or spelling suggestions, also can potentially inform and or integrate with other proposals. That is, to offer something that is not in conflict with those as possible future goals.
+
 ## Non-Goals
 
 * This API does not itself aim to address spell-check suggestions, autocorrect, or AI proofreading features.
-
 * Exceeding the language-targeting capabilities of the existing browser custom dictionary. Words added via this API apply across all user-enabled languages, exactly as they do today for user-added words — no more, no less.
 
 ## Proposed Approach
 
-We propose the addition of a new `SpellCheckCustomDictionary` object accessible via `document.spellCheckCustomDictionary`, where users can manage sets of "words" via calls to its method `addWords()` or `removeWords()`.
+We propose the addition of a new `SpellCheckCustomDictionary` object accessible via `document.spellCheckCustomDictionary`, where users can manage sets of "words" via calls to its methods `addWords()` and `removeWords()`.
 
 
 ```
@@ -84,34 +83,32 @@ partial interface Document {
 Example:
 
 ```js
-
 document.spellCheckCustomDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"]);
 
 document.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
-**Note:** On platforms whose native spellcheck APIs distinguish *ignored* from *learned* words (e.g. *NSSpellChecker.ignoreWord:inSpellDocumentWithTag:* on macOS, *UITextChecker.ignoredWords* on iOS, *mIgnoreTable* in Firefox), *learned* words are added permanently to the user's persistent dictionary, whereas *ignored* words are held only in a transient, in-memory list. This web API maps to the **ignored** semantics. Moreover, it exposes an explicit ```removeWords()``` and is *more tightly scoped* to the ```Document```.
+**Note:** On platforms whose native spellcheck APIs distinguish *ignored* from *learned* words (e.g. *NSSpellChecker.ignoreWord:inSpellDocumentWithTag:* on macOS, *UITextChecker.ignoredWords* on iOS, and *mIgnoreTable* in Firefox), *learned* words are added permanently to the user's persistent dictionary, whereas *ignored* words are held only in a transient, in-memory list. This web API maps only to the **ignored** semantics. Moreover, it exposes an explicit ```removeWords()``` and is *more tightly scoped* to the ```Document```.
 
-**Note:** Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, and prevent the dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocabulary leaks into subsequent view. Unlike native ignore lists, which are effectively add-only, a page-driven, long-lived document does not get the automatic reset that native ignore lists have, so it needs an explicit removal primitive to scope vocabulary to the current view and bound growth.
+**Note:** Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, and prevent the dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocabulary leaks into subsequent views. Native ignore lists are effectively add-only. A page-driven, long-lived document does not get the automatic reset that native ignore lists have, so it needs an explicit removal primitive to scope vocabulary to the current view and to bound growth.
 
 **Note:** The custom dictionary is strictly **additive** and should not modify any underlying dictionary, such as OS dictionary in macOS.
 
-**Note:** "words" is defined loosely — validation of the entries matches how the *browser custom dictionary* works.
+**Note:** "words" is defined loosely. Validation of the entries matches how the *browser custom dictionary* works.
 
 The new dictionary has two key characteristics:
 
 * *Per-document lifecycle*. The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it entirely.
-
-* Render-process managed. Unlike the browser custom dictionary, which lives in browser settings and is global across all pages, this dictionary is scoped to the document and controlled entirely by page script.
+* *Render-process managed*. Unlike the browser's custom dictionary, which lives in browser settings and is global across all pages, this dictionary is scoped to the document and controlled entirely by page script.
 
 Browsers implement spell checking differently across operating systems.  This API is designed to layer cleanly on top of all of them.
 
 <details>
-	<summary>implementation notes</summary>
+	<summary><strong>Implementation notes</strong></summary>
 
-The existing spell-check pipeline is unchanged. The custom set is consulted only when results are reconciled: a token that would otherwise be flagged is suppressed if it appears in the document's custom dictionary. The check is strictly **additive** — the custom dictionary can only suppress a flag, never create one. A word that overlaps with an underlying dictionary is expected and inert. `removeWords()` affects only the custom set and never the underlying dictionaries, so removing an overlapping word does not cause it to be flagged.
+The existing spell-check pipeline is unchanged. The custom set is consulted only when results are reconciled: a token that would otherwise be flagged is suppressed if it appears in the document's custom dictionary. The check is strictly **additive**; that is, the custom dictionary can only suppress a flag, never create one. A word that overlaps with an underlying dictionary is expected and inert. `removeWords()` affects only the custom set and never the underlying dictionaries, so removing an overlapping word does not cause it to be flagged.
 
-How a word gets added so it is no longer flagged depends on the operating system, and the behavior is inconsistent. On some platforms such words are learned directly into a global, system-wide dictionary that persists and is shared with every application on the device; on others they are kept by the browser. This API sidesteps that entirely: rather than write into any underlying engine or system dictionary, the browser applies the custom dictionary as a suppression step over whatever results an engine returns. The dictionary lives entirely **within the browser, scoped to a single document** — so added words only filter what the browser renders, never persist, and never leak into the OS spellchecker or other applications.
+How a word gets added so it is no longer flagged depends on the operating system, and the behavior is inconsistent. On some platforms such words are learned directly into a global, system-wide dictionary that persists and is shared with every application on the device; on others they are kept by the browser. This API sidesteps that entirely: rather than write into any underlying engine or system dictionary, the browser applies the custom dictionary as a suppression step over whatever results an engine returns. The dictionary lives **entirely within the browser, scoped to a single document**. Therefore, added words only filter what the browser renders, never persist beyond the document’s lifetime, and never leak into the OS spellchecker or other applications.
 
 </details>
 
@@ -122,7 +119,7 @@ How a word gets added so it is no longer flagged depends on the operating system
 
 The Spell Check Custom dictionary is a collection of word strings. One option is to introduce an array attribute to represent the dictionary. Since the dictionary is mutable, an `ObservableArray` type as suggested [here](https://github.com/WebAudio/web-speech-api/pull/169#issuecomment-3006838443) could be ideal.
 
-`ObservableArray` offers developers great choices of standard Array methods. This gives us the convenience of manipulating the dictionary with functionalities by calling standard Array methods. However, we decided not to take this route because it re-exposes the read surface this API withholds. As [TAG review comments](https://github.com/w3ctag/design-reviews/issues/1191) noted, "All of the spell check-related things are carefully designed to not be observable, it might be good to not have additional methods to see inside". The write-only `addWords()`/`removeWords()` pair exists precisely so there is no enumerable object to probe.
+`ObservableArray` offers developers great choices of standard Array methods. This provides the convenience of manipulating the dictionary with functionalities by calling standard Array methods. However, we decided not to take this route because it re-exposes the read surface this API withholds. As [TAG review comments](https://github.com/w3ctag/design-reviews/issues/1191) noted, "All of the spell check-related things are carefully designed to not be observable, it might be good to not have additional methods to see inside". The write-only `addWords()`/`removeWords()` pair exists precisely so there is no enumerable object to probe.
 
 </details>
 
@@ -130,8 +127,8 @@ The Spell Check Custom dictionary is a collection of word strings. One option is
 <details>
 For the interface, a natural alternative would be `SetLike<DOMString>`, a Set-shaped surface (`add`, `delete`, `has`, `size`, `clear`, iteration) — familiar to authors who know JavaScript's `Set`. However, we chose not to use it because:
 
-* Privacy. Exposing the read operations of the interface lets any script with access to the dictionary enumerate or probe its contents.
-* Batch shape matches caller intent and scales. SetLike's ```add(value)``` is single-element. In most common use cases, callers push lists, so on a SetLike surface they end up coalescing via forEach. Bespoke ```addWords(sequence<DOMString>)``` matches caller intent, batches cleanly, and remains a single operation.
+* Privacy would be compromised. Exposing the read operations of the interface lets any script with access to the dictionary enumerate or probe its contents.
+* Batch shape matches caller intent and scales. SetLike's ```add(value)``` is single-element. In most common use cases, callers push lists, so on a SetLike surface they end up coalescing via ```forEach```. The bespoke ```addWords(sequence<DOMString>)``` we propose matches caller intent, batches cleanly, and remains a single operation.
 * The cost of a bespoke surface is a small ergonomic one — authors learn ```addWords / removeWords``` instead of ```add / delete```.
 
 </details>
@@ -139,30 +136,25 @@ For the interface, a natural alternative would be `SetLike<DOMString>`, a Set-sh
 ### 3. A Unified `CustomDictionary` Across Features
 <details>
 
-Domain-specific vocabulary matters beyond spell checking — the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. The proposed [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features) also has a need for some kind of related features, as would, for example [translation APIs](https://github.com/webmachinelearning/translation-api/issues/9).
+Domain-specific vocabulary matters beyond spell checking. The [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md) addresses somewhat similar needs for transcription, and text-to-speech may eventually need pronunciation hints for the same terms. The proposed [Proofreader API](https://github.com/webmachinelearning/proofreader-api?tab=readme-ov-file#interaction-with-other-browser-integrated-proofreading-features) also has a need for some kind of related features, as would, for example [translation APIs](https://github.com/webmachinelearning/translation-api/issues/9).
 
-Abstractly, a shared `CustomDictionary` abstraction could in principle serve all of these.
-
-However, we decided against this for the following reasons:
+Abstractly, a shared `CustomDictionary` abstraction could in principle serve all of these. However, we decided against this for the following reasons:
 
 * Chromium already ships the Web Speech biasing feature unprefixed, and Firefox is close behind, leaving little room for redesign.
-
 * Browsers can already choose to treat Web Speech terms as valid for spell checking (or vice versa) without any additional API surface, or via later convenience methods.  That is, if it is clear this is always desired - but it is not.
 
-Authors who want to share vocabulary between both APIs today can do so simply:
+Authors who want to share vocabulary between both APIs today can do so:
 
 ```javascript
 document.spellCheckCustomDictionary.addWords(recognition.phrases.map(p => p.phrase));
 ```
 
-If this pattern is still taxing or inefficient, we can always consider adding a convenience method later.
-
-For now, keeping the API minimal helps avoid premature abstraction.
+If this pattern is still taxing or inefficient, we can always consider adding a convenience method later. For now, keeping the API minimal helps avoid premature abstraction.
 </details>
 
 ### 4. Declarative `<link>`
 <details>
-A natural question seems to be whether we could just make this declarative.  Perhaps something like:
+A natural question is whether we could just make this declarative.  Perhaps something like:
 
 ```
 <link rel="custom-dictionary" href="lotr.words">
@@ -172,7 +164,7 @@ This would have several advantages in that it is very easy for authors to use in
 
 Given such a tag, we technically wouldn't even need an additional API surface as adding a link would add words to the dictionary and removing the link would remove them.
 
-On balance though, there are advantages to a JavaScript based interface and we believe it's worth doing that first for two reasons:
+On balance, though, there are advantages to a JavaScript based interface and we believe it's worth doing that first for two reasons:
 
   * As shown above, it makes it easier and more efficient to share terms among APIs with similar needs
   * We currently lack a `rel` type or agreed serialization format, which also generally happen in a different space of browser architecture. `fetch` and `json` are pretty easy ways to achieve mostly similar results and require nothing new.
@@ -184,9 +176,9 @@ Given this, while we believe it is a potentially worthwhile pursuit in future it
 ### 5. DOM subtree scoped
 
 <details>
-Choosing scope for the API largely depends on use cases. For example, Document-scoped is enough for whole-page vocabularies while subtree-scoped wins when multiple forms on one page need distinct vocabularies, or when web components want isolation. We would say that Document scope and DOM-subtree scope are not mutually exclusive — document scope is just the simplest form, which we can continue to build more specifically on in the future if so desired.
+Choosing scope for the API largely depends on use cases. For example, Document-scoped is enough for whole-page vocabularies, while subtree-scoped wins when multiple forms on one page need distinct vocabularies, or when web components want isolation. We would say that Document scope and DOM-subtree scope are not mutually exclusive — document scope is merely the simplest form, which we can continue to build on more specifically in the future if desired.
 
-We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice but leaves the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge (See [Future Work](#future-work))
+We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice, while leaving the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge (See [Future Work](#future-work))
 </details>
 
 ---
@@ -203,7 +195,7 @@ Words added via this API apply across all user-enabled languages, matching the b
 
 - **Transient data.** The custom dictionary is discarded when the document or tab closes.
 
-- **No dictionary probing.** This API exposes no read method to script and a page can only observe words it supplied itself. A known issue with a highlight side channel — which lets a page probe dictionary membership by timing `::spelling-error` / `::grammar-error` highlight rendering — is being addressed in [css-pseudo `#highlight-security`](https://drafts.csswg.org/css-pseudo/#highlight-security) and the [user-dictionary-leaks proposal](https://github.com/explainers-by-googlers/user-dictionary-leaks). The same highlight side channel could, in principle, be used to *guess the contents of the custom set itself*, so addressing it would benefit this API too.
+- **No dictionary probing.** This API exposes no read method to script and a page can only observe words it supplied itself. A known issue with a highlight side channel — which lets a page probe dictionary membership by timing `::spelling-error` / `::grammar-error` highlight rendering — is being addressed in [css-pseudo `#highlight-security`](https://drafts.csswg.org/css-pseudo/#highlight-security) and the [user-dictionary-leaks proposal](https://github.com/explainers-by-googlers/user-dictionary-leaks). The same highlight side channel could, in principle, be used to *guess the contents of the custom set itself*, so closing that side channel would benefit this API too.
 
 - **The dictionary is local to the document it's associated with.** Details are discussed at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4)
 
@@ -212,7 +204,7 @@ Words added via this API apply across all user-enabled languages, matching the b
 
 - **No new network exposure.** The API does not require network access and does not introduce new privacy risks.
 
-- **Third-party iframes.** Because the dictionary is scoped per document, every iframe — including cross-origin, third-party frames — gets its own independent dictionary. An embedded third party can only add or remove words for *its own* document. Detailed discussion for Chromium case can be found at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
+- **Third-party iframes.** Because the dictionary is scoped per document, every iframe — including cross-origin, third-party frames — gets its own independent dictionary. An embedded third party can only add or remove words for *its own* document. A detailed discussion for the Chromium case can be found at [The Per‑Document Design in Chromium](https://docs.google.com/document/d/1ND1a1Z4i6kXMHqMwEyRkHSj5VVTWgX5Ya0aNLgVQYGw/edit?tab=t.0#heading=h.kmfizh6cwyy4).
 
 - **Resource Limits and Abuse Mitigation**
 
@@ -225,7 +217,7 @@ It is noted that rapid `addWords()` / `removeWords()` churns can cause waste of 
 ### Built-in AI APIs (Proofreader)
 
 The [Proofreader API](https://github.com/webmachinelearning/proofreader-api) explainer references this API as a potential model for handling proper names and acronyms, while stating it is "moving forward without integration with custom dictionaries until further exploration and evaluation are done." We take the same position from this side — the features are complementary but should ship independently first — for a few reasons:
-- **Different operations.** This API suppresses a spell-check flag by matching a flat string set layered over the platform spellchecker. A proofreader is generative and contextual; "accept this word" there is a fuzzier operation than "don't flag this token," and is not simply a set-membership test.
+- **Different operations.** This API suppresses a spell-check flag by matching a flat string set layered over the platform spellchecker. A proofreader is generative and contextual; "accept this word" from a proofreader is a fuzzier operation than "don't flag this token," and is not simply a set-membership test.
 - **The surfaces are still early**. Questions are better resolved once both APIs are more settled.
 
 ### Browser Extensions (Grammarly)
@@ -246,12 +238,11 @@ Writing-assistant extensions such as *Grammarly* and *LanguageTool* run their ow
 
 The current proposal is intentionally minimal in scope. A few directions have come up during discussion that we think are worth pursuing, but only once the core API has shipped and settled:
 
-* **Declarative authoring.** A `<link rel="custom-dictionary" href="...">`-style declarative form (see [Alternatives Considered §4](#4-declarative-link)) could make the common case easier to author and get preloading, CORS, and link semantics for free. We'd want an agreed serialization format before pursuing this, and answer the question about whether more specific subtree-scoped dictionaries make sense.
+* **Declarative authoring.** A `<link rel="custom-dictionary" href="...">`-style declarative form (see [Alternatives Considered §4](#4-declarative-link)) could make the common case easier to author and get preloading, CORS, and link semantics for free. We'd want an agreed serialization format before pursuing this, and an answer to the question of whether more specific subtree-scoped dictionaries make sense.
 
-* **Subtree-scoped dictionaries.** Today the dictionary is scoped to the whole `Document`. A `partial interface HTMLElement` (see [Alternatives Considered §5](#5-dom-subtree-scoped)) could let pages scope distinct vocabularies to individual forms or web components, for cases where a single page legitimately needs more than one vocabulary at once.  Note that this is neither how user dictionaries work today, nor is it currently well supported in spell-checking with regard to languages in general.  We imagine it being rather easy to adapt in terms of API by simply adding a lang as an optional secondary argument to each of the methods.
+* **Subtree-scoped dictionaries.** Today the dictionary is scoped to the whole `Document`. A `partial interface HTMLElement` (see [Alternatives Considered §5](#5-dom-subtree-scoped)) could let pages scope distinct vocabularies to individual forms or web components, for cases where a single page legitimately needs more than one vocabulary at once.  Note that this is neither how user dictionaries work today, nor is it currently well supported in spell-checking with regard to languages in general.  We imagine it being rather straightforward to adapt in terms of API by simply adding a lang as an optional secondary argument to each of the methods.
 
-* **Fuzzy matching.** Today the dictionary is based on exact matches for many reasons laid out in other sections.  This is not always the most author convenient way to express things, and, in fact does not offer real solutions for some languages.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features though, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  Exact matching should always still be possible, so let's start there.
-
+* **Fuzzy matching.** Today the dictionary is based on exact matches for many reasons laid out in other sections.  This is not always the most author convenient way to express things, and in fact does not offer real solutions for some languages.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  Exact matching should always still be possible, so let's start there.
 
 * **Convenience integration with related APIs.** Sharing vocabulary with the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md), translation APIs, or a future [Proofreader API](https://github.com/webmachinelearning/proofreader-api) integration is possible today by passing the same word list to both APIs manually. If this pattern proves common or inefficient in practice, a convenience method to share vocabulary across APIs could be considered later.
 
