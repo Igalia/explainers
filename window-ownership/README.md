@@ -14,7 +14,7 @@
 ## Introduction
 In complex scenarios like financial trading platforms and design tools, users often need to open multiple windows across multiple monitors. Currently, the web lacks native support for coordinated window management, forcing users to operate each window individually, which is time-consuming and inefficient.
 
-Several alternative exist for creating pop-up UI elements, such as formatted boxes, dialogs, and popovers. However, these pop-up UI elements are limited to displaying content or enabling simple interactions within a single window. For complex applications that need to display substantial content (like tables), adjust window positioning, or navigate between related pages, they are insufficient.
+Several alternatives exist for creating pop-up UI elements, such as formatted boxes, dialogs, and popovers. However, these pop-up UI elements are limited to displaying content or enabling simple interactions within a single window. For complex applications that need to display substantial content (like tables), adjust window positioning, or navigate between related pages, they are insufficient.
 
 Desktop operating systems provide "window ownership" that connects two windows as an owner window (parent window) and an owned window (child window). The owned window is attached to the owner window, allowing control over several aspects, like Z-order, lifespan, movement, reactivation, and so on. This provides significant convenience for complex applications.
 
@@ -22,33 +22,32 @@ While browsers provide `window.open()` to create new windows with some connectio
 
 Let's take a close look at the different window operations:
 
-Z-Order: When two browser windows overlap, there is no hierarchy-the active window is always on top. However, users often want to keep a small window visible while interacting with a larger window behind it. Although features like Picture-in-Picture exist, they are currently limited to media pages. With window ownership, owned windows could optionally stay on top of their owner window, making this pattern broadly available.
-
-Lifespan: Browser windows' lifespans are independent. In complex scenarios where several pop-up windows are related to a main window, users must close them individually or terminate the entire browser application, neither option is ideal. With window ownership, it is natural to connect their lifespan, windows could be naturally grouped: closing the owner window would automatically close all owned windows, streamlining window management.
-
-Movement: Browser windows move independently of each other. In scenarios where several pop-up windows are related to a main window, switching context becomes cumbersome. Users must move each window individually to another area of the screen or to a different monitor. This becomes even more complex when trying to maintain the relative positioning between windows. With window ownership, owned windows could optionally move with their owner window automatically, preserving their spatial relationships and simplifying workspace management.
-
-Reactivation: When the browser is running in the background, users need to bring windows back to the foreground. Currently, each window must be reactivated individually. With window ownership, clicking on owner window would bring all owned windows to the foreground simultaneously, making it much more convenient to resume work with multi-window applications.
+- **Z-Order**: When two browser windows overlap, there is no hierarchy: the active window is always on top. However, users often want to keep a small window visible while interacting with a larger window behind it. Although features like Picture-in-Picture exist, they are currently limited to media pages. With window ownership, owned windows could optionally stay on top of their owner window, making the desired pattern broadly available.
+- **Lifespan**: Browser windows' lifespans are independent. In scenarios where several pop-up windows are related to a main window, users must close them individually or terminate the entire browser application. Neither option is ideal. With window ownership, windows' lifespans could be naturally grouped: closing the owner window would automatically close all owned windows, streamlining window management.
+- **Movement**: Browser windows move independently of each other by default. In scenarios where several pop-up windows are related to a main window, switching context becomes cumbersome. Users must move each window individually to another area of the screen or to a different monitor. This becomes even more complex when trying to maintain the relative positioning between windows. With window ownership, owned windows could optionally move with their owner window automatically, preserving their spatial relationships and simplifying workspace management.
+- **Reactivation**: When the browser is running in the background, users need to bring windows back to the foreground. Currently, each window must be surfaced individually. With window ownership, clicking on owner window would bring all owned windows to the foreground simultaneously with the owner window, making it much more convenient to resume work within multi-window applications.
 
 Windows with an ownership hierarchy can be grouped naturally. Users don't need to operate windows individually. They can be managed as a group, providing convenience for complex web applications.
 
+
 ## Proposal
-We propose adding "window ownership" capabilities to the window interface, enabling browsers to better support complex multi-window applications by establishing parent-child relationships between windows.
+
+We propose adding "window ownership" capabilities to the window interface, enabling browsers to better support complex multi-window applications by establishing parent-child relationships between windows. A given owner window may have any number of owned (child) windows, but an owned window may only have one owner (parent) window.
+
 
 ### Core Concepts
 
-**Owner Window**: A window that has one or more owned windows attached to it.
-
-**Owned Window**: A window that is attached to another window, establishing a parent-child relationship.
-
-**Ownership Constraint**: An owned window must be created by its owner window (e.g., via `window.open()`). Windows cannot establish an ownership relationship unless one created the other.
+- **Owner Window**: A window that has one or more owned windows attached to it.
+- **Owned Window**: A window that is attached to another window, establishing a parent-child relationship.
+- **Ownership Constraint**: An owned window must be created by its owner window (e.g., via `window.open()`). Windows cannot establish an ownership relationship unless one created the other.
 
 When windows are attached in this hierarchy, the following behaviors are defined:
 
 - **Z-Order**: The owned window can be configured to remain on top of its owner window, even when the owner is active.
 - **Lifespan**: Closing the owner window automatically closes all its owned windows. Closing an owned window does not affect its owner.
 - **Movement**: The owned window can be configured to move automatically with its owner window, maintaining their relative positions.
-- **Reactivation**: Activating owner window brings owned windows to the foreground together.
+- **Reactivation**: Activating an owner window brings owned windows to the foreground together with it.
+
 
 ### Proposed API
 
@@ -62,23 +61,34 @@ When windows are attached in this hierarchy, the following behaviors are defined
 
 **`window.ownerWindow`**: Returns the owner window if this window is owned by another window, or `null` otherwise.
 
+
 ## Risks
 
+
 ### User Experience
-- **Unexpected Window Behavior**: Users unfamiliar with window ownership may find it confusing when windows close together or move in sync. However, once adapted, this behavior significantly improves productivity in complex multi-window scenarios.
-- **Accidental Data Loss**: Closing an owner window could unintentionally close owned windows with unsaved work. Appropriate warnings should be deliveried to the users before closure to prevent data loss.
+
+- **Unexpected Window Behavior**: Users unfamiliar with window ownership may find it confusing when windows close together or move in sync. However, once it becomes familiar, this behavior significantly improves productivity in complex multi-window scenarios.
+- **Accidental Data Loss**: Closing an owner window could unintentionally close owned windows with unsaved work. Appropriate warnings should be delivered to the users before closure to prevent data loss, similar to the closure warnings browsers already present when the user attempts to close a window where changes have been made but not saved.
+
 
 ### Compatibility on different platforms
-- **Browser Support Fragmentation**: Different browsers may implement window ownership features inconsistently, leading to varying behavior across platforms.
+
+- **Browser Support Fragmentation**: Different browsers may implement window ownership features inconsistently, leading to inconsistent user experience across browsers.
 - **Operating System Constraints**: Operating systems differ in their window ownership models. Some platforms may not support all proposed features, limiting what browsers can implement.
-- **Mobile Platforms**: Window ownership concepts don't translate well to mobile browsers with limited multi-window support. This feature may need to be restricted to desktop platforms.
+- **Mobile Platforms**: Window ownership concepts don't translate well to mobile browsers with limited multi-window support. This feature may need to be restricted to desktop platforms and other medium-to-large display media (e.g., smart televisions, projected media, embedded systems).
 - **Window Manager Conflicts**: Browser-level window ownership may conflict with OS-level window management. For example, position synchronization could conflict with tiled window managers that automatically arrange windows. This requires careful coordination with platform-specific window management behaviors.
 
+
 ### Developer Complexity
+
 - **API Misuse**: Developers might create overly complex window hierarchies that become difficult to debug and maintain. However, the ownership constraint mitigates this risk by requiring that owned windows be created by their owner window. Since these windows already have an existing relationship through `window.open()`, the ownership API simply formalizes and strengthens this connection rather than introducing arbitrary relationships.
 
+
 ## Security and Privacy Considerations
-This feature does not reveal extra sensitive information, and there is no data kept across browsing sessions.
+
+This feature does not reveal extra sensitive information, and there is no data kept across browsing sessions.  It is possible that the combination of supported and unsupported features could aid with hardware and OS fingerprinting, but it is more likely there are many other vectors to identify the same information.
+
 
 ## Other resolution for an Embedded Web Applications
+
 For applications that embed web content within their views, an interface could be provided to notify the host application when a web page requests an owned window. This would allow applications to implement their own ownership behaviors, such as position synchronization, z-order, reactivation and lifespan management, according to their specific requirements.
