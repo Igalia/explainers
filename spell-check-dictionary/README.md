@@ -76,7 +76,7 @@ We propose the addition of a new `SpellCheckCustomDictionary` object accessible 
 };
 
 partial interface Document {
-    [SameObject] readonly attribute SpellCheckCustomDictionary spellCheckCustomDictionary;
+    [SecureContext, SameObject] readonly attribute SpellCheckCustomDictionary spellCheckCustomDictionary;
 };
 ```
 
