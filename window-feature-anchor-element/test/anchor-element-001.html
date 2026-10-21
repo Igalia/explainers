@@ -1,0 +1,310 @@
+<!doctype html>
+<title>Anchor Element Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=0.5">
+<style>
+input {
+    margin: 20px;
+}
+input.anchor-align {
+    margin-right: 200px;
+}
+
+</style>
+<script>
+    let subWindow;
+
+    // default
+    function anchorAlignDefault() {
+        let selectorValue = "#anchor-align-default";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue}`);
+    }
+
+    // anchorhorizontalalign: left
+    function anchorAlignBottomLeft() {
+        let selectorValue = "#anchor-align-bottom-left";
+        let verticalAlign = "bottom";
+        let horizontalAlign = "left";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+    function anchorAlignMiddleLeft() {
+        let selectorValue = "#anchor-align-middle-left";
+        let verticalAlign = "middle";
+        let horizontalAlign = "left";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+    function anchorAlignTopLeft() {
+        let selectorValue = "#anchor-align-top-left";
+        let verticalAlign = "top";
+        let horizontalAlign = "left";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+
+    // anchorhorizontalalign: center
+    function anchorAlignBottomCenter() {
+        let selectorValue = "#anchor-align-bottom-center";
+        let verticalAlign = "bottom";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+    function anchorAlignMiddleCenter() {
+        let selectorValue = "#anchor-align-middle-center";
+        let verticalAlign = "middle";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+    function anchorAlignTopCenter() {
+        let selectorValue = "#anchor-align-top-center";
+        let verticalAlign = "top";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+
+    // anchorhorizontalalign: right
+    function anchorAlignBottomRight() {
+        let selectorValue = "#anchor-align-bottom-right";
+        let verticalAlign = "bottom";
+        let horizontalAlign = "right";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+
+    function anchorAlignMiddleRight() {
+        let selectorValue = "#anchor-align-middle-right";
+        let verticalAlign = "middle";
+        let horizontalAlign = "right";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+
+    function anchorAlignTopRight() {
+        let selectorValue = "#anchor-align-top-right";
+        let verticalAlign = "top";
+        let horizontalAlign = "right";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue} ,anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}`);
+    }
+
+// top
+    function positionAtTopLeftCorner() {
+        let selectorValue = "#top-left-corner";
+        let verticalOffset = 0 - document.querySelector("#top-left-corner").clientHeight  - 10;
+        let horizontalOffset = 0 - document.querySelector("#top-left-corner").clientWidth - 10;
+        let verticalAlign = "bottom";
+        let horizontalAlign = "right";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function positionOnTopMiddleSide() {
+        let selectorValue = "#top-middle-side";
+        let verticalOffset = 0 - document.querySelector("#top-middle-side").clientHeight  - 10;
+        let horizontalOffset = 0;
+        let verticalAlign = "bottom";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function positionAtTopRightCorner() {
+        let selectorValue = "#top-right-corner";
+        let verticalOffset = 0 - document.querySelector("#top-right-corner").clientHeight - 10;
+        let horizontalOffset = document.querySelector("#top-right-corner").clientWidth + 10;
+        let verticalAlign = "bottom";
+        let horizontalAlign = "left";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+
+// middle
+
+    function positionAtMiddleLeftCorner() {
+        let selectorValue = "#middle-left-corner";
+        let verticalOffset = 0;
+        let horizontalOffset = 0 - document.querySelector("#middle-left-corner").clientWidth - 10;
+        let verticalAlign = "middle";
+        let horizontalAlign = "right";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function positionOnMiddleMiddleSide() {
+        let selectorValue = "#middle-middle-side";
+        let verticalOffset = 0;
+        let horizontalOffset = 0;
+        let verticalAlign = "middle";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function positionAtMiddleRightCorner() {
+        let selectorValue = "#middle-right-corner";
+        let verticalOffset = 0;
+        let horizontalOffset = document.querySelector("#middle-right-corner").clientWidth + 10;
+        let verticalAlign = "middle";
+        let horizontalAlign = "left";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+
+// bottom
+
+    function positionAtBottomLeftCorner() {
+        let selectorValue = "#bottom-left-corner";
+        let verticalOffset = document.querySelector("#bottom-left-corner").clientHeight  + 10;
+        let horizontalOffset = - document.querySelector("#bottom-left-corner").clientWidth  - 10;
+        let verticalAlign = "top";
+        let horizontalAlign = "right";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function positionOnBottomMiddleSide() {
+        let selectorValue = "#bottom-middle-side";
+        let verticalOffset = document.querySelector("#bottom-left-corner").clientHeight + 10;
+        let horizontalOffset = 0;
+        let verticalAlign = "top";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function positionAtBottomRightCorner() {
+        let selectorValue = "#bottom-right-corner";
+        let verticalOffset = document.querySelector("#bottom-left-corner").clientHeight + 10;
+        let horizontalOffset = document.querySelector("#bottom-right-corner").clientWidth + 10;
+        let verticalAlign = "top";
+        let horizontalAlign = "left";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+
+    // flip if needed
+    function flipIfNeededLeftToRight() {
+        let selectorValue = "#flip-if-needed-left-to-right";
+        let verticalOffset = 0;
+        let horizontalOffset = 0 - document.querySelector("#flip-if-needed-left-to-right").clientWidth - 10;
+        let verticalAlign = "middle";
+        let horizontalAlign = "right";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function flipIfNeededRightToLeft() {
+        let selectorValue = "#flip-if-needed-right-to-left";
+        let verticalOffset = 0;
+        let horizontalOffset = document.querySelector("#flip-if-needed-right-to-left").clientWidth + 10;
+        let verticalAlign = "middle";
+        let horizontalAlign = "left";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+
+    function flipIfNeededTopToBottom() {
+        let selectorValue = "#flip-if-needed-top-to-bottom";
+        let verticalOffset = 0 - document.querySelector("#flip-if-needed-top-to-bottom").clientHeight - 100;
+        let horizontalOffset = 0;
+        let verticalAlign = "bottom";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+
+    function flipIfNeededBottomToTop() {
+        let selectorValue = "#flip-if-needed-bottom-to-top";
+        let verticalOffset = document.querySelector("#flip-if-needed-bottom-to-top").clientHeight + 100;
+        let horizontalOffset = 0;
+        let verticalAlign = "top";
+        let horizontalAlign = "center";
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+
+    // flip offset
+    function flipOffsetLeftToRight() {
+        let selectorValue = "#flip-offset-left-to-right";
+        let verticalOffset = 0;
+        let horizontalOffset = 0 - document.querySelector("#flip-offset-left-to-right").clientWidth - 100;
+        let verticalAlign = "middle";
+        let horizontalAlign = "right";
+        let flippedHorizontalOffset = document.querySelector("#flip-offset-left-to-right").clientWidth + 150;
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, anchorflippedhorizontaloffset=${flippedHorizontalOffset}, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function flipOffsetRightToLeft() {
+        let selectorValue = "#flip-offset-right-to-left";
+        let verticalOffset = 0;
+        let horizontalOffset = document.querySelector("#flip-offset-right-to-left").clientWidth + 100;
+        let verticalAlign = "middle";
+        let horizontalAlign = "left";
+        let flippedHorizontalOffset = 0 - document.querySelector("#flip-offset-right-to-left").clientWidth - 150;
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, anchorflippedhorizontaloffset=${flippedHorizontalOffset}, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+
+    function flipOffsetTopToBottom() {
+        let selectorValue = "#flip-offset-top-to-bottom";
+        let verticalOffset = 0 - document.querySelector("#flip-offset-top-to-bottom").clientHeight - 100;
+        let horizontalOffset = 0;
+        let verticalAlign = "bottom";
+        let horizontalAlign = "center";
+        let flippedVerticalOffset = document.querySelector("#flip-offset-top-to-bottom").clientHeight + 150;
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, anchor-flipped-vertical-offset=${flippedVerticalOffset}, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+    function flipOffsetBottomToTop() {
+        let selectorValue = "#flip-offset-bottom-to-top";
+        let verticalOffset = document.querySelector("#flip-offset-bottom-to-top").clientHeight + 100;
+        let horizontalOffset = 0;
+        let verticalAlign = "top";
+        let horizontalAlign = "center";
+        let flippedVerticalOffset = 0 - document.querySelector("#flip-offset-bottom-to-top").clientHeight - 150;
+        const ownedWindow = window.open("./sub-001.html", "_blank", `anchorflipifneeded, anchor-flipped-vertical-offset=${flippedVerticalOffset}, sticky, width=200,height=200,anchorelement=${selectorValue},anchorverticalalign=${verticalAlign}, anchorhorizontalalign=${horizontalAlign}, anchorverticaloffset=${verticalOffset}, anchorhorizontaloffset=${horizontalOffset}`);
+    }
+</script>
+
+<body>
+    Anchor Aligns:<br>
+    <input class="anchor-align" type="button" value="default" id="anchor-align-default"
+        onclick="anchorAlignDefault()"> <br>
+
+    <input class="anchor-align" type="button" value="bottom left" id="anchor-align-bottom-left"
+        onclick="anchorAlignBottomLeft()">
+    <input class="anchor-align" type="button" value="bottom center" id="anchor-align-bottom-center"
+        onclick="anchorAlignBottomCenter()">
+    <input class="anchor-align" type="button" value="bottom right" id="anchor-align-bottom-right"
+        onclick="anchorAlignBottomRight()">
+    <br>
+
+    <input class="anchor-align" type="button" value="middle left" id="anchor-align-middle-left"
+        onclick="anchorAlignMiddleLeft()">
+    <input class="anchor-align" type="button" value="middle center" id="anchor-align-middle-center"
+        onclick="anchorAlignMiddleCenter()">
+    <input class="anchor-align" type="button" value="middle right" id="anchor-align-middle-right"
+        onclick="anchorAlignMiddleRight()">
+    <br>
+    <input class="anchor-align" type="button" value="top left" id="anchor-align-top-left"
+        onclick="anchorAlignTopLeft()">
+    <input class="anchor-align" type="button" value="top center" id="anchor-align-top-center" onclick="anchorAlignTopCenter()">
+    <input class="anchor-align" type="button" value="top right" id="anchor-align-top-right" onclick="anchorAlignTopRight()">
+    <br>
+Anchor Element with Offset:<br>
+    <br>
+    Top:
+    <input class="anchor-offset" type="button" value="top left corner" id="top-left-corner" onclick="positionAtTopLeftCorner()">
+
+    <input class="anchor-offset" type="button" value="top middle side" id="top-middle-side" onclick="positionOnTopMiddleSide()">
+
+    <input class="anchor-offset" type="button" value="top right corner" id="top-right-corner" onclick="positionAtTopRightCorner()">
+    <br>
+
+    Middle:
+    <input class="anchor-offset" type="button" value="middle left corner" id="middle-left-corner" onclick="positionAtMiddleLeftCorner()">
+
+    <input class="anchor-offset" type="button" value="middle middle side" id="middle-middle-side" onclick="positionOnMiddleMiddleSide()">
+
+    <input class="anchor-offset" type="button" value="middle right corner" id="middle-right-corner" onclick="positionAtMiddleRightCorner()">
+    <br>
+
+    Bottom:
+    <input class="anchor-offset" type="button" value="bottom left corner" id="bottom-left-corner" onclick="positionAtBottomLeftCorner()">
+
+    <input class="anchor-offset" type="button" value="bottom middle side" id="bottom-middle-side" onclick="positionOnBottomMiddleSide()">
+
+    <input class="anchor-offset" type="button" value="bottom right corner" id="bottom-right-corner" onclick="positionAtBottomRightCorner()">
+    <br>
+
+    Flip-if-needed test:<br>
+    <input class="flip-if-needed" type="button" value="flip-if-needed left to right" id="flip-if-needed-left-to-right" onclick="flipIfNeededLeftToRight()">
+    <input class="flip-if-needed" type="button" value="flip-if-needed right to left" id="flip-if-needed-right-to-left" onclick="flipIfNeededRightToLeft()">
+    <br>
+    <input class="flip-if-needed" type="button" value="flip-if-needed top to bottom" id="flip-if-needed-top-to-bottom" onclick="flipIfNeededTopToBottom()">
+    <input class="flip-if-needed" type="button" value="flip-if-needed bottom to top" id="flip-if-needed-bottom-to-top" onclick="flipIfNeededBottomToTop()">
+    <br>
+    Flip-offset test:<br>
+    <input class="flip-offset" type="button" value="flip-offset left to right" id="flip-offset-left-to-right"
+        onclick="flipOffsetLeftToRight()">
+    <input class="flip-offset" type="button" value="flip-offset right to left" id="flip-offset-right-to-left"
+        onclick="flipOffsetRightToLeft()">
+    <br>
+    <input class="flip-offset" type="button" value="flip-offset top to bottom" id="flip-offset-top-to-bottom"
+        onclick="flipOffsetTopToBottom()">
+    <input class="flip-offset" type="button" value="flip-offset bottom to top" id="flip-offset-bottom-to-top"
+        onclick="flipOffsetBottomToTop()">
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+</body>
