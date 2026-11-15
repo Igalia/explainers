@@ -14,12 +14,15 @@
 - [Goals](#goals)
 - [Non-Goals](#non-goals)
 - [Proposed Approach](#proposed-approach)
+  - [Matching](#matching)
 - [Alternatives Considered](#alternatives-considered)
   - [1. An `ObservableArray` Type for the Dictionary](#1-an-observablearray-type-for-the-dictionary)
   - [2. A SetLike interface](#2-a-setlike-interface)
   - [3. A Unified `CustomDictionary` Across Features](#3-a-unified-customdictionary-across-features)
   - [4. Declarative `<link>`](#4-declarative-link)
   - [5. DOM subtree scoped](#5-dom-subtree-scoped)
+  - [6. Case-insensitive matching](#6-case-insensitive-matching)
+  - [7. Compatibility normalization (NFKC)](#7-compatibility-normalization-nfkc)
 - [Accessibility, Internationalization, Privacy & Security](#accessibility-internationalization-privacy--security)
 - [Relationship to Other Tools & APIs](#relationship-to-other-tools--apis)
 - [Stakeholder Feedback / Opposition](#stakeholder-feedback--opposition)
@@ -88,7 +91,7 @@ document.spellCheckCustomDictionary.addWords(["Igalia", "Wolvic", "spidermonkey"
 document.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 ```
-**Note:** On platforms whose native spellcheck APIs distinguish *ignored* from *learned* words (e.g. *NSSpellChecker.ignoreWord:inSpellDocumentWithTag:* on macOS, *UITextChecker.ignoredWords* on iOS, and *mIgnoreTable* in Firefox), *learned* words are added permanently to the user's persistent dictionary, whereas *ignored* words are held only in a transient, in-memory list. This web API maps only to the **ignored** semantics. Moreover, it exposes an explicit ```removeWords()``` and is *more tightly scoped* to the ```Document```.
+**Note:** On platforms whose native spellcheck APIs distinguish *ignored* from *learned* words (e.g. *NSSpellChecker.ignoreWord:inSpellDocumentWithTag:* on macOS, *UITextChecker.ignoredWords* on iOS, and *mIgnoreTable* in Firefox), *learned* words are added permanently to the user's persistent dictionary, whereas *ignored* words are held only in a transient, in-memory list. This web API maps only to the **ignored** semantics: words are transient and per-document. How they are matched is defined by this API (see [Matching](#matching)), not by the platform's ignore list. Moreover, it exposes an explicit ```removeWords()``` and is *more tightly scoped* to the ```Document```.
 
 **Note:** Both ```addWords()``` and ```removeWords()``` are essential for this interface. We need ```removeWords()``` to retract mistakes, mirror user unmarks, and prevent the dictionary from growing unboundedly. For single page applications particularly, as the document is the whole session, when view switches, without ```removeWords()```, every view's vocabulary leaks into subsequent views. Native ignore lists are effectively add-only. A page-driven, long-lived document does not get the automatic reset that native ignore lists have, so it needs an explicit removal primitive to scope vocabulary to the current view and to bound growth.
 
@@ -103,10 +106,92 @@ The new dictionary has two key characteristics:
 
 Browsers implement spell checking differently across operating systems.  This API is designed to layer cleanly on top of all of them.
 
+### Matching
+
+A flagged word is suppressed when it *matches* a word in the document's custom dictionary. Matching is exact, with two adjustments that make the custom words behave like words in a built-in dictionary: it ignores differences in how the same characters are encoded (Unicode normalization), and it lets a word be capitalized.
+
+#### Unicode normalization
+
+The same visible word can be encoded in more than one way. For example, "Pikachú" can end with the single code point U+00FA, or with "u" followed by the combining accent U+0301. Which one ends up in the text depends on the keyboard, the input method, or where the text was pasted from, and the user cannot see the difference.
+
+Words are therefore compared after [Normalization Form C (NFC)](https://unicode.org/reports/tr15/#Norm_Forms). Canonically equivalent words are the same word everywhere in the API: in matching, in `removeWords()`, and when applying any per-word length limit.
+
+Only canonical equivalence is applied, not compatibility equivalence (NFKC). Compatibility variants such as the ligature "ﬁ" or full-width "Ｗｏｌｖｉｃ" can look different and are often deliberate, so they remain distinct words (see [Alternatives Considered §7](#7-compatibility-normalization-nfkc)).
+
+#### Case mapping
+
+A word in the dictionary also matches forms of itself with *more* capitals, but never forms with fewer: **capitals can be added to a word, but never removed**.
+
+| Word added | Also matches | Still flagged |
+|---|---|---|
+| `pikachu` (lower case) | `Pikachu`, `PIKACHU` | `pIkachu` |
+| `Pikachu` (initial capital) | `PIKACHU` | `pikachu` |
+| `iPhone` (mixed case) | `IPHONE` | `iphone`, `Iphone` |
+| `NASA` (all capitals) | | `Nasa`, `nasa` |
+| `straße` | `Straße`, `STRASSE` | `strasse`, `Strasse` |
+
+```js
+document.spellCheckCustomDictionary.addWords(["wolvic"]);
+// "wolvic", "Wolvic" and "WOLVIC" are all accepted.
+
+document.spellCheckCustomDictionary.addWords(["Igalia"]);
+// "Igalia" and "IGALIA" are accepted; "igalia" is still flagged.
+```
+
+A word can always be capitalized at the start of a sentence or set in capitals in a heading, but the capitals in a proper noun, brand name or acronym ("Paris", "iPhone", "NASA") are part of its spelling. Pages mostly add exactly this kind of word, so the API should not accept their misspellings.
+
+Precisely, a flagged word is compared with the dictionary in NFC according to its shape:
+
+| Flagged word | Matches when |
+|---|---|
+| **All capitals**: it has at least one cased character, and every cased character is upper case (`PIKACHU`) | the NFC of the upper-case mapping of some dictionary word equals it |
+| **Capitalized**: the first cased character is upper case or title case, and every later cased character is lower case (`Pikachu`) | the word itself, or the NFC of its lower-case mapping, is in the dictionary |
+| **Anything else** (`pikachu`, `iPhone`, `pIkachu`) | the word itself is in the dictionary |
+
+* "Cased", "upper case", "lower case" and the case mappings are Unicode's default, language-independent definitions ([Unicode §3.13, "Default Case Algorithms"](https://www.unicode.org/versions/latest/core-spec/chapter-3/)), with full mappings, so the upper-case form of "ß" is "SS".
+* Characters without case, such as digits, apostrophes and combining marks, are ignored when deciding the shape of a word, so `'Tis` counts as capitalized.
+* Scripts without case, such as Chinese, Japanese, Arabic and Hebrew, always fall into the last row, so their words match exactly.
+
+`removeWords()` does not map case: it removes the NFC form of each word exactly as given. `Pikachu` and `pikachu` are separate entries that a page may have added for different reasons, so `removeWords(["Wolvic"])` does not remove `wolvic`.
+
+#### Prior art
+
+This is the rule the major spell checkers already apply to the words in their built-in dictionaries, so a page's words behave like the dictionary words users already know:
+
+* **Hunspell** (Firefox, LibreOffice, and Chromium on Linux and ChromeOS) accepts a lower-case dictionary word when it is capitalized or in all capitals, and never accepts a capitalized word in lower case. Upstream Hunspell also accepts the all-caps form of a mixed-case word (`IPHONE` for `iPhone`).
+* **macOS and iOS** (`NSSpellChecker`, `UITextChecker`) apply the same rule to their built-in dictionary, and are more lenient in one respect: they also accept other mixed-case forms of a lower-case word, such as `aPPle` for `apple`.
+
+Spell checkers treat *words added by the user* less consistently. Firefox matches them exactly, and case-sensitively, and so does Chromium's own filter, although on macOS and Windows Chromium also adds them to the system spell checker, which applies its own rules. The Enchant personal word list (WebKitGTK, WPE) uses the rule above, except that it matches mixed-case words only as written. macOS and iOS ignore case entirely for learned words, and so does macOS for ignored words (see [Alternatives Considered §6](#6-case-insensitive-matching)). With exact matching, a word the user has added is still flagged when it starts a sentence.
+
+A fuller comparison of how spell checkers handle case, and of the options considered for this API, is in [Case handling in the SpellCheckCustomDictionary API: analysis and proposal](case-handling-analysis-proposal.md).
+
+#### Limitations
+
+Without a language, the default case mappings cannot handle every language's capitalization rules:
+
+* **Turkish and Azerbaijani.** The default mappings pair "i" with "I", so adding `istanbul` accepts `ISTANBUL` but not `İSTANBUL`.
+* **Greek.** Default upper-casing keeps accents, so adding `Αθήνα` accepts `ΑΘΉΝΑ` but not the unaccented `ΑΘΗΝΑ` usual in Greek typography.
+* **Dutch.** "IJ" is capitalized as a unit, so adding `ijsselmeer` accepts `Ijsselmeer` but not `IJsselmeer`.
+
+Separately, the upper-case form of "ß" is "SS", in German as well as by default, so adding `straße` accepts `STRASSE` but not `STRAẞE`, written with the capital sharp s "ẞ" (U+1E9E).
+
+In each case the page can add the other form explicitly. Language-aware mapping, which would close the Turkish, Azerbaijani, Greek and Dutch gaps, is listed under [Future Work](#future-work).
+
+#### Word boundaries
+
+The dictionary does not segment text itself: it is compared against the words the platform spell checker has already flagged, so an entry only helps when it matches the checker's word boundaries. That is not always the case:
+
+* **Compounds.** If a checker flags `Wolvicbrowser` as one word, adding `Wolvic` does not suppress it.
+* **Attached words.** In Arabic, "and" (و) is written attached to the following word, so adding `كتاب` ("book") does not suppress `وكتاب` ("and a book").
+* **Multiple words.** Each flagged word is compared on its own, so an entry containing a space never matches.
+* **Scripts without spaces.** Chinese, Japanese and Thai are rarely spell-checked today. Where they are, the checker's segmentation decides what a "word" is, and it may split a name the page added as one entry.
+
+Word boundaries, including how hyphens and apostrophes split words, also differ between spell checkers, so the same entry can match on one platform and not on another. Matching parts of a flagged word is discussed under Fuzzy matching in [Future Work](#future-work).
+
 <details>
 	<summary><strong>Implementation notes</strong></summary>
 
-The existing spell-check pipeline is unchanged. The custom set is consulted only when results are reconciled: a token that would otherwise be flagged is suppressed if it appears in the document's custom dictionary. The check is strictly **additive**; that is, the custom dictionary can only suppress a flag, never create one. A word that overlaps with an underlying dictionary is expected and inert. `removeWords()` affects only the custom set and never the underlying dictionaries, so removing an overlapping word does not cause it to be flagged.
+The existing spell-check pipeline is unchanged. The custom set is consulted only when results are reconciled: a token that would otherwise be flagged is suppressed if it matches a word in the document's custom dictionary (see [Matching](#matching)). The check is strictly **additive**; that is, the custom dictionary can only suppress a flag, never create one. A word that overlaps with an underlying dictionary is expected and inert. `removeWords()` affects only the custom set and never the underlying dictionaries, so removing an overlapping word does not cause it to be flagged.
 
 How a word gets added so it is no longer flagged depends on the operating system, and the behavior is inconsistent. On some platforms such words are learned directly into a global, system-wide dictionary that persists and is shared with every application on the device; on others they are kept by the browser. This API sidesteps that entirely: rather than write into any underlying engine or system dictionary, the browser applies the custom dictionary as a suppression step over whatever results an engine returns. The dictionary lives **entirely within the browser, scoped to a single document**. Therefore, added words only filter what the browser renders, never persist beyond the document’s lifetime, and never leak into the OS spellchecker or other applications.
 
@@ -181,6 +266,37 @@ Choosing scope for the API largely depends on use cases. For example, Document-s
 We propose to proceed with document-scoped first as it's a more conservative, easier-to-spec choice, while leaving the door open for adding a partial interface HTMLElement later if multi-vocabulary scenarios emerge (See [Future Work](#future-work))
 </details>
 
+### 6. Case-insensitive matching
+
+<details>
+
+Matching could ignore case entirely, by comparing words after Unicode [case folding](https://www.unicode.org/reports/tr44/#CaseFolding.txt). This is what macOS and iOS do for words the user learns, and macOS for words the user ignores, so an implementation built on `ignoreWord:inSpellDocumentWithTag:` would get it for free. We chose not to:
+
+* **Capitals can be part of the spelling.** With case folding, adding "Paris" or "US" would also accept "paris" and "us".
+* **Folding changes more than case.** "ß" folds to "ss", so adding "Straße" would also accept "Strasse". In German that is a different spelling (Swiss orthography), not a different capitalization.
+* **Removal would fold too.** Removing "pikachu" would also remove a separately added "Pikachu".
+
+Folding suits a single user's personal dictionary, where the user decides what to add and a lost capital costs little. A page's words are applied to text the user types, so accepting a wrong capitalization of the page's proper noun hides a real error from the user. Because the result differs from Apple's handling of user words, an implementation on Apple platforms has to apply the [case-mapping rule](#case-mapping) itself rather than delegate to `ignoreWord:inSpellDocumentWithTag:`.
+
+Exact, case-sensitive matching was also considered. It is the simplest rule, but it forces pages to add every capitalization of every word ("wolvic", "Wolvic", "WOLVIC") to cover sentence starts and headings, and every variant a page misses shows up as a false spelling error.
+
+</details>
+
+### 7. Compatibility normalization (NFKC)
+
+<details>
+
+Words could be compared after [Normalization Form KC (NFKC)](https://unicode.org/reports/tr15/#Norm_Forms) instead of NFC. NFKC also merges *compatibility* variants: the ligature "ﬁ" becomes "fi", full-width "Ｗｏｌｖｉｃ" becomes "Wolvic", the superscript in "m²" becomes "2", and the long "ſ" becomes "s". This would help in one case: text pasted from a PDF that uses ligatures would match a word added without them. We chose not to:
+
+* **Compatibility variants are different characters.** [UAX #15](https://unicode.org/reports/tr15/#Canon_Compat_Equivalence) describes canonically equivalent sequences as representing "the same abstract character", so treating them as one word loses nothing. Compatibility equivalence is "a weaker type of equivalence" between characters that "may have distinct visual appearances or behaviors". UAX #15 warns that the compatibility forms NFKC and NFKD "must not be blindly applied to arbitrary text", because "they may remove distinctions that are important to the semantics of the text".
+* **The differences are often deliberate.** Full-width Latin letters are a normal style in Chinese, Japanese and Korean text, superscripts carry meaning ("m²" is not "m2"), and mathematical letters such as "𝐱" are different symbols from "x". A dictionary should not decide that these are spelling variants of each other.
+* **It would accept text the page never added.** Adding "m2" would also suppress "m²", and adding "Wolvic" would also suppress "Ｗｏｌｖｉｃ". The rule in [Matching](#matching) only ever accepts the word as added, in another encoding or with more capitals.
+* **The case it helps is rare, and easy to cover.** A page that expects ligatures or full-width text can add those forms explicitly.
+
+UAX #15 notes that the compatibility forms "can be applied more freely to domains with restricted character sets", such as identifiers ([UAX #31](https://www.unicode.org/reports/tr31/)). Spell checking works on open-ended prose, where the author's choice of character should be kept.
+
+</details>
+
 ---
 
 ## Accessibility, Internationalization, Privacy & Security
@@ -190,6 +306,8 @@ This API has no direct effect on the accessibility tree or assistive technology.
 
 ### Internationalization
 Words added via this API apply across all user-enabled languages, matching the behavior of the existing browser custom dictionary. Sites can simply load different dictionaries as appropriate if desired. No language-targeting beyond what already exists is introduced.
+
+Words are compared after Unicode NFC normalization, using the language-independent default case mappings, so matching does not depend on the input method or on the user's or the page's language. See [Matching](#matching), including the language-specific cases this does not cover.
 
 ### Privacy
 
@@ -242,7 +360,11 @@ The current proposal is intentionally minimal in scope. A few directions have co
 
 * **Subtree-scoped dictionaries.** Today the dictionary is scoped to the whole `Document`. A `partial interface HTMLElement` (see [Alternatives Considered §5](#5-dom-subtree-scoped)) could let pages scope distinct vocabularies to individual forms or web components, for cases where a single page legitimately needs more than one vocabulary at once.  Note that this is neither how user dictionaries work today, nor is it currently well supported in spell-checking with regard to languages in general.  We imagine it being rather straightforward to adapt in terms of API by simply adding a lang as an optional secondary argument to each of the methods.
 
-* **Fuzzy matching.** Today the dictionary is based on exact matches for many reasons laid out in other sections.  This is not always the most author convenient way to express things, and in fact does not offer real solutions for some languages.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  Exact matching should always still be possible, so let's start there.
+* **Language-aware case mapping.** With an optional language argument (see **Subtree-scoped dictionaries** above), matching could use a language's own case mappings, such as Turkish "i" and "İ", accentless Greek capitals and Dutch "IJ", closing those language-specific gaps listed under [Matching](#limitations). Words added without a language would keep the default behavior, so the current rule does not block this.
+
+* **Per-word case control.** A page might want a word to match only exactly as written, like Hunspell's `KEEPCASE` flag, for example when its all-caps form is a different word. This could be an option to `addWords()`, but should wait for evidence that pages need it.
+
+* **Fuzzy matching.** Today the dictionary is based on exact matches, adjusted only for Unicode normalization and capitalization (see [Matching](#matching)), for many reasons laid out in other sections.  This is not always the most author convenient way to express things, and in fact does not offer real solutions for some languages.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  It should always be possible to require a particular spelling, so let's start there.
 
 * **Convenience integration with related APIs.** Sharing vocabulary with the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md), translation APIs, or a future [Proofreader API](https://github.com/webmachinelearning/proofreader-api) integration is possible today by passing the same word list to both APIs manually. If this pattern proves common or inefficient in practice, a convenience method to share vocabulary across APIs could be considered later.
 
