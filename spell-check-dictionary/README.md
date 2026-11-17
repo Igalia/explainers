@@ -96,6 +96,12 @@ document.spellCheckCustomDictionary.removeWords(["Wolvic", "spidermonkey"]);
 
 **Note:** "words" is defined loosely. Validation of the entries matches how the *browser custom dictionary* works.
 
+**Note:** A word in the page is matched against the dictionary's entries as follows:
+
+* **Unicode normalization.** User agents should apply Unicode normalization when comparing, so that the same word typed through different keyboards or input methods still matches. For example, "Pokémon" written with a precomposed `é` (U+00E9) and with `e` plus a combining acute accent (U+0065 U+0301) look identical, and an entry added in one form should suppress the other. This mirrors how the HTML Standard already asks user agents to match `<datalist>` suggestions, with reference to [Character Model for the World Wide Web: String Matching](https://www.w3.org/TR/charmod-norm/).
+* **Case-sensitive.** Matching does not fold case. Adding "Pikachu" does not suppress "PIKACHU" or "pikachu"; authors who need several capitalizations add each one.
+* **No stemming.** Each inflected form is a separate entry. Adding "anaerobe" does not suppress "anaerobes". See [Future Work](#future-work) for how richer matching could be layered on later.
+
 The new dictionary has two key characteristics:
 
 * *Per-document lifecycle*. The dictionary exists only for the lifetime of the document. Closing the tab or navigating away discards it entirely.
@@ -106,7 +112,9 @@ Browsers implement spell checking differently across operating systems.  This AP
 <details>
 	<summary><strong>Implementation notes</strong></summary>
 
-The existing spell-check pipeline is unchanged. The custom set is consulted only when results are reconciled: a token that would otherwise be flagged is suppressed if it appears in the document's custom dictionary. The check is strictly **additive**; that is, the custom dictionary can only suppress a flag, never create one. A word that overlaps with an underlying dictionary is expected and inert. `removeWords()` affects only the custom set and never the underlying dictionaries, so removing an overlapping word does not cause it to be flagged.
+The existing spell-check pipeline is unchanged. The custom set is consulted only when results are reconciled: a token that would otherwise be flagged is suppressed if it matches an entry in the document's custom dictionary, using the matching rules described above. The check is strictly **additive**; that is, the custom dictionary can only suppress a flag, never create one. A word that overlaps with an underlying dictionary is expected and inert. `removeWords()` affects only the custom set and never the underlying dictionaries, so removing an overlapping word does not cause it to be flagged.
+
+Chromium's current implementation compares entries code unit by code unit and does not yet apply Unicode normalization. Adding it means normalizing (to NFC) both when words are stored and when a flagged word is looked up, including where existing spelling markers are cleared after `addWords()`.
 
 How a word gets added so it is no longer flagged depends on the operating system, and the behavior is inconsistent. On some platforms such words are learned directly into a global, system-wide dictionary that persists and is shared with every application on the device; on others they are kept by the browser. This API sidesteps that entirely: rather than write into any underlying engine or system dictionary, the browser applies the custom dictionary as a suppression step over whatever results an engine returns. The dictionary lives **entirely within the browser, scoped to a single document**. Therefore, added words only filter what the browser renders, never persist beyond the document’s lifetime, and never leak into the OS spellchecker or other applications.
 
@@ -191,6 +199,8 @@ This API has no direct effect on the accessibility tree or assistive technology.
 ### Internationalization
 Words added via this API apply across all user-enabled languages, matching the behavior of the existing browser custom dictionary. Sites can simply load different dictionaries as appropriate if desired. No language-targeting beyond what already exists is introduced.
 
+Following [review by the W3C Internationalization Working Group](https://github.com/w3c/i18n-actions/issues/222) on the [HTML pull request](https://github.com/whatwg/html/pull/12590), the specification asks user agents to apply Unicode normalization when matching words against entries, so that different encodings of the same word (for example precomposed versus decomposed accented letters, or Hangul syllables versus conjoining jamo) are not treated as different words. Matching remains case-sensitive and does not stem or decline words, so authors of content in heavily inflected languages need to add each form they use. Language-aware matching is discussed under [Future Work](#future-work).
+
 ### Privacy
 
 - **Transient data.** The custom dictionary is discarded when the document or tab closes.
@@ -242,7 +252,7 @@ The current proposal is intentionally minimal in scope. A few directions have co
 
 * **Subtree-scoped dictionaries.** Today the dictionary is scoped to the whole `Document`. A `partial interface HTMLElement` (see [Alternatives Considered §5](#5-dom-subtree-scoped)) could let pages scope distinct vocabularies to individual forms or web components, for cases where a single page legitimately needs more than one vocabulary at once.  Note that this is neither how user dictionaries work today, nor is it currently well supported in spell-checking with regard to languages in general.  We imagine it being rather straightforward to adapt in terms of API by simply adding a lang as an optional secondary argument to each of the methods.
 
-* **Fuzzy matching.** Today the dictionary is based on exact matches for many reasons laid out in other sections.  This is not always the most author convenient way to express things, and in fact does not offer real solutions for some languages.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  Exact matching should always still be possible, so let's start there.
+* **Fuzzy matching.** Today the dictionary is based on exact matches (after Unicode normalization) for many reasons laid out in other sections.  This is not always the most author convenient way to express things, and in fact does not offer real solutions for some languages.  It also means that the list is generally not integrated with spelling _suggestions_.  These are different features, and at most would ideally share some _source_ list.  We propose that there are opportunities to identify source lists in a few possible ways ([simple partial matching](https://github.com/Igalia/explainers/issues/94), or even fuller solutions like hunspell, etc), and that we can identify these at a later time.  Exact matching should always still be possible, so let's start there. Case-insensitive matching is a related option: for example, a lowercase entry could also accept capitalized and all-caps forms, the way many spell checkers treat their own dictionaries.
 
 * **Convenience integration with related APIs.** Sharing vocabulary with the [Web Speech Contextual Biasing API](https://github.com/WebAudio/web-speech-api/blob/main/explainers/contextual-biasing.md), translation APIs, or a future [Proofreader API](https://github.com/webmachinelearning/proofreader-api) integration is possible today by passing the same word list to both APIs manually. If this pattern proves common or inefficient in practice, a convenience method to share vocabulary across APIs could be considered later.
 
